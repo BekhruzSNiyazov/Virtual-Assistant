@@ -4,7 +4,9 @@ This is a virtual assistant created by Bekhruz Niyazov for 3rd Code Jam hosted b
 You need to have Python 3.x installed
 # Usage
 ## Windows
-python main.py
+`python main.py`
 ## macOS and Linux
-python3 main.py | ./main.py
+`python3 main.py`
+*or*
+`./main.py`
 I hope you will enjoy using this virtual assistant!
