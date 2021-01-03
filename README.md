@@ -8,6 +8,9 @@ You need to have Python 3.x installed
 ### macOS and Linux
 `python3 main.py`
 or
-`./main.py`
+```
+chmod +x main.py
+./main.py
+```
 
 I hope you will enjoy using this virtual assistant!
