@@ -7,6 +7,7 @@ You need to have Python 3.x installed
 `python main.py`
 ## macOS and Linux
 `python3 main.py`
-*or*
+or
 `./main.py`
+
 I hope you will enjoy using this virtual assistant!
