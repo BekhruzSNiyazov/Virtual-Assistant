@@ -55,6 +55,11 @@ while True:
         # if the last character in user's input is "?"
         if user_input[-1] == "?" or user_input[-2] == "?" or user_input[-3] == "?":
             question = True
+
+        # if user's input was not yet recognized as a question
+        if not question:
+            if words[0].capitalize() in data["question_keywords"]:
+                question = True
         
         # if user's input is not a question
         if not question:
@@ -68,9 +73,27 @@ while True:
             if not about_themselves:
                 statement = True
 
+    if user_input == "show me your knowledge":
+        print_answer(str(data))
+
+    elif user_input_without_syntax in data["exit"]:
+        exit(data)
+
     # if user's input is a question
-    if question:
-        pass
+    elif question:
+
+        if words[-1] == "mean":
+            search_result = ""
+
+            answered = False
+
+            for category in data:
+                if words[-2] in data[category]:
+                    print_answer(words[-2] + " means " + category)
+                    answered = True
+                    break
+            if not answered:
+                print_answer("Sorry, I don't know that. But you can teach me.")
 
     # if user's input is not a question but a greeting
     elif greeting:
@@ -82,12 +105,12 @@ while True:
         # responding to the user
 
         # if user asked "what's up?"
-        if greeting_word == "whats up":
+        if greeting_word == "What's up?":
             responses = ["Nothing", "Not much", "Alright"]
             print_answer(random.choice(responses))
 
         # if user did not ask "what's up?" but they asked "how are you" or "how do you do" or "how are you doing"
-        elif greeting_word == "how are you" or greeting_word == "how do you do" or greeting_word == "how are you doing":
+        elif greeting_word == "How are you?" or greeting_word == "How do you do?" or greeting_word == "How are you doing?":
 
             # creating a response variable with a start; one word will be appended to it
             response = random.choice(["Everything is ", "I feel "])
@@ -127,6 +150,33 @@ while True:
         
         # creating variables that will hold information about user's input
         explanation = False
+
+        # initializing variables that will be useful in the future
+        means = False
+
+        if "means" in words:
+            explanation = True
+            means = True
+        elif "is" in words:
+            if words[words.index("is")+1] == "a" or words[words.index("is")+1] == "an":
+                explanation = True
+        else:
+            print_answer("Sorry, but I don't understand you.")
+
+        # if user's input is an explanation:
+        if explanation:
+            index = user_input_without_syntax.index("means") if means else user_input_without_syntax.index("is")
+            to_remember = user_input_without_syntax[:index].strip()
+            length = len("means") if means else len("is")
+            category = user_input_without_syntax[index+length:].strip()
+            # if category already exists
+            if category in data:
+                # append the word to the category
+                data[category].append(to_remember)
+            # if category does not exist
+            else:
+                # create it and append to it the word
+                data[category] = [to_remember]
 
     # if the type of user's input is not recognized
     else:
