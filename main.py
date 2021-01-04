@@ -81,7 +81,7 @@ while True:
 
     # if user's input is a question
     elif question:
-
+        print("This is a question")
         if words[-1] == "mean":
             search_result = ""
 
@@ -97,6 +97,7 @@ while True:
 
     # if user's input is not a question but a greeting
     elif greeting:
+        print("This is a greeting")
         # creating a copy of data["greeting"] list
         greetings = data["greeting"].copy()
         # removing the words that we don't need
@@ -143,11 +144,12 @@ while True:
 
     # if user's input is not a question nor a greeting but it is a statement about themselves
     elif about_themselves:
+        print("This is a statement about themselves")
         pass
 
     # if user's input is not a question nor a greeting nor a statement about themselves but a statement
     elif statement:
-        
+        print("This is a statement")
         # creating variables that will hold information about user's input
         explanation = False
 
