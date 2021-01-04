@@ -4,6 +4,8 @@
 import re
 import random
 
+from googlesearch import search as gSearch
+
 # importing learned dataset from data.py file
 from data import data
 
@@ -13,6 +15,24 @@ def print_answer(string):
 
 def remove_syntax(string):
     return re.sub("[,.!?\"']*", "", string)
+
+def search(search_for, means, person):
+    answered = False
+    for category in data:
+        if search_for in data[category]:
+            string = " is a " if person else " means "
+            string = " means " if means else " is a "
+            print_answer(search_for + string + category)
+            answered = True
+            break
+
+    if not answered:
+        print_answer("That's what I found on Google:")
+        search_google(search_for, person)
+
+def search_google(search_for, person):
+    for url in gSearch(search_for if person else search_for + " meaning", tld="com", lang="en", stop=5):
+        print("\t" + url)
 
 # chatting with user forever until they type "exit" or
 # another word in "exit" category
@@ -67,6 +87,8 @@ while True:
             # checking, if user is saying something about themselves/their feelings
             for word in words:
                 if word in data["self"]:
+                    if word == "my":
+                        if "is" in words: statement = True
                     about_themselves = True
 
             # if user's input is not a greeting or a question or a statement about themselves/their feelings
@@ -80,30 +102,26 @@ while True:
         exit(data)
 
     # if user's input is a question
-    elif question:
-        print("This is a question")
+    if question:
         if words[-1] == "mean":
             search_result = ""
 
-            answered = False
+            search_for = user_input_without_syntax[user_input_without_syntax.index("does") + len("does") + 1 : user_input_without_syntax.index("mean")].strip()
 
-            for category in data:
-                if words[-2] in data[category]:
-                    print_answer(words[-2] + " means " + category)
-                    answered = True
-                    break
-            if not answered:
-                print_answer("Sorry, I don't know that. But you can teach me.")
+            search(search_for, False, False)
+        else:
+            if re.match(r"what is [\w\s]+", user_input_without_syntax) or re.match(r"who is [\w\s]+", user_input_without_syntax):
+                search_for = user_input_without_syntax[len(words[0]) + len(words[1]) + 2:].strip()
+                search(search_for, True, False if words[0] == "what" else True)
 
-    # if user's input is not a question but a greeting
-    elif greeting:
-        print("This is a greeting")
+    # if user's input is a greeting
+    if greeting:
         # creating a copy of data["greeting"] list
         greetings = data["greeting"].copy()
         # removing the words that we don't need
         greetings.remove(greeting_word)
 
-        # responding to the user
+        # answering to the user
 
         # if user asked "what's up?"
         if greeting_word == "What's up?":
@@ -142,14 +160,12 @@ while True:
             # answering to the user
             print_answer(random.choice(greetings))
 
-    # if user's input is not a question nor a greeting but it is a statement about themselves
-    elif about_themselves:
-        print("This is a statement about themselves")
+    # if user's input is a statement about themselves
+    if about_themselves:
         pass
 
-    # if user's input is not a question nor a greeting nor a statement about themselves but a statement
-    elif statement:
-        print("This is a statement")
+    # if user's input is a statement
+    if statement:
         # creating variables that will hold information about user's input
         explanation = False
 
@@ -169,7 +185,7 @@ while True:
         if explanation:
             index = user_input_without_syntax.index("means") if means else user_input_without_syntax.index("is")
             to_remember = user_input_without_syntax[:index].strip()
-            length = len("means") if means else len("is")
+            length = len("means") if means else len("is") + len(words[words.index("is")+1]) + 1
             category = user_input_without_syntax[index+length:].strip()
             # if category already exists
             if category in data:
@@ -179,7 +195,3 @@ while True:
             else:
                 # create it and append to it the word
                 data[category] = [to_remember]
-
-    # if the type of user's input is not recognized
-    else:
-        print("bananas")
