@@ -3,4 +3,3 @@ google
 requests
 wikipedia
 PyDictionary
-textblob
