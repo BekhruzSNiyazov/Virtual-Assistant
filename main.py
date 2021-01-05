@@ -29,13 +29,30 @@ def search(search_item, person):
             print_answer("Here is what I found on Wikipedia:")
             print_answer(wikipedia.summary(search_item))
         except:
-            print_answer("Sorry, I don't know that.")
+            try:
+                print_answer("Here is what I found on Wikipedia:")
+                print_answer(wikipedia.summary(search_item.split()[-1]))
+            except:
+                try:
+                    print_answer("Here is what I found on Wikipedia:")
+                    print_answer(wikipedia.summary(search_item.split()[0]))
+                except:
+                    print_answer("Sorry, I don't know that.")
     else:
         answered = False
-        for category in data:
-            if search_item in data[category]:
-                print_answer(search_item + " is a " + category if search_item != category else search_item + " means " + random.choice(data[category]))
-                answered = True
+        try:
+            print_answer("Here are some definitions that I found: ")
+            definition = dictionary.meaning(search_item)
+            for part in definition:
+                print("\t" + part + ":")
+                for meaning in definition[part]:
+                    print("\t\t" + str(definition[part].index(meaning)+1) + ". " + meaning)
+            answered = True
+        except:
+            for category in data:
+                if search_item in data[category]:
+                    print_answer(search_item + " is a " + category if search_item != category else search_item + " means " + random.choice(data[category]))
+                    answered = True
         if not answered:
             print_answer("Sorry, I don't know that yet. But you can teach me.")
 
@@ -77,9 +94,10 @@ while True:
     # if user's input is not a greeting
     if not greeting:
         
-        # if the last character in user's input is "?"
-        if user_input[-1] == "?" or user_input[-2] == "?" or user_input[-3] == "?":
-            question = True
+        if len(user_input) > 1:
+            # if the last character in user's input is "?"
+            if user_input[-1] == "?" or user_input[-2] == "?" or user_input[-3] == "?":
+                question = True
 
         # if user's input was not yet recognized as a question
         if not question:
@@ -146,6 +164,7 @@ while True:
             available_words.remove("well")
             available_words.remove("outstanding")
             available_words.remove("terrific")
+            available_words.remove("exceptional")
             available_words.append("really well")
 
             # appending a word to the response
