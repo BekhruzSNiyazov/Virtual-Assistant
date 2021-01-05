@@ -18,7 +18,7 @@ dictionary = PyDictionary()
 
 # this function reduces copy-pasting
 def print_answer(string):
-    print("Assistant:", string.strip())
+    print("\nAssistant:", string.strip())
 
 def remove_syntax(string):
     return re.sub("[,.!?\"']*", "", string)
@@ -26,13 +26,19 @@ def remove_syntax(string):
 def search(search_item, person):
     if person:
         try:
-            search_wikipedia(search_item)
+            answer = search_wikipedia(search_item)
+            found_on_wikipedia()
+            print_answer(answer)
         except:
             try:
-                search_wikipedia(search_item.split()[-1])
+                answer = search_wikipedia(search_item.split()[-1])
+                found_on_wikipedia()
+                print_answer(answer)
             except:
                 try:
-                    search_wikipedia(search_item.split()[0])
+                    answer = search_wikipedia(search_item.split()[0])
+                    found_on_wikipedia()
+                    print_answer(answer)
                 except:
                     print_answer("Sorry, I don't know that.")
     else:
@@ -54,15 +60,17 @@ def search(search_item, person):
             print_answer("Sorry, I don't know that yet. But you can teach me.")
 
 def search_wikipedia(search_item):
+    return wikipedia.summary(search_item)
+
+def found_on_wikipedia():
     print_answer("Here is what I found on Wikipedia:")
-    print_answer(wikipedia.summary(search_item))
 
 # chatting with user forever until they type "exit" or
 # another word in "exit" category
 while True:
 
     # getting an input from the user and removing white spaces
-    user_input = input("User: ").strip()
+    user_input = input("\nUser: ").strip()
 
     # creating a variable that stores user's input without useless syntax and lowercased and without white spaces
     user_input_without_syntax = remove_syntax(user_input).lower().strip()
