@@ -6,8 +6,15 @@ import random
 
 from googlesearch import search as gSearch
 
+import requests
+
+import wikipedia
+from PyDictionary import PyDictionary
+
 # importing learned dataset from data.py file
 from data import data
+
+dictionary = PyDictionary()
 
 # this function reduces copy-pasting
 def print_answer(string):
@@ -16,23 +23,21 @@ def print_answer(string):
 def remove_syntax(string):
     return re.sub("[,.!?\"']*", "", string)
 
-def search(search_for, means, person):
-    answered = False
-    for category in data:
-        if search_for in data[category]:
-            string = " is a " if person else " means "
-            string = " means " if means else " is a "
-            print_answer(search_for + string + category)
-            answered = True
-            break
-
-    if not answered:
-        print_answer("That's what I found on Google:")
-        search_google(search_for, person)
-
-def search_google(search_for, person):
-    for url in gSearch(search_for if person else search_for + " meaning", tld="com", lang="en", stop=5):
-        print("\t" + url)
+def search(search_item, person):
+    if person:
+        try:
+            print_answer("Here is what I found on Wikipedia:")
+            print_answer(wikipedia.summary(search_item))
+        except:
+            print_answer("Sorry, I don't know that.")
+    else:
+        answered = False
+        for category in data:
+            if search_item in data[category]:
+                print_answer(search_item + " is a " + category if search_item != category else search_item + " means " + random.choice(data[category]))
+                answered = True
+        if not answered:
+            print_answer("Sorry, I don't know that yet. But you can teach me.")
 
 # chatting with user forever until they type "exit" or
 # another word in "exit" category
@@ -106,13 +111,13 @@ while True:
         if words[-1] == "mean":
             search_result = ""
 
-            search_for = user_input_without_syntax[user_input_without_syntax.index("does") + len("does") + 1 : user_input_without_syntax.index("mean")].strip()
+            search_item = user_input_without_syntax[user_input_without_syntax.index("does") + len("does") + 1 : user_input_without_syntax.index("mean")].strip()
 
-            search(search_for, False, False)
+            search(search_item, False)
         else:
             if re.match(r"what is [\w\s]+", user_input_without_syntax) or re.match(r"who is [\w\s]+", user_input_without_syntax):
-                search_for = user_input_without_syntax[len(words[0]) + len(words[1]) + 2:].strip()
-                search(search_for, True, False if words[0] == "what" else True)
+                search_item = user_input_without_syntax[len(words[0]) + len(words[1]) + 2:].strip()
+                search(search_item, False if words[0] == "what" else True)
 
     # if user's input is a greeting
     if greeting:
