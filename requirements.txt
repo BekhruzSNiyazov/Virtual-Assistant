@@ -3,4 +3,4 @@ google
 requests
 wikipedia
 PyDictionary
-pyspellchecker
+textblob
