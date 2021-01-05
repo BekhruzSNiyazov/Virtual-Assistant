@@ -26,16 +26,13 @@ def remove_syntax(string):
 def search(search_item, person):
     if person:
         try:
-            print_answer("Here is what I found on Wikipedia:")
-            print_answer(wikipedia.summary(search_item))
+            search_wikipedia(search_item)
         except:
             try:
-                print_answer("Here is what I found on Wikipedia:")
-                print_answer(wikipedia.summary(search_item.split()[-1]))
+                search_wikipedia(search_item.split()[-1])
             except:
                 try:
-                    print_answer("Here is what I found on Wikipedia:")
-                    print_answer(wikipedia.summary(search_item.split()[0]))
+                    search_wikipedia(search_item.split()[0])
                 except:
                     print_answer("Sorry, I don't know that.")
     else:
@@ -55,6 +52,10 @@ def search(search_item, person):
                     answered = True
         if not answered:
             print_answer("Sorry, I don't know that yet. But you can teach me.")
+
+def search_wikipedia(search_item):
+    print_answer("Here is what I found on Wikipedia:")
+    print_answer(wikipedia.summary(search_item))
 
 # chatting with user forever until they type "exit" or
 # another word in "exit" category
