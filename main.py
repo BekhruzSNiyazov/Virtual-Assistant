@@ -93,13 +93,6 @@ while True:
         greeting = True
         greeting_word = data["greeting"][greetings.index(user_input_without_syntax)]
 
-    # if user's input was not yet recognized as a greeting
-    if not greeting:
-        for word in words:
-            if word in greetings:
-                greeting = True
-                greeting_word = data["greeting"][greetings.index(word)]
-
     # if user's input is not a greeting
     if not greeting:
         
