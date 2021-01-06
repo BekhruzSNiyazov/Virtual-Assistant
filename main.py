@@ -16,6 +16,8 @@ from data import data
 
 dictionary = PyDictionary()
 
+last_assistant = ""
+
 # this function reduces copy-pasting
 def print_answer(string):
 	print("\nAssistant:", string)
@@ -156,7 +158,6 @@ while True:
 	if question:
 		print("This is a question")
 		if re.match(r"what does [\w\s]+ mean", user_input_without_syntax):
-			search_result = ""
 
 			search_item = user_input_without_syntax[user_input_without_syntax.index("does") + len("does") + 1 : user_input_without_syntax.index("mean")].strip()
 
@@ -174,7 +175,7 @@ while True:
 			if word in data["good"]:
 				print_answer("Thanks a ton!")
 			elif word in data["bad"]:
-				print_answer("( Please, contact Bekhruz on Tim's discord and tell him the reason why you didn't like me.")
+				print_answer("Please, contact @bekhruzniyazov on Tim's Discord and tell him the reason why you didn't like me. :(")
 
 	# if user's input is a greeting
 	if greeting:
