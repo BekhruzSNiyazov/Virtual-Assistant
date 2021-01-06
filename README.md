@@ -5,11 +5,11 @@ You need to have Python 3.x installed.
 # Setup
 1. Download main.py and data.py files. **Do not delete data.py file. It should be in the same directory as main.py file**.
 2. Install needed libraries like so:
-### Windows
+#### Windows
 ```
 pip install -r requirements.txt
 ```
-### macOS and Linux
+#### macOS and Linux
 ```
 pip3 install -r requirements.txt
 ```
