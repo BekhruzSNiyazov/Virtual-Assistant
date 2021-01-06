@@ -6,19 +6,19 @@ import random
 
 from googlesearch import search as gSearch
 
-import requests
-
 import wikipedia
 from PyDictionary import PyDictionary
 
-# importing learned dataset from data.py file
+from datetime import datetime
+
+# importing dataset from data.py file
 from data import data
 
 dictionary = PyDictionary()
 
 # this function reduces copy-pasting
 def print_answer(string):
-	print("\nAssistant:", string.strip())
+	print("\nAssistant:", string)
 
 def remove_syntax(string):
 	return re.sub("[,.!?\"']*", "", string)
@@ -83,6 +83,7 @@ while True:
 	greeting = False
 	about_themselves = False
 	statement = False
+	about_it = False
 
 	# initializing variables that may become useful in the future
 	greeting_word = ""
@@ -115,28 +116,35 @@ while True:
 	if not greeting:
 		
 		if len(user_input) > 3:
-			# if the last character in user's input is "?"
-			if user_input[-1] == "?" or user_input[-2] == "?" or user_input[-3] == "?":
-				question = True
+			for word in data["self"]:
+				if word in words:
+					if word == "youre" or "are" in words:
+						about_it = True
+						break
 
-			# if user's input was not yet recognized as a question
-			if not question:
-				if words[0].capitalize() in data["question_keywords"]:
+			if not about_it:
+				# if the last character in user's input is "?"
+				if user_input[-1] == "?" or user_input[-2] == "?" or user_input[-3] == "?":
 					question = True
-			
-			# if user's input is not a question
-			if not question:
 
-				# checking, if user is saying something about themselves/their feelings
-				for word in words:
-					if word in data["self"]:
-						if word == "my":
-							if "is" in words: statement = True
-						about_themselves = True
+				# if user's input was not yet recognized as a question
+				if not question:
+					if words[0].capitalize() in data["question_keywords"]:
+						question = True
+				
+				# if user's input is not a question
+				if not question:
 
-				# if user's input is not a greeting or a question or a statement about themselves/their feelings
-				if not about_themselves:
-					statement = True
+					# checking, if user is saying something about themselves/their feelings
+					for word in words:
+						if word in data["themselves"]:
+							if word == "my":
+								if "is" in words: statement = True
+							about_themselves = True
+
+					# if user's input is not a greeting or a question or a statement about themselves/their feelings
+					if not about_themselves:
+						statement = True
 
 	if user_input == "show me your knowledge":
 		print_answer(str(data))
@@ -158,61 +166,137 @@ while True:
 				search_item = user_input_without_syntax[len(words[0]) + len(words[1]) + 2:].strip()
 				search(search_item, False if words[0] == "what" else True)
 
+	# if user said something about assistant
+	if about_it:
+		print("They said something about assistant")
+		
+		for word in words:
+			if word in data["good"]:
+				print_answer("Thanks a ton!")
+			elif word in data["bad"]:
+				print_answer("( Please, contact Bekhruz on Tim's discord and tell him the reason why you didn't like me.")
+
 	# if user's input is a greeting
 	if greeting:
 		print("This is a greeting")
-		# creating a copy of data["greeting"] list
-		greetings = data["greeting"].copy()
-		# removing the words that we don't need
-		greetings.remove(greeting_word)
+		
+		answered = False
 
-		# answering to the user
+		hour = datetime.now().time().hour
 
-		# if user asked "what's up?"
-		if greeting_word == "What's up?":
-			responses = ["Nothing", "Not much", "Alright"]
-			print_answer(random.choice(responses))
+		if greeting_word == "Good morning!" or greeting_word == "Morning":
+			if hour > 12:
+				if hour < 17:
+					print_answer("It is no longer morning, I believe. It is already afternoon.")
+					answered = True
+				elif hour < 20:
+					print_answer("It is evening now. Good evening to you!")
+					answered = True
+				else:
+					print_answer("Good night. It's night now.")
+					answered = True
+			else:
+				print_answer("Good morning!")
+				answered = True
 
-		# if user did not ask "what's up?" but they asked "how are you" or "how do you do" or "how are you doing"
-		elif greeting_word == "How are you?" or greeting_word == "How do you do?" or greeting_word == "How are you doing?":
+		elif greeting_word == "Good day!" or greeting_word == "Day":
+			if hour < 12 or hour > 17:
+				if hour < 12:
+					print_answer("It is only morning yet, I believe. Good morning to you!")
+					answered = True
+				elif hour > 17:
+					print_answer("It is evening now.")
+					answered = True
+				elif hour > 20:
+					print_answer("Good night. It is night now.")
+					answered = True
+			else:
+				print_answer("Good day!")
+				answered = True
 
-			# creating a response variable with a start; one word will be appended to it
-			response = random.choice(["Everything is ", "I feel "])
+		elif greeting_word == "Good evening" or greeting_word == "Evening":
+			if hour < 17 or hour > 20:
+				if hour < 12:
+					print_answer("It is only morning now. Good morning!")
+				elif hour < 17:
+					print_answer("It is not evening yet. Good day to you!")
+					answered = True
+				elif hour > 20:
+					print_answer("It is night now. Good night to you!")
+					answered = True
+			else:
+				print_answer("Good evening!")
+				answered = True
 
-			# creating a copy of data["good"] list
-			available_words = data["good"].copy()
+		elif greeting_word == "Good night!" or greeting_word == "Night":
+			if hour < 20 or hour > 6:
+				if hour < 20:
+					print_answer("It is not night yet.")
+					answered = True
+				elif hour > 6:
+					print_answer("It is no longer night.")
+					answered = True
+			else:
+				print_answer("Good night to you!")
+				answered = True
 
-			# filtering the list from unwanted words
-			available_words.remove("well")
-			available_words.remove("outstanding")
-			available_words.remove("terrific")
-			available_words.remove("fine")
-			available_words.remove("exceptional")
-			available_words.append("really well")
-
-			# appending a word to the response
-			response += random.choice(available_words)
-
-			# answering to the user
-			print_answer(response)
-
-		# if user did not ask "what's up?" nor "how are you" or "how do you do" or "how are you doing"
-		else:
+		if not answered:
 			# creating a copy of data["greeting"] list
 			greetings = data["greeting"].copy()
-
-			# filtering the list
+			# removing the words that we don't need
 			greetings.remove(greeting_word)
 
 			# answering to the user
-			print_answer(random.choice(greetings))
+
+			# if user asked "what's up?"
+			if greeting_word == "What's up?":
+				responses = ["Nothing", "Not much", "Alright"]
+				print_answer(random.choice(responses))
+
+			# if user did not ask "what's up?" but they asked "how are you" or "how do you do" or "how are you doing"
+			elif greeting_word == "How are you?" or greeting_word == "How do you do?" or greeting_word == "How are you doing?":
+
+				# creating a response variable with a start; one word will be appended to it
+				response = random.choice(["Everything is ", "I feel "])
+
+				# creating a copy of data["good"] list
+				available_words = data["good"].copy()
+
+				# filtering the list from unwanted words
+				available_words.remove("well")
+				available_words.remove("outstanding")
+				available_words.remove("terrific")
+				available_words.remove("fine")
+				available_words.remove("cool")
+				available_words.remove("exceptional")
+				available_words.append("really well")
+
+				# appending a word to the response
+				response += random.choice(available_words)
+
+				# answering to the user
+				print_answer(response)
+
+			# if user did not ask "what's up?" nor "how are you" or "how do you do" or "how are you doing"
+			else:
+				# creating a copy of data["greeting"] list
+				greetings = data["greeting"].copy()
+
+				# filtering the list
+				words = ["Hullo", "Sup", "Hulo", "Day", "Morning", "Evening", "Night", "Good morning!", "Good day!", "Good evening!", "Good night!"]
+				if greeting_word not in words: greetings.remove(greeting_word)
+				for word in words:
+					greetings.remove(word)
+
+				# answering to the user
+				print_answer(random.choice(greetings))
 
 	# if user's input is a statement about themselves
 	if about_themselves:
 
 		print("This is a statement about themselves")
 		
-		if re.match(r"i feel [\w\s]+[,]* [\w\s]*", user_input_without_syntax):
+		if re.match(r"i feel [\w\s]+[,]*[\w\s]*", user_input_without_syntax):
 
 			their_feelings = re.findall(r"i feel ([\w\s]+)", user_input_without_syntax)[0]
 
@@ -226,7 +310,7 @@ while True:
 					print_answer(":-)")
 					answered = True
 					break
-				   
+				
 				elif word in data["bad"]:
 					print_answer("Can I cheer you up somehow? You can ask me for a joke.")
 					answered = True
