@@ -361,6 +361,13 @@ while True:
 			if words[words.index("is")+1] == "a" or words[words.index("is")+1] == "an":
 				explanation = True
 
+		if len(words) == 1:
+			if words[0] in data["good"]:
+				available_words = data["good"].copy()
+				available_words.remove(words[0])
+
+				print_answer(random.choice(available_words).capitalize())
+
 		# if user's input is an explanation:
 		if explanation:
 			index = user_input_without_syntax.index("means") if means else user_input_without_syntax.index("is")
