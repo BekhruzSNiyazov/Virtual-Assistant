@@ -95,21 +95,26 @@ while True:
 
 	# if user's input wasn't yet recognized as a greeting
 	if not greeting:
-		if words[1] in data["greeting"]:
-			greeting_word = words[1]
-			greeting = True
-		
-		else:
-			for grtng in data["greeting"]:
-				if user_input_without_syntax.startswith(remove_syntax(grtng).lower()):
-					greeting_word = grtng
-					greeting = True
-					break
+		if len(words) > 1:
+			if words[1] in data["greeting"]:
+				greeting_word = words[1]
+				greeting = True
+
+	# last check
+	if not greeting:
+		for grtng in data["greeting"]:
+			if user_input_without_syntax.startswith(remove_syntax(grtng).lower()):
+				greeting_word = grtng
+				greeting = True
+				break
+			elif user_input_without_syntax.endswith(remove_syntax(grtng).lower()):
+				greeting_word = grtng
+				greeting = True
 
 	# if user's input is not a greeting
 	if not greeting:
 		
-		if len(user_input) > 0:
+		if len(user_input) > 3:
 			# if the last character in user's input is "?"
 			if user_input[-1] == "?" or user_input[-2] == "?" or user_input[-3] == "?":
 				question = True
@@ -181,6 +186,7 @@ while True:
 			available_words.remove("well")
 			available_words.remove("outstanding")
 			available_words.remove("terrific")
+			available_words.remove("fine")
 			available_words.remove("exceptional")
 			available_words.append("really well")
 
@@ -206,7 +212,7 @@ while True:
 
 		print("This is a statement about themselves")
 		
-		if re.match(r"i feel [\w\s]+", user_input_without_syntax):
+		if re.match(r"i feel [\w\s]+[,]* [\w\s]*", user_input_without_syntax):
 
 			their_feelings = re.findall(r"i feel ([\w\s]+)", user_input_without_syntax)[0]
 
@@ -219,17 +225,38 @@ while True:
 				if word in data["good"]:
 					print_answer(":-)")
 					answered = True
+					break
 				   
 				elif word in data["bad"]:
 					print_answer("Can I cheer you up somehow? You can ask me for a joke.")
 					answered = True
+					break
 
 			if not answered:
 				print_answer("Sorry, but I don't know what \"" + their_feelings + "\" means.")
 
 		if re.match(r"i am a[n]* [\w\s]+", user_input_without_syntax):
 
-			noun = re.findall(r"i feel a[n]* (")
+			answered = False
+
+			noun = re.findall(r"i am a[n]* ([\w\s]+)", user_input_without_syntax)[0]
+
+			for word in noun.split():
+
+				word = word.strip()
+
+				if word in data["good"]:
+					print_answer("I agree with you.")
+					answered = True
+					break
+
+				elif word in data["bad"]:
+					print_answer("I feel so sorry about that. Can I help you somehow?")
+					answered = True
+					break
+
+			if not answered:
+				print_answer("I am sorry, but I do not know what \"" + noun + "\" means.")
 
 	# if user's input is a statement
 	if statement:
@@ -248,8 +275,6 @@ while True:
 		elif "is" in words:
 			if words[words.index("is")+1] == "a" or words[words.index("is")+1] == "an":
 				explanation = True
-		else:
-			print_answer("Sorry, but I don't understand you.")
 
 		# if user's input is an explanation:
 		if explanation:
