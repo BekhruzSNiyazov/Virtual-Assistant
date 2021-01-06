@@ -22,7 +22,7 @@ python3 main.py
 ```
 or
 ```
-chmod +x main.py
+chmod +x main.py # you only need to type this first time
 ./main.py
 ```
 
