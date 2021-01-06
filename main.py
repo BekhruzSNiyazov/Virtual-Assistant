@@ -18,206 +18,250 @@ dictionary = PyDictionary()
 
 # this function reduces copy-pasting
 def print_answer(string):
-    print("\nAssistant:", string.strip())
+	print("\nAssistant:", string.strip())
 
 def remove_syntax(string):
-    return re.sub("[,.!?\"']*", "", string)
+	return re.sub("[,.!?\"']*", "", string)
 
 def search(search_item, person):
-    if person:
-        try:
-            answer = search_wikipedia(search_item)
-            found_on_wikipedia()
-            print_answer(answer)
-        except:
-            try:
-                answer = search_wikipedia(search_item.split()[-1])
-                found_on_wikipedia()
-                print_answer(answer)
-            except:
-                try:
-                    answer = search_wikipedia(search_item.split()[0])
-                    found_on_wikipedia()
-                    print_answer(answer)
-                except:
-                    print_answer("Sorry, I don't know that.")
-    else:
-        answered = False
-        try:
-            print_answer("Here are some definitions that I found: ")
-            definition = dictionary.meaning(search_item)
-            for part in definition:
-                print("\t" + part + ":")
-                for meaning in definition[part]:
-                    print("\t\t" + str(definition[part].index(meaning)+1) + ". " + meaning)
-            answered = True
-        except:
-            for category in data:
-                if search_item in data[category]:
-                    print_answer(search_item + " is a " + category if search_item != category else search_item + " means " + random.choice(data[category]))
-                    answered = True
-        if not answered:
-            print_answer("Sorry, I don't know that yet. But you can teach me.")
+	if person:
+		try:
+			answer = search_wikipedia(search_item)
+			found_on_wikipedia()
+			print_answer(answer)
+		except:
+			try:
+				answer = search_wikipedia(search_item.split()[-1])
+				found_on_wikipedia()
+				print_answer(answer)
+			except:
+				try:
+					answer = search_wikipedia(search_item.split()[0])
+					found_on_wikipedia()
+					print_answer(answer)
+				except:
+					print_answer("Sorry, I don't know that.")
+	else:
+		answered = False
+		try:
+			print_answer("Here are some definitions that I found: ")
+			definition = dictionary.meaning(search_item)
+			for part in definition:
+				print("\t" + part + ":")
+				for meaning in definition[part]:
+					print("\t\t" + str(definition[part].index(meaning)+1) + ". " + meaning)
+			answered = True
+		except:
+			for category in data:
+				if search_item in data[category]:
+					print_answer(search_item + " is a " + category if search_item != category else search_item + " means " + random.choice(data[category]))
+					answered = True
+		if not answered:
+			print_answer("Sorry, I don't know that yet. But you can teach me.")
 
 def search_wikipedia(search_item):
-    return wikipedia.summary(search_item)
+	return wikipedia.summary(search_item)
 
 def found_on_wikipedia():
-    print_answer("Here is what I found on Wikipedia:")
+	print_answer("Here is what I found on Wikipedia:")
 
 # chatting with user forever until they type "exit" or
 # another word in "exit" category
 while True:
 
-    # getting an input from the user and removing white spaces
-    user_input = input("\nUser: ").strip()
+	# getting an input from the user and removing white spaces
+	user_input = input("\nUser: ").strip()
 
-    # creating a variable that stores user's input without useless syntax and lowercased and without white spaces
-    user_input_without_syntax = remove_syntax(user_input).lower().strip()
+	# creating a variable that stores user's input without useless syntax and lowercased and without white spaces
+	user_input_without_syntax = remove_syntax(user_input).lower().strip()
 
-    # splitting user's input into seperate words
-    words = user_input_without_syntax.split()
+	# splitting user's input into seperate words
+	words = user_input_without_syntax.split()
 
-    # creating variables that will hold information about user's input
-    question = False
-    greeting = False
-    about_themselves = False
-    statement = False
+	# creating variables that will hold information about user's input
+	question = False
+	greeting = False
+	about_themselves = False
+	statement = False
 
-    # initializing variables that may become useful in the future
-    greeting_word = ""
-    greetings = [remove_syntax(greeting.lower()) for greeting in data["greeting"]]
+	# initializing variables that may become useful in the future
+	greeting_word = ""
+	greetings = [remove_syntax(grtng.lower()) for grtng in data["greeting"]]
 
-    # checking if user's input is a greeting
-    if user_input_without_syntax in greetings:
-        greeting = True
-        greeting_word = data["greeting"][greetings.index(user_input_without_syntax)]
+	# checking if user's input is a greeting
+	if user_input_without_syntax in greetings:
+		greeting_word = data["greeting"][greetings.index(user_input_without_syntax)]
+		greeting = True
 
-    # if user's input is not a greeting
-    if not greeting:
-        
-        if len(user_input) > 1:
-            # if the last character in user's input is "?"
-            if user_input[-1] == "?" or user_input[-2] == "?" or user_input[-3] == "?":
-                question = True
+	# if user's input wasn't yet recognized as a greeting
+	if not greeting:
+		if words[1] in data["greeting"]:
+			greeting_word = words[1]
+			greeting = True
+		
+		else:
+			for grtng in data["greeting"]:
+				if user_input_without_syntax.startswith(remove_syntax(grtng).lower()):
+					greeting_word = grtng
+					greeting = True
+					break
 
-        # if user's input was not yet recognized as a question
-        if not question:
-            if words[0].capitalize() in data["question_keywords"]:
-                question = True
-        
-        # if user's input is not a question
-        if not question:
+	# if user's input is not a greeting
+	if not greeting:
+		
+		if len(user_input) > 0:
+			# if the last character in user's input is "?"
+			if user_input[-1] == "?" or user_input[-2] == "?" or user_input[-3] == "?":
+				question = True
 
-            # checking, if user is saying something about themselves/their feelings
-            for word in words:
-                if word in data["self"]:
-                    if word == "my":
-                        if "is" in words: statement = True
-                    about_themselves = True
+			# if user's input was not yet recognized as a question
+			if not question:
+				if words[0].capitalize() in data["question_keywords"]:
+					question = True
+			
+			# if user's input is not a question
+			if not question:
 
-            # if user's input is not a greeting or a question or a statement about themselves/their feelings
-            if not about_themselves:
-                statement = True
+				# checking, if user is saying something about themselves/their feelings
+				for word in words:
+					if word in data["self"]:
+						if word == "my":
+							if "is" in words: statement = True
+						about_themselves = True
 
-    if user_input == "show me your knowledge":
-        print_answer(str(data))
+				# if user's input is not a greeting or a question or a statement about themselves/their feelings
+				if not about_themselves:
+					statement = True
 
-    elif user_input_without_syntax in data["exit"]:
-        exit(data)
+	if user_input == "show me your knowledge":
+		print_answer(str(data))
 
-    # if user's input is a question
-    if question:
-        if words[-1] == "mean":
-            search_result = ""
+	elif user_input_without_syntax in data["exit"]:
+		exit(data)
 
-            search_item = user_input_without_syntax[user_input_without_syntax.index("does") + len("does") + 1 : user_input_without_syntax.index("mean")].strip()
+	# if user's input is a question
+	if question:
+		print("This is a question")
+		if re.match(r"what does [\w\s]+ mean", user_input_without_syntax):
+			search_result = ""
 
-            search(search_item, False)
-        else:
-            if re.match(r"what is [\w\s]+", user_input_without_syntax) or re.match(r"who is [\w\s]+", user_input_without_syntax):
-                search_item = user_input_without_syntax[len(words[0]) + len(words[1]) + 2:].strip()
-                search(search_item, False if words[0] == "what" else True)
+			search_item = user_input_without_syntax[user_input_without_syntax.index("does") + len("does") + 1 : user_input_without_syntax.index("mean")].strip()
 
-    # if user's input is a greeting
-    if greeting:
-        # creating a copy of data["greeting"] list
-        greetings = data["greeting"].copy()
-        # removing the words that we don't need
-        greetings.remove(greeting_word)
+			search(search_item, False)
+		else:
+			if re.match(r"what is [\w\s]+", user_input_without_syntax) or re.match(r"who is [\w\s]+", user_input_without_syntax):
+				search_item = user_input_without_syntax[len(words[0]) + len(words[1]) + 2:].strip()
+				search(search_item, False if words[0] == "what" else True)
 
-        # answering to the user
+	# if user's input is a greeting
+	if greeting:
+		print("This is a greeting")
+		# creating a copy of data["greeting"] list
+		greetings = data["greeting"].copy()
+		# removing the words that we don't need
+		greetings.remove(greeting_word)
 
-        # if user asked "what's up?"
-        if greeting_word == "What's up?":
-            responses = ["Nothing", "Not much", "Alright"]
-            print_answer(random.choice(responses))
+		# answering to the user
 
-        # if user did not ask "what's up?" but they asked "how are you" or "how do you do" or "how are you doing"
-        elif greeting_word == "How are you?" or greeting_word == "How do you do?" or greeting_word == "How are you doing?":
+		# if user asked "what's up?"
+		if greeting_word == "What's up?":
+			responses = ["Nothing", "Not much", "Alright"]
+			print_answer(random.choice(responses))
 
-            # creating a response variable with a start; one word will be appended to it
-            response = random.choice(["Everything is ", "I feel "])
+		# if user did not ask "what's up?" but they asked "how are you" or "how do you do" or "how are you doing"
+		elif greeting_word == "How are you?" or greeting_word == "How do you do?" or greeting_word == "How are you doing?":
 
-            # creating a copy of data["good"] list
-            available_words = data["good"].copy()
+			# creating a response variable with a start; one word will be appended to it
+			response = random.choice(["Everything is ", "I feel "])
 
-            # filtering the list from unwanted words
-            available_words.remove("well")
-            available_words.remove("outstanding")
-            available_words.remove("terrific")
-            available_words.remove("exceptional")
-            available_words.append("really well")
+			# creating a copy of data["good"] list
+			available_words = data["good"].copy()
 
-            # appending a word to the response
-            response += random.choice(available_words)
+			# filtering the list from unwanted words
+			available_words.remove("well")
+			available_words.remove("outstanding")
+			available_words.remove("terrific")
+			available_words.remove("exceptional")
+			available_words.append("really well")
 
-            # answering to the user
-            print_answer(response)
+			# appending a word to the response
+			response += random.choice(available_words)
 
-        # if user did not ask "what's up?" nor "how are you" or "how do you do" or "how are you doing"
-        else:
-            # creating a copy of data["greeting"] list
-            greetings = data["greeting"].copy()
+			# answering to the user
+			print_answer(response)
 
-            # filtering the list
-            greetings.remove(greeting_word)
+		# if user did not ask "what's up?" nor "how are you" or "how do you do" or "how are you doing"
+		else:
+			# creating a copy of data["greeting"] list
+			greetings = data["greeting"].copy()
 
-            # answering to the user
-            print_answer(random.choice(greetings))
+			# filtering the list
+			greetings.remove(greeting_word)
 
-    # if user's input is a statement about themselves
-    if about_themselves:
-        pass
+			# answering to the user
+			print_answer(random.choice(greetings))
 
-    # if user's input is a statement
-    if statement:
-        # creating variables that will hold information about user's input
-        explanation = False
+	# if user's input is a statement about themselves
+	if about_themselves:
 
-        # initializing variables that will be useful in the future
-        means = False
+		print("This is a statement about themselves")
+		
+		if re.match(r"i feel [\w\s]+", user_input_without_syntax):
 
-        if "means" in words:
-            explanation = True
-            means = True
-        elif "is" in words:
-            if words[words.index("is")+1] == "a" or words[words.index("is")+1] == "an":
-                explanation = True
-        else:
-            print_answer("Sorry, but I don't understand you.")
+			their_feelings = re.findall(r"i feel ([\w\s]+)", user_input_without_syntax)[0]
 
-        # if user's input is an explanation:
-        if explanation:
-            index = user_input_without_syntax.index("means") if means else user_input_without_syntax.index("is")
-            to_remember = user_input_without_syntax[:index].strip()
-            length = len("means") if means else len("is") + len(words[words.index("is")+1]) + 1
-            category = user_input_without_syntax[index+length:].strip()
-            # if category already exists
-            if category in data:
-                # append the word to the category
-                data[category].append(to_remember)
-            # if category does not exist
-            else:
-                # create it and append to it the word
-                data[category] = [to_remember]
+			answered = False
+
+			for word in their_feelings.split():
+
+				word = word.strip()
+				
+				if word in data["good"]:
+					print_answer(":-)")
+					answered = True
+				   
+				elif word in data["bad"]:
+					print_answer("Can I cheer you up somehow? You can ask me for a joke.")
+					answered = True
+
+			if not answered:
+				print_answer("Sorry, but I don't know what \"" + their_feelings + "\" means.")
+
+		if re.match(r"i am a[n]* [\w\s]+", user_input_without_syntax):
+
+			noun = re.findall(r"i feel a[n]* (")
+
+	# if user's input is a statement
+	if statement:
+		
+		print("This is a statement")
+
+		# creating variables that will hold information about user's input
+		explanation = False
+
+		# initializing variables that will be useful in the future
+		means = False
+
+		if "means" in words:
+			explanation = True
+			means = True
+		elif "is" in words:
+			if words[words.index("is")+1] == "a" or words[words.index("is")+1] == "an":
+				explanation = True
+		else:
+			print_answer("Sorry, but I don't understand you.")
+
+		# if user's input is an explanation:
+		if explanation:
+			index = user_input_without_syntax.index("means") if means else user_input_without_syntax.index("is")
+			to_remember = user_input_without_syntax[:index].strip()
+			length = len("means") if means else len("is") + len(words[words.index("is")+1]) + 1
+			category = user_input_without_syntax[index+length:].strip()
+			# if category already exists
+			if category in data:
+				# append the word to the category
+				data[category].append(to_remember)
+			# if category does not exist
+			else:
+				# create it and append to it the word
+				data[category] = [to_remember]
