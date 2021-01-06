@@ -29,4 +29,7 @@ chmod +x main.py # you only need to type this first time
 # What can this assistant do?
 Pretty much everything. Feel free to chat with it.
 
+
+
+
 I hope you will enjoy using this virtual assistant!
