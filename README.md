@@ -14,11 +14,11 @@ pip install -r requirements.txt
 pip3 install -r requirements.txt
 ```
 # Usage
-### Windows
+#### Windows
 ```
 python main.py
 ```
-### macOS and Linux
+#### macOS and Linux
 ```
 python3 main.py
 ```
