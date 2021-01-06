@@ -343,6 +343,26 @@ while True:
 			if not answered:
 				print_answer("I am sorry, but I do not know what \"" + noun + "\" means.")
 
+		if re.match(r"my [\w\W]+ is [\w\W]+", user_input_without_syntax):
+
+			noun = re.findall(r"my [\w\W]+ is ([\w\W]+)", user_input_without_syntax)[0]
+
+			for word in noun.split():
+
+				if word in data["good"]:
+					available_words = data["good"].copy()
+					available_words.remove("well")
+					available_words.remove("outstanding")
+					available_words.remove("terrific")
+					available_words.remove("fine")
+					available_words.remove("cool")
+					available_words.remove("exceptional")
+					available_words.append("really well")
+					print_answer(random.choice(available_words).capitalize())
+
+				elif word in data["bad"]:
+					print_answer(":(")
+
 	# if user's input is a statement
 	if statement:
 		
