@@ -241,7 +241,7 @@ def main():
 					print_answer("Good morning!")
 					answered = True
 
-			elif greeting_word == "Good day!" or greeting_word == "Day":
+			elif greeting_word == "Good day!" or greeting_word == "Day" or greeting_word == "Good afternoon!" or greeting_word == "Afternoon":
 				if hour < 12 or hour > 17:
 					if hour < 12:
 						print_answer("It is only morning yet, I believe. Good morning to you!")
@@ -253,7 +253,7 @@ def main():
 						print_answer("Good night. It is night now.")
 						answered = True
 				else:
-					print_answer("Good day!")
+					print_answer("Good afternoon!")
 					answered = True
 
 			elif greeting_word == "Good evening" or greeting_word == "Evening":
@@ -283,11 +283,6 @@ def main():
 					answered = True
 
 			if not answered:
-				# creating a copy of data["greeting"] list
-				greetings = data["greeting"].copy()
-				# removing the words that we don't need
-				greetings.remove(greeting_word)
-
 				# answering to the user
 
 				# if user asked "what's up?"
@@ -325,7 +320,7 @@ def main():
 					greetings = data["greeting"].copy()
 
 					# filtering the list
-					words = ["Hullo", "Sup", "Hulo", "Day", "Morning", "Evening", "Night", "Good morning!", "Good day!", "Good evening!", "Good night!", "Yo"]
+					words = ["Hullo", "Sup", "Hulo", "Day", "Morning", "Evening", "Night", "Good morning!", "Good day!", "Good evening!", "Good night!", "Yo", "Afternoon", "Good afternoon!", "Halo", "Hallo"]
 					if greeting_word not in words: greetings.remove(greeting_word)
 					for word in words:
 						greetings.remove(word)
