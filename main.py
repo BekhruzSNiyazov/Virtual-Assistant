@@ -18,12 +18,20 @@ import threading
 
 import os
 
+from sys import argv
+
 # importing dataset from data.py file
 from data import data
 
 dictionary = PyDictionary()
 
 last_assistant = ""
+
+tts_off = False
+
+if len(argv) > 1:
+	if argv[1] == "--tts-off":
+		tts_off = True
 
 def say(string):
 	if len(string) < 100:
@@ -36,8 +44,9 @@ def say(string):
 
 def print_answer(string):
 	print("\nAssistant:", string)
-	thread = threading.Thread(target=say, args=(string,))
-	thread.start()
+	if not tts_off:
+		thread = threading.Thread(target=say, args=(string,))
+		thread.start()
 
 def remove_syntax(string):
 	return re.sub("[,.!?\"']*", "", string)
@@ -322,8 +331,8 @@ def main():
 					# filtering the list
 					words = ["Hullo", "Sup", "Hulo", "Day", "Morning", "Evening", "Night", "Good morning!", "Good day!", "Good evening!", "Good night!", "Yo", "Afternoon", "Good afternoon!", "Halo", "Hallo"]
 					if greeting_word not in words: greetings.remove(greeting_word)
-					for word in words:
-						greetings.remove(word)
+					for wrd in words:
+						greetings.remove(wrd)
 
 					# answering to the user
 					print_answer(random.choice(greetings))
