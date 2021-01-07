@@ -3,3 +3,5 @@ google
 requests
 wikipedia
 PyDictionary
+gTTS
+playsound
