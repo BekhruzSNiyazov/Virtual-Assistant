@@ -152,7 +152,16 @@ while True:
 		print_answer(str(data))
 
 	elif user_input_without_syntax in data["exit"]:
+		available_words = data["exit"].copy()
+		available_words.remove("exit")
+		print_answer(random.choice(available_words).capitalize())
 		exit(data)
+
+	if len(user_input) == 1:
+		if user_input == ")":
+			print_answer(")")
+		elif user_input == "(":
+			print_answer("(")
 
 	# if user's input is a question
 	if question:
@@ -363,6 +372,24 @@ while True:
 				elif word in data["bad"]:
 					print_answer(":(")
 
+		if re.match(r"i am doing \w+ [\w\W]*", user_input_without_syntax):
+			noun = re.findall(r"i am doing (\w+) [\w\W]*", user_input_without_syntax)[0]
+			_not = False
+			for word in data["good"]:
+				if word == "not": _not = True
+				if word in data["good"]:
+					if _not:
+						print_answer("Can I help you somehow?")
+						break
+					else:
+						available_words = data["good"].copy()
+						words_to_remove = ["terrific", "exceptional", "outstanding"]
+						if word not in words: available_words.remove(word)
+						for word in words_to_remove:
+							available_words.remove(word)
+						print_answer("That's " + random.choice(available_words) + "!")
+						break
+
 	# if user's input is a statement
 	if statement:
 		
@@ -382,9 +409,14 @@ while True:
 				explanation = True
 
 		if len(words) == 1:
-			if words[0] in data["good"]:
+			word = words[0]
+			if word in data["good"]:
 				available_words = data["good"].copy()
-				available_words.remove(words[0])
+				words_to_remove = ["fine", "outstanding", "terrific", "exceptional"]
+				if word not in words_to_remove: available_words.remove(word)
+				
+				for wrd in words_to_remove:
+					available_words.remove(wrd)
 
 				print_answer(random.choice(available_words).capitalize())
 
