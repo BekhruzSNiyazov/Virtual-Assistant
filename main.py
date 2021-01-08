@@ -44,6 +44,7 @@ def say(string):
 
 def print_answer(string):
 	print("\nAssistant:", string)
+	print(tts_off)
 	if not tts_off:
 		thread = threading.Thread(target=say, args=(string,))
 		thread.start()
@@ -94,6 +95,7 @@ def found_on_wikipedia():
 	print_answer("Here is what I found on Wikipedia:")
 
 def main():
+	global tts_off
 	# chatting with user forever until they type "exit" or
 	# another word in "exit" category
 	while True:
@@ -178,11 +180,18 @@ def main():
 		if user_input == "show me your knowledge":
 			print_answer(str(data))
 
+		elif user_input_without_syntax == "exit":
+			exit(data)
+
 		elif user_input_without_syntax in data["exit"]:
 			available_words = data["exit"].copy()
 			available_words.remove("exit")
+			available_words.remove("cya")
+			available_words.remove("see you")
 			print_answer(random.choice(available_words).capitalize())
-			exit(data)
+
+		elif user_input_without_syntax == "shut up":
+			tts_off = True
 
 		if len(user_input) == 1:
 			if user_input == ")":
