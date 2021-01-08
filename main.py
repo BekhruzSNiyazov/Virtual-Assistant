@@ -44,7 +44,8 @@ def say(string):
 
 def print_answer(string):
 	print("\nAssistant:", string)
-	print(tts_off)
+	global last_assistant
+	last_assistant = string
 	if not tts_off:
 		thread = threading.Thread(target=say, args=(string,))
 		thread.start()
@@ -95,7 +96,7 @@ def found_on_wikipedia():
 	print_answer("Here is what I found on Wikipedia:")
 
 def main():
-	global tts_off
+	global tts_off, last_assistant
 	# chatting with user forever until they type "exit" or
 	# another word in "exit" category
 	while True:
@@ -192,6 +193,15 @@ def main():
 
 		elif user_input_without_syntax == "shut up":
 			tts_off = True
+
+		elif user_input_without_syntax == "what":
+			print_answer(last_assistant)
+
+		elif user_input_without_syntax == "say something":
+			words = ["Hullo", "Sup", "Hulo", "Day", "Morning", "Evening", "Night", "Good morning!", "Good day!", "Good evening!", "Good night!", "Yo", "Afternoon", "Good afternoon!", "Halo", "Hallo", "Howdy"]
+			available_words = data["greeting"].copy()
+			for word in words: available_words.remove(word)
+			print_answer(random.choice(available_words))
 
 		if len(user_input) == 1:
 			if user_input == ")":
@@ -338,7 +348,7 @@ def main():
 					greetings = data["greeting"].copy()
 
 					# filtering the list
-					words = ["Hullo", "Sup", "Hulo", "Day", "Morning", "Evening", "Night", "Good morning!", "Good day!", "Good evening!", "Good night!", "Yo", "Afternoon", "Good afternoon!", "Halo", "Hallo"]
+					words = ["Hullo", "Sup", "Hulo", "Day", "Morning", "Evening", "Night", "Good morning!", "Good day!", "Good evening!", "Good night!", "Yo", "Afternoon", "Good afternoon!", "Halo", "Hallo", "Howdy"]
 					if greeting_word not in words: greetings.remove(greeting_word)
 					for wrd in words:
 						greetings.remove(wrd)
