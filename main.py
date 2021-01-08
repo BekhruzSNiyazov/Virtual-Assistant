@@ -20,6 +20,8 @@ import os
 
 from sys import argv
 
+import time
+
 # importing dataset from data.py file
 from data import data
 
@@ -94,6 +96,10 @@ def search_wikipedia(search_item):
 
 def found_on_wikipedia():
 	print_answer("Here is what I found on Wikipedia:")
+
+def sleep(seconds):
+	time.sleep(seconds)
+	print_answer("Time is over.")
 
 def main():
 	global tts_off, last_assistant
@@ -484,6 +490,22 @@ def main():
 				else:
 					# create it and append to it the word
 					data[category] = [to_remember]
+
+			if user_input_without_syntax == "set a timer":
+
+				seconds = 0
+				while seconds <= 0:
+					print_answer("How many seconds should I set timer for (enter a number)? ")
+					seconds = input()
+					if seconds.isdigit(): seconds = int(seconds)
+					else:
+						print_answer("Timer canceled.")
+						break
+
+				if type(seconds) == int:
+					if seconds > 0:							
+						timer_thread = threading.Thread(target=sleep, args=(seconds,))
+						timer_thread.start()
 
 if __name__ == "__main__":
 	main_thread = threading.Thread(target=main)
