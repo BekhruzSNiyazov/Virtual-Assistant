@@ -492,7 +492,6 @@ def main():
 					data[category] = [to_remember]
 
 			if user_input_without_syntax == "set a timer":
-
 				seconds = 0
 				while seconds <= 0:
 					print_answer("How many seconds should I set timer for (enter a number)? ")
@@ -506,6 +505,13 @@ def main():
 					if seconds > 0:							
 						timer_thread = threading.Thread(target=sleep, args=(seconds,))
 						timer_thread.start()
+
+			elif re.match("set a timer for [\d]+ seconds", user_input_without_syntax):
+				seconds = int(re.findall("set a timer for ([\d]+) seconds", user_input_without_syntax)[0])
+
+				if seconds > 0:
+					timer_thread = threading.Thread(target=sleep, args=(seconds,))
+					timer_thread.start()
 
 if __name__ == "__main__":
 	main_thread = threading.Thread(target=main)
