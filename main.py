@@ -44,8 +44,8 @@ def say(string):
 			os.system("rm speech.mp3")
 		except: pass
 
-def print_answer(string):
-	print("\nAssistant:", string)
+def print_answer(string, end="\n"):
+	print("\nAssistant:", string, end=end)
 	global last_assistant
 	last_assistant = string
 	if not tts_off:
@@ -472,7 +472,7 @@ def main():
 			if len(words) == 1:
 				word = words[0]
 				if word in data["good"]:
-					print_answer("Indeed")
+					print_answer("That's awesome!")
 				if word in data["bad"]:
 					print_answer("What's wrong?")
 
@@ -491,10 +491,10 @@ def main():
 					# create it and append to it the word
 					data[category] = [to_remember]
 
-			if user_input_without_syntax == "set a timer":
+			if re.match(r"set[ a]* timer$", user_input_without_syntax):
 				seconds = 0
 				while seconds <= 0:
-					print_answer("How many seconds should I set timer for (enter a number)? ")
+					print_answer("How many seconds should I set timer for (enter a number)? ", end="")
 					seconds = input()
 					if seconds.isdigit(): seconds = int(seconds)
 					else:
@@ -506,8 +506,8 @@ def main():
 						timer_thread = threading.Thread(target=sleep, args=(seconds,))
 						timer_thread.start()
 
-			elif re.match("set a timer for [\d]+ seconds", user_input_without_syntax):
-				seconds = int(re.findall("set a timer for ([\d]+) seconds", user_input_without_syntax)[0])
+			elif re.match(r"set[ a]* timer for [\d]+ seconds", user_input_without_syntax):
+				seconds = int(re.findall(r"set[ a]* timer for ([\d]+) seconds", user_input_without_syntax)[0])
 
 				if seconds > 0:
 					timer_thread = threading.Thread(target=sleep, args=(seconds,))
