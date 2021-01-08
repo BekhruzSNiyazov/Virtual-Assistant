@@ -466,7 +466,7 @@ def main():
 			if len(words) == 1:
 				word = words[0]
 				if word in data["good"]:
-					print_answer("Glad you like it!")
+					print_answer("Indeed")
 				if word in data["bad"]:
 					print_answer("What's wrong?")
 
