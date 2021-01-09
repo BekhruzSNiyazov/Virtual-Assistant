@@ -116,7 +116,7 @@ def answer(user_input, user_input_without_syntax, words, question, greeting, abo
 		available_words.remove("see you")
 		print_answer(random.choice(available_words).capitalize())
 
-	elif user_input_without_syntax == "shut up":
+	elif user_input_without_syntax.startswith("shut up") or user_input_without_syntax.endswith("shut up"):
 		tts_off = True
 
 	elif user_input_without_syntax == "what":
@@ -150,7 +150,7 @@ def answer(user_input, user_input_without_syntax, words, question, greeting, abo
 		if re.match(r"[\w\W]*and you", user_input_without_syntax) or re.match(r"[\w\W]*and what about you", user_input_without_syntax):
 			user_input = last_assistant
 			user_input_without_syntax = remove_syntax(last_assistant).lower().strip()
-			question, greeeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
+			question, greeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
 			answer(last_assistant, user_input_without_syntax, user_input_without_syntax.split(), question, greeting, about_themselves, statement, about_it, greeting_word)
 
 	# if user said something about assistant
@@ -515,10 +515,14 @@ def recognize_type(user_input, user_input_without_syntax, words):
 				if not question:
 					if words[0].capitalize() in data["question_keywords"]:
 						question = True
+
+				# last check
+				if not question:
+					if re.match("[\w\W]*and you", user_input_without_syntax) or re.match("[\w\W]*what[s]* about you", user_input_without_syntax):
+						question = True
 				
 				# if user's input is not a question
 				if not question:
-
 					# checking, if user is saying something about themselves/their feelings
 					for word in words:
 						if word in data["themselves"]:
