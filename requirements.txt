@@ -5,3 +5,4 @@ wikipedia
 PyDictionary
 gTTS
 playsound
+eel
