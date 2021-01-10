@@ -116,8 +116,11 @@ def answer(user_input, user_input_without_syntax, words, question, greeting, abo
 		available_words.remove("see you")
 		print_answer(random.choice(available_words).capitalize())
 
-	elif user_input_without_syntax.startswith("shut up") or user_input_without_syntax.endswith("shut up"):
+	elif re.match(r"[\w\W]*shut[\w\W]*", user_input_without_syntax) and "mouth" in words or re.match(r"[\w\W]*tts-off[\w\W]*", user_input_without_syntax):
 		tts_off = True
+
+	elif re.match(r"[\w\W]*tts-on[\w\W]*", user_input_without_syntax):
+		tts_off = False
 
 	elif user_input_without_syntax == "what":
 		print_answer(last_assistant)
@@ -152,6 +155,7 @@ def answer(user_input, user_input_without_syntax, words, question, greeting, abo
 			user_input_without_syntax = remove_syntax(last_assistant).lower().strip()
 			question, greeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
 			answer(last_assistant, user_input_without_syntax, user_input_without_syntax.split(), question, greeting, about_themselves, statement, about_it, greeting_word)
+			return
 
 	# if user said something about assistant
 	if about_it:
@@ -239,6 +243,10 @@ def answer(user_input, user_input_without_syntax, words, question, greeting, abo
 			else:
 				print_answer("Good night to you!")
 				answered = True
+
+		if re.match(r"[\w\W]*glad[\w\W]*see[\w\W]*you", user_input_without_syntax):
+			print_answer("Thanks)")
+			answered = True
 
 		if not answered:
 			# answering to the user
@@ -436,6 +444,8 @@ def answer(user_input, user_input_without_syntax, words, question, greeting, abo
 			if seconds > 0:
 				timer_thread = threading.Thread(target=sleep, args=(seconds,))
 				timer_thread.start()
+
+		# TODO: set a timer for x hours y minutes z seconds
 
 def main():
 	# chatting with user forever until they type "exit" or
