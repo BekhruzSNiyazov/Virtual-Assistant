@@ -31,6 +31,8 @@ last_assistant = ""
 
 tts_off = False
 
+word_to_remove = ""
+
 if len(argv) > 1:
 	if argv[1] == "--tts-off":
 		tts_off = True
@@ -102,7 +104,7 @@ def sleep(seconds):
 	print_answer("Time is over.")
 
 def answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word):
-	global tts_off, last_assistant
+	global tts_off, last_assistant, word_to_remove
 	if user_input == "show me your knowledge":
 		print_answer(str(data))
 
@@ -155,6 +157,11 @@ def answer(user_input, user_input_without_syntax, words, question, greeting, abo
 			user_input_without_syntax = remove_syntax(last_assistant).lower().strip()
 			question, greeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
 			answer(last_assistant, user_input_without_syntax, user_input_without_syntax.split(), question, greeting, about_themselves, statement, about_it, greeting_word)
+			for word in words:
+				if word in data["good"]:
+					word_to_remove = word
+				if word in data["bad"]:
+					word_to_remove = word
 			return
 
 	# if user said something about assistant
@@ -245,7 +252,7 @@ def answer(user_input, user_input_without_syntax, words, question, greeting, abo
 				answered = True
 
 		if re.match(r"[\w\W]*glad[\w\W]*see[\w\W]*you", user_input_without_syntax):
-			print_answer("Thanks)")
+			print_answer("Thanks")
 			answered = True
 
 		if not answered:
@@ -266,12 +273,10 @@ def answer(user_input, user_input_without_syntax, words, question, greeting, abo
 				available_words = data["good"].copy()
 
 				# filtering the list from unwanted words
-				available_words.remove("well")
-				available_words.remove("outstanding")
-				available_words.remove("terrific")
-				available_words.remove("fine")
-				available_words.remove("cool")
-				available_words.remove("exceptional")
+				words_to_remove = ["well", "outstanding", "terrific", "fine", "cool", "exceptional"]
+				if word_to_remove not in words_to_remove and word_to_remove in available_words: available_words.remove(word_to_remove.strip())
+				for wrd in words_to_remove:
+					available_words.remove(wrd)
 				available_words.append("really well")
 
 				# appending a word to the response
