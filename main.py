@@ -104,6 +104,9 @@ def found_on_wikipedia():
 	print_answer("Here is what I found on Wikipedia:")
 
 def sleep(seconds):
+	if seconds > 15: print_answer("A timer was set. Countdown has started.")
+	elif seconds > 1: print_answer("A countdown has started.")
+	print(seconds)
 	time.sleep(seconds)
 	print_answer("Time is over.")
 
@@ -452,23 +455,28 @@ def answer(user_input, user_input_without_syntax, words, question, greeting, abo
 				if seconds > 0:							
 					timer_thread = threading.Thread(target=sleep, args=(seconds,))
 					timer_thread.start()
+				else: print_answer("Timer was canceled.")
 		
-		elif re.match(r"set[ a]* timer for [\d]*[ hours\W]*[\d]*[ minutes\W]*[\d]*[ seconds\W]", user_input_without_syntax):
+		elif re.match(r"set[ a]* timer for [\d]*[ hours\W]*[and ]*[\d]*[ minutes\W]*[and ]*[\d]*[ seconds\W]", user_input_without_syntax):
 			hours, minutes, seconds = 0, 0, 0
 			if "hours" in words or "hour" in words:
-				hours = int(re.findall(r"([\d])+ hour", user_input_without_syntax)[0])
+				try: hours = int(re.findall(r"\s([\d]+) hour", user_input_without_syntax)[0])
+				except: pass
 			if "minutes" in words or "minute" in words:
-				minutes = int(re.findall(r"([\d])+ minute", user_input_without_syntax)[0])
+				try: minutes = int(re.findall(r"\s([\d]+) minute", user_input_without_syntax)[0])
+				except: pass
 			if "seconds" in words or "second" in words:
-				seconds = int(re.findall(r"([\d])+ second", user_input_without_syntax)[0])
+				try: seconds = int(re.findall(r"\s([\d]+) second", user_input_without_syntax)[0])
+				except: pass
 			
 			time = seconds
 			time += minutes * 60
 			time += hours * 3600
 
-			if seconds > 0:
-				timer_thread = threading.Thread(target=sleep, args=(seconds,))
+			if time > 0:
+				timer_thread = threading.Thread(target=sleep, args=(time,))
 				timer_thread.start()
+			else: print_answer("Timer was canceled.")
 
 def main():
 	# chatting with user forever until they type "exit" or
