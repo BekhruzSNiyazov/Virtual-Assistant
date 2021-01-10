@@ -41,10 +41,11 @@ def say(string):
 	if len(string) < 100:
 		tts = gTTS(text=string)
 		try:
-			tts.save("speech.mp3")
-			playsound("speech.mp3")
-			os.system("rm speech.mp3")
-		except: pass
+			filename = "speech" + str(random.randint(0, 100)) + ".mp3"
+			tts.save(filename)
+			playsound(filename)
+			os.system("rm " + filename)
+		except Exception as e: print(e)
 
 def print_answer(string, end="\n"):
 	print("\nAssistant:", string, end=end)
@@ -74,18 +75,21 @@ def search(search_item, person):
 					found_on_wikipedia()
 					print_answer(answer)
 				except:
-					print_answer("Sorry, I don't know that.")
+					print_answer("Sorry, I don't know who " + search_item + " is.")
 	else:
 		answered = False
 		try:
-			print_answer("Here are some definitions that I found: ")
+			search_item = search_item.replace("a ", "").strip()
 			definition = dictionary.meaning(search_item)
-			for part in definition:
-				print("\t" + part + ":")
-				for meaning in definition[part]:
-					print("\t\t" + str(definition[part].index(meaning)+1) + ". " + meaning)
-			answered = True
-		except:
+			if definition:
+				print_answer("Here are some definitions that I found: ")
+				for part in definition:
+					print("\t" + part + ":")
+					for meaning in definition[part]:
+						print("\t\t" + str(definition[part].index(meaning)+1) + ". " + meaning)
+				answered = True
+		except: pass
+		if not answered:
 			for category in data:
 				if search_item in data[category]:
 					print_answer(search_item + " is a " + category if search_item != category else search_item + " means " + random.choice(data[category]))
@@ -109,7 +113,14 @@ def answer(user_input, user_input_without_syntax, words, question, greeting, abo
 		print_answer(str(data))
 
 	elif user_input_without_syntax == "exit":
-		exit(data)
+		with open("data.py", "w") as file:
+			file.write(str(data))
+		available_words = data["exit"].copy()
+		available_words.remove("exit")
+		available_words.remove("cya")
+		available_words.remove("see you")
+		print_answer(random.choice(available_words).capitalize())
+		exit()
 
 	elif user_input_without_syntax in data["exit"]:
 		available_words = data["exit"].copy()
@@ -163,7 +174,6 @@ def answer(user_input, user_input_without_syntax, words, question, greeting, abo
 				if word in data["bad"]:
 					word_to_remove = word
 			return
-
 	# if user said something about assistant
 	if about_it:
 		print("They said something about assistant")
@@ -442,15 +452,23 @@ def answer(user_input, user_input_without_syntax, words, question, greeting, abo
 				if seconds > 0:							
 					timer_thread = threading.Thread(target=sleep, args=(seconds,))
 					timer_thread.start()
-
-		elif re.match(r"set[ a]* timer for [\d]+ seconds", user_input_without_syntax):
-			seconds = int(re.findall(r"set[ a]* timer for ([\d]+) seconds", user_input_without_syntax)[0])
+		
+		elif re.match(r"set[ a]* timer for [\d]*[ hours\W]*[\d]*[ minutes\W]*[\d]*[ seconds\W]", user_input_without_syntax):
+			hours, minutes, seconds = 0, 0, 0
+			if "hours" in words or "hour" in words:
+				hours = int(re.findall(r"([\d])+ hour", user_input_without_syntax)[0])
+			if "minutes" in words or "minute" in words:
+				minutes = int(re.findall(r"([\d])+ minute", user_input_without_syntax)[0])
+			if "seconds" in words or "second" in words:
+				seconds = int(re.findall(r"([\d])+ second", user_input_without_syntax)[0])
+			
+			time = seconds
+			time += minutes * 60
+			time += hours * 3600
 
 			if seconds > 0:
 				timer_thread = threading.Thread(target=sleep, args=(seconds,))
 				timer_thread.start()
-
-		# TODO: set a timer for x hours y minutes z seconds
 
 def main():
 	# chatting with user forever until they type "exit" or
