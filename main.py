@@ -41,7 +41,7 @@ def say(string):
 	if len(string) < 100:
 		tts = gTTS(text=string)
 		try:
-			filename = "speech" + str(random.randint(0, 100)) + ".mp3"
+			filename = "speech" + str(random.randint(0, 1000000)) + ".mp3"
 			tts.save(filename)
 			playsound(filename)
 			os.system("rm " + filename)
@@ -106,7 +106,6 @@ def found_on_wikipedia():
 def sleep(seconds):
 	if seconds > 15: print_answer("A timer was set. Countdown has started.")
 	elif seconds > 1: print_answer("A countdown has started.")
-	print(seconds)
 	time.sleep(seconds)
 	print_answer("Time is over.")
 
