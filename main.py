@@ -116,7 +116,7 @@ def answer(user_input, user_input_without_syntax, words, question, greeting, abo
 
 	elif user_input_without_syntax == "exit":
 		with open("data.py", "w") as file:
-			file.write(str(data))
+			file.write("data = " + str(data))
 		available_words = data["exit"].copy()
 		available_words.remove("exit")
 		available_words.remove("cya")
