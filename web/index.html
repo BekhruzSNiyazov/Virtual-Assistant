@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Assistant</title>
+</head>
+<body style="background-color: #f7f7f7;">
+    <style>
+        *:focus {
+            outline: none;
+        }
+        span {
+            float: right;
+            font-size: 130%;
+            margin-right: 3%;
+            margin-left: 30%;
+            background-color: #eeeeee;
+            border-radius: 25px;
+            padding: 10px;
+            margin-bottom: 25%;
+            margin-top: -20%;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+    </style>
+    <div style="margin-bottom: 25%;"></div>
+    <input id="input" style="position: fixed; bottom: 0; width: 99%; margin: 0.5%; border-radius: 25px; height: 50px; font-size: 130%; padding-left: 15px; border: none; background-color: #eeeeee;" placeholder="Type a command" autofocus>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="/eel.js"></script>
+    <script>
+        let input = document.getElementById("input");
+ 
+        let command;
+
+        input.onkeypress = async function(e) {
+            if (!e) e = window.event;
+            var keyCode = e.code || e.key;
+            if (keyCode == "Enter") {
+                command = input.value;
+                if (command != "") {
+                    input.value = "";
+                    let question, greeting, about_themselves, statement, about_it;
+                    let user_input_without_syntax = await eel.remove_syntax(command)();
+                    let command_split = command.split(" ");
+                    let type = await eel.recognize_type(command, user_input_without_syntax, command_split)();
+                    question = type[0];
+                    greeting = type[1];
+                    about_themselves = type[2];
+                    statement = type[3];
+                    about_it = type[4];
+                    greeting_word = type[5];
+        
+                    let answer = await eel.generate_answer(command, user_input_without_syntax, command_split, question, greeting, about_themselves, statement, about_it, greeting_word)();
+                    question_GUI = document.createElement("span");
+                    question_GUI.innerHTML = command;
+                    if (command < 3) question_GUI.style.marginTop = "-8%";
+                    document.body.appendChild(question_GUI);
+                    window.scrollTo(0, document.body.scrollHeight);
+                    if (answer != "") {
+                        answer_GUI = document.createElement("span");
+                        answer_GUI.innerHTML = answer;
+                        answer_GUI.style.float = "left";
+                        answer_GUI.style.marginLeft = "3%";
+                        answer_GUI.style.marginRight = "30%";
+                        if (answer.length < 3) answer_GUI.style.marginTop = "-8%";
+                        document.body.appendChild(answer_GUI);
+                        window.scrollTo(0, document.body.scrollHeight);
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
