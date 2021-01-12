@@ -60,6 +60,7 @@ def print_answer(string, end="\n"):
 		if not tts_off:
 			thread = threading.Thread(target=say, args=(string,))
 			thread.start()
+		return string
 
 @eel.expose
 def remove_syntax(string):
@@ -185,7 +186,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				answer = search(search_item, False if words[0] == "what" else True)
 				print_answer(answer)
 
-		if re.match(r"[\w\W]*and you", user_input_without_syntax) or re.match(r"[\w\W]*and what about you", user_input_without_syntax):
+		if re.match(r"[\w\W]*and you[\w\W]*", user_input_without_syntax) or re.match(r"[\w\W]*what about you[\w\W]*", user_input_without_syntax):
 			user_input = last_assistant
 			user_input_without_syntax = remove_syntax(last_assistant).lower().strip()
 			question, greeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
@@ -305,8 +306,8 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			# answering to the user
 
 			# if user asked "what's up?"
-			if greeting_word == "What's up?":
-				responses = ["Nothing", "Not much", "Alright"]
+			if greeting_word == "What's up?" or greeting_word == "Sup":
+				responses = ["Nothing", "Not much", "All right"]
 				answer = random.choice(responses)
 				print_answer(answer)
 
@@ -466,7 +467,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		if len(words) == 1:
 			word = words[0]
 			if word in data["good"]:
-				answer = "I feel really happy about that."
+				answer = "I feel really happy about that." if last_assistant != "I feel really happy about that." else ")"
 				print_answer(answer)
 			if word in data["bad"]:
 				answer = "What's wrong?"
@@ -490,14 +491,16 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		if re.match(r"set[ a]* timer$", user_input_without_syntax):
 			seconds = 0
 			while seconds <= 0:
-				answer = "How many seconds should I set timer for (enter a number)? "
+				answer = "How many seconds should I set timer for? "
 				print_answer(answer, end="")
 				seconds = input()
+				# TODO: do the timers
 				if seconds.isdigit(): seconds = int(seconds)
 				else:
 					answer = "Timer canceled."
 					print_answer()
 					break
+				# TODO: "nice to see you here"
 
 			if type(seconds) == int:
 				if seconds > 0:							
