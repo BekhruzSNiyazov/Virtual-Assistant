@@ -69,7 +69,7 @@ def say(string):
 def send_to_js():
 	global to_send_to_js, turnTTSOff, tts_off, wait
 	if not wait:
-		tmp = turnTTSOff
+		tmp = True if turnTTSOff else False
 		turnTTSOff = False
 		if tmp: tts_off = True
 		return to_send_to_js, tmp
@@ -558,24 +558,25 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		if re.match(r"set[ a]* timer$", user_input_without_syntax):
 			wait = True
 			waiting_for_input = True
+			answer = "How many seconds should I set timer for? "
+			wait = False
+			to_send_to_js = answer
 			seconds = 0
-			while seconds <= 0:
-				answer = "How many seconds should I set timer for? "
-				wait = False
+			print_answer(answer, end="")
+			seconds = eel.send_to_python()()
+			while not seconds:
+				seconds = eel.send_to_python()()
+			waiting_for_input = False
+			# TODO: fix the timers
+			if seconds.isdigit(): seconds = int(seconds)
+			else:
+				answer = "Timer canceled."
 				to_send_to_js = answer
-				print_answer(answer, end="")
-				seconds = eel.send_to_python()
-				waiting_for_input = False
-				# TODO: fix the timers
-				if seconds.isdigit(): seconds = int(seconds)
-				else:
-					answer = "Timer canceled."
-					print_answer()
-					break
-				# TODO: "nice to see you here"
-				# TODO: fix "shut up"
-				# TODO: fix "I feel really happy about that"; the issue: says "I feel really happy about that" even though it was the last response
-				# TODO: fix "say something"
+				print_answer(answer)
+			# TODO: "nice to see you here"
+			# TODO: fix "shut up"
+			# TODO: fix "I feel really happy about that"; the issue: says "I feel really happy about that" even though it was the last response
+			# TODO: fix "say something"
 
 			if type(seconds) == int:
 				if seconds > 0:							
