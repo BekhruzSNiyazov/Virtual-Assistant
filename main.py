@@ -29,9 +29,19 @@ dictionary = PyDictionary()
 
 last_assistant = ""
 
+before_last_assistant = ""
+
 tts_off = False
 
 word_to_remove = ""
+
+to_send_to_js = ""
+
+printed = False
+
+said = False
+
+turnTTSOff = False
 
 import eel
 
@@ -42,7 +52,7 @@ if len(argv) > 1:
 		tts_off = True
 
 def say(string):
-	if len(string) < 100:
+	if len(string) < 100 and len(string) > 1:
 		tts = gTTS(text=string)
 		try:
 			filename = "speech" + str(random.randint(0, 1000000)) + ".mp3"
@@ -52,19 +62,34 @@ def say(string):
 		except Exception as e: print(e)
 
 @eel.expose
+def send_to_js():
+	global to_send_to_js, turnTTSOff, tts_off
+	tmp = turnTTSOff
+	turnTTSOff = False
+	if tmp: tts_off = True
+	return to_send_to_js, tmp
+
+@eel.expose
 def print_answer(string, end="\n"):
 	if string:
 		print("\nAssistant:", string, end=end)
-		global last_assistant
+		global last_assistant, to_send_to_js, last_assistant2, to_send, printed, tts_off
+		printed = True
+		before_last_assistant = last_assistant
 		last_assistant = string
 		if not tts_off:
 			thread = threading.Thread(target=say, args=(string,))
 			thread.start()
-		return string
+		to_send_to_js = string
 
 @eel.expose
 def remove_syntax(string):
 	return re.sub("[,.!?\"']*", "", string)
+
+@eel.expose
+def toggle_tts():
+	global tts_off
+	tts_off = not tts_off
 
 def search(search_item, person):
 	answer = ""
@@ -119,9 +144,11 @@ def sleep(seconds):
 
 @eel.expose
 def generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word):
-	global tts_off, last_assistant, word_to_remove
+	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff
 
 	answer = ""
+
+	printed = False
 
 	if user_input == "show me your knowledge":
 		answer = str(data)
@@ -146,11 +173,11 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		answer = random.choice(available_words).capitalize()
 		print_answer(answer)
 
-	elif re.match(r"[\w\W]*shut[\w\W]*", user_input_without_syntax) and "mouth" in words or re.match(r"[\w\W]*tts-off[\w\W]*", user_input_without_syntax):
+	elif re.match(r"[\w\W]*shut[\w\W]*", user_input_without_syntax) and "mouth" in words or re.match(r"[\w\W]*shut up[\w\W]*", user_input_without_syntax):
 		tts_off = True
-
-	elif re.match(r"[\w\W]*tts-on[\w\W]*", user_input_without_syntax):
-		tts_off = False
+		answer = "Okay"
+		turnTTSOff = True
+		print_answer(answer)
 
 	elif user_input_without_syntax == "what":
 		answer = last_assistant
@@ -187,10 +214,16 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				print_answer(answer)
 
 		if re.match(r"[\w\W]*and you[\w\W]*", user_input_without_syntax) or re.match(r"[\w\W]*what about you[\w\W]*", user_input_without_syntax):
-			user_input = last_assistant
-			user_input_without_syntax = remove_syntax(last_assistant).lower().strip()
+			user_input = before_last_assistant
+			user_input_without_syntax = remove_syntax(before_last_assistant).lower().strip()
+			words = user_input_without_syntax.split()
 			question, greeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
-			answer = generate_answer(last_assistant, user_input_without_syntax, user_input_without_syntax.split(), question, greeting, about_themselves, statement, about_it, greeting_word)
+			if not question:
+				user_input = last_assistant
+				user_input_without_syntax = remove_syntax(last_assistant).lower().strip()
+				words = user_input_without_syntax.split()
+				question, greeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
+			answer = generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word)
 			print_answer(answer)
 			return answer
 	# if user said something about assistant
@@ -297,7 +330,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				print_answer(answer)
 				answered = True
 
-		if re.match(r"[\w\W]*glad[\w\W]*see[\w\W]*you", user_input_without_syntax):
+		if re.match(r"[\w\W]*glad[\w\W]*see[\w\W]*you", user_input_without_syntax) or re.match(r"[\w\W]*nice[\w\W]to[\w\W]*you[\w\W]*", user_input_without_syntax):
 			answer = "Thanks"
 			print_answer(answer)
 			answered = True
@@ -467,8 +500,9 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		if len(words) == 1:
 			word = words[0]
 			if word in data["good"]:
-				answer = "I feel really happy about that." if last_assistant != "I feel really happy about that." else ")"
+				answer = "I feel really happy about that." if not said and "feel" not in last_assistant else ")"
 				print_answer(answer)
+				said = True
 			if word in data["bad"]:
 				answer = "What's wrong?"
 				print_answer(answer)
@@ -494,13 +528,15 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				answer = "How many seconds should I set timer for? "
 				print_answer(answer, end="")
 				seconds = input()
-				# TODO: do the timers
+				# TODO: fix the timers
 				if seconds.isdigit(): seconds = int(seconds)
 				else:
 					answer = "Timer canceled."
 					print_answer()
 					break
 				# TODO: "nice to see you here"
+				# TODO: fix "shut up"
+				# TODO: fix "I feel really happy about that"; the issue: says "I feel really happy about that" even though it was the last response
 
 			if type(seconds) == int:
 				if seconds > 0:							
@@ -532,7 +568,8 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			else:
 				answer = "Timer was canceled."
 				print_answer(answer)
-	return answer
+	if not printed:
+		to_send_to_js = ""
 
 def main():
 	# chatting with user forever until they type "exit" or
@@ -636,6 +673,6 @@ def recognize_type(user_input, user_input_without_syntax, words):
 	return question, greeting, about_themselves, statement, about_it, greeting_word
 
 if __name__ == "__main__":
-	eel.start("index.html", size=(400, 700))
+	eel.start("index.html", size=(500, 800))
 	main_thread = threading.Thread(target=main)
 	main_thread.start()
