@@ -138,7 +138,7 @@ def found_on_wikipedia():
 
 def sleep(seconds):
 	if seconds > 15: print_answer("A timer was set. Countdown has started.")
-	elif seconds > 1: print_answer("A countdown has started.")
+	elif seconds > 1: print_answer("A countdown has started")
 	time.sleep(seconds)
 	print_answer("Time is over.")
 
@@ -537,6 +537,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				# TODO: "nice to see you here"
 				# TODO: fix "shut up"
 				# TODO: fix "I feel really happy about that"; the issue: says "I feel really happy about that" even though it was the last response
+				# TODO: fix "say something"
 
 			if type(seconds) == int:
 				if seconds > 0:							
@@ -546,7 +547,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 					answer = "Timer was canceled."
 					print_answer(answer)
 		
-		elif re.match(r"set[ a]* timer for [\d]*[ hours\W]*[and ]*[\d]*[ minutes\W]*[and ]*[\d]*[ seconds\W]", user_input_without_syntax):
+		elif re.match(r"set[ \w]* timer for [\d]*[ hours\W]*[and ]*[\d]*[ minutes\W]*[and ]*[\d]*[ seconds\W]", user_input_without_syntax):
 			hours, minutes, seconds = 0, 0, 0
 			if "hours" in words or "hour" in words:
 				try: hours = int(re.findall(r"\s([\d]+) hour", user_input_without_syntax)[0])
@@ -568,6 +569,11 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			else:
 				answer = "Timer was canceled."
 				print_answer(answer)
+
+		elif re.match(r"[\w\W]*thank you[\w\W]*", user_input_without_syntax) or user_input_without_syntax == "thanks" or user_input_without_syntax.endswith("thanks"):
+			answer = "You are welcome"
+			print_answer(answer)
+
 	if not printed:
 		to_send_to_js = ""
 
