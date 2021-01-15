@@ -5,80 +5,136 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Virtual Assistant</title>
 </head>
-<body style="background-color: #f7f7f7;">
+<body style="background-color: #000000;">
     <style>
         *:focus {
             outline: none;
         }
         span {
+            color: #eeeeee;
             float: right;
-            font-size: 130%;
-            margin-right: 3%;
+            font-size: 120%;
+            margin-right: 6%;
             margin-left: 30%;
-            background-color: #eeeeee;
-            border-radius: 25px;
-            padding: 10px;
+            background-color: #393e46;
+            border-radius: 25px 25px 5px 25px;
+            padding: 10px 18px 10px 20px;
             margin-bottom: 20%;
-            margin-top: -19.5%;
+            margin-top: -18.25%;
             padding-left: 20px;
             padding-right: 20px;
         }
+        ::-webkit-scrollbar { width: 10px; }
+			::-webkit-scrollbar-track {
+				box-shadow: inset 0 0 1px black;
+				border-radius: 15px;
+        }
+        ::-webkit-scrollbar-thumb {
+            border-radius: 15px;
+            background-color: #3f4349;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: #686d75; }
+        svg {
+            color: #eeeeee;
+            background-color: #393e46;
+            border-radius: 25px;
+            padding: 10px; 
+            position: fixed;
+            bottom: 0;
+            margin: 1%;
+            opacity: 95%;
+        }
     </style>
+    <!-- TODO: make tts turn on and off -->
     <div style="margin-bottom: 25%;"></div>
-    <input id="input" style="position: fixed; bottom: 0; width: 99%; margin: 0.5%; border-radius: 25px; height: 50px; font-size: 130%; padding-left: 15px; border: none; background-color: #eeeeee;" placeholder="Type a command" autofocus>
+    <input id="input" style="position: fixed; bottom: 0; width: 77%; margin: 1%; border-radius: 25px; height: 50px; font-size: 130%; padding-left: 15px; border: none; background-color: #393e46; color: #eeeeee; opacity: 95%; margin-left: 11%;" placeholder="Type a command" autofocus>
 
-    <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">
-        <path fill-rule="evenodd" d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/>
-        <path fill-rule="evenodd" d="M10 8V3a2 2 0 1 0-4 0v5a2 2 0 1 0 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3z"/>
-    </svg> -->
+    <svg style="margin-left: 89%;" xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16" onclick="send();" id="send">
+        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+    </svg>
 
+    <svg id="toggle_tts" onclick="toggle_tts();" xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-volume-up" viewBox="0 0 16 16">
+        <path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-.708.707A7.476 7.476 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/>
+        <path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.483 5.483 0 0 1 11.025 8a5.483 5.483 0 0 1-1.61 3.89l.706.706z"/>
+        <path d="M10.025 8a4.486 4.486 0 0 1-1.318 3.182L8 10.475A3.489 3.489 0 0 0 9.025 8c0-.966-.392-1.841-1.025-2.475l.707-.707A4.486 4.486 0 0 1 10.025 8zM7 4a.5.5 0 0 0-.812-.39L3.825 5.5H1.5A.5.5 0 0 0 1 6v4a.5.5 0 0 0 .5.5h2.325l2.363 1.89A.5.5 0 0 0 7 12V4zM4.312 6.39L6 5.04v5.92L4.312 9.61A.5.5 0 0 0 4 9.5H2v-3h2a.5.5 0 0 0 .312-.11z"/>
+    </svg>
+        
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
-
+    
     <script type="text/javascript" src="/eel.js"></script>
     <script>
         let input = document.getElementById("input");
  
         let command;
 
-        input.onkeypress = async function(e) {
+        let tts = true;
+
+        input.onkeypress = function(e) {
             if (!e) e = window.event;
             var keyCode = e.code || e.key;
             if (keyCode == "Enter") {
-                command = input.value;
-                if (command != "") {
-                    input.value = "";
-                    let question, greeting, about_themselves, statement, about_it;
-                    let user_input_without_syntax = await eel.remove_syntax(command)();
-                    let command_split = command.split(" ");
-                    let type = await eel.recognize_type(command, user_input_without_syntax, command_split)();
-                    question = type[0];
-                    greeting = type[1];
-                    about_themselves = type[2];
-                    statement = type[3];
-                    about_it = type[4];
-                    greeting_word = type[5];
-        
-                    let answer = await eel.generate_answer(command, user_input_without_syntax, command_split, question, greeting, about_themselves, statement, about_it, greeting_word)();
-                    question_GUI = document.createElement("span");
-                    question_GUI.innerHTML = command;
-                    if (command < 3) question_GUI.style.marginTop = "-8%";
-                    document.body.appendChild(question_GUI);
+                send();
+            }
+        }
+        async function send() {
+            command = input.value;
+            if (command != "") {
+                input.value = "";
+                let question, greeting, about_themselves, statement, about_it, greeting_word
+                let user_input_without_syntax = await eel.remove_syntax(command)();
+                let command_split = command.split(" ");
+                let type = await eel.recognize_type(command, user_input_without_syntax, command_split)();
+                question = type[0];
+                greeting = type[1];
+                about_themselves = type[2];
+                statement = type[3];
+                about_it = type[4];
+                greeting_word = type[5];
+                let question_GUI = document.createElement("span");
+                question_GUI.innerHTML = command;
+                if (command < 3) question_GUI.style.marginTop = "-8%";
+                document.body.appendChild(question_GUI);
+                window.scrollTo(0, document.body.scrollHeight);
+    
+                let temp = await eel.generate_answer(command, user_input_without_syntax, command_split, question, greeting, about_themselves, statement, about_it, greeting_word)();
+                let response = await eel.send_to_js()();
+                let answer = response[0];
+                let turnTTSOff = response[1];
+                console.log(response);
+                if (turnTTSOff) {
+                    toggle_tts(true);
+                }
+                if (answer != "") {
+                    answer_GUI = document.createElement("span");
+                    answer_GUI.innerHTML = answer;
+                    answer_GUI.style.float = "left";
+                    answer_GUI.style.marginLeft = "6%";
+                    answer_GUI.style.marginRight = "30%";
+                    answer_GUI.style.marginTop = "-17%";
+                    if (answer.length < 3) answer_GUI.style.marginTop = "-8%";
+                    answer_GUI.style.borderRadius = "25px 25px 25px 5px";
+                    answer_GUI.style.backgroundColor = "#686d75";
+                    answer_GUI.style.padding = "10px 20px 10px 18px";
+                    document.body.appendChild(answer_GUI);
                     window.scrollTo(0, document.body.scrollHeight);
-                    if (answer != "") {
-                        answer_GUI = document.createElement("span");
-                        answer_GUI.innerHTML = answer;
-                        answer_GUI.style.float = "left";
-                        answer_GUI.style.marginLeft = "3%";
-                        answer_GUI.style.marginRight = "30%";
-                        if (answer.length < 3) answer_GUI.style.marginTop = "-8%";
-                        document.body.appendChild(answer_GUI);
-                        window.scrollTo(0, document.body.scrollHeight);
-                    }
                 }
             }
+        }
+
+        function toggle_tts(off) {
+            tts_button = document.getElementById("toggle_tts");
+            if (tts) {
+                tts_button.innerHTML = '<path d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06zM6 5.04L4.312 6.39A.5.5 0 0 1 4 6.5H2v3h2a.5.5 0 0 1 .312.11L6 10.96V5.04zm7.854.606a.5.5 0 0 1 0 .708L12.207 8l1.647 1.646a.5.5 0 0 1-.708.708L11.5 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L10.793 8 9.146 6.354a.5.5 0 1 1 .708-.708L11.5 7.293l1.646-1.647a.5.5 0 0 1 .708 0z"/>';
+                tts = false;
+            } else {
+                tts_button.innerHTML = '<path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-.708.707A7.476 7.476 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/><path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.483 5.483 0 0 1 11.025 8a5.483 5.483 0 0 1-1.61 3.89l.706.706z"/><path d="M10.025 8a4.486 4.486 0 0 1-1.318 3.182L8 10.475A3.489 3.489 0 0 0 9.025 8c0-.966-.392-1.841-1.025-2.475l.707-.707A4.486 4.486 0 0 1 10.025 8zM7 4a.5.5 0 0 0-.812-.39L3.825 5.5H1.5A.5.5 0 0 0 1 6v4a.5.5 0 0 0 .5.5h2.325l2.363 1.89A.5.5 0 0 0 7 12V4zM4.312 6.39L6 5.04v5.92L4.312 9.61A.5.5 0 0 0 4 9.5H2v-3h2a.5.5 0 0 0 .312-.11z"/>';
+                tts = true;
+            }
+            if (off) { if (tts) eel.toggle_tts(); }
+            else eel.toggle_tts();
         }
     </script>
 </body>
