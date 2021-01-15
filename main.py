@@ -43,6 +43,10 @@ said = False
 
 turnTTSOff = False
 
+waiting_for_input = False
+
+wait = False
+
 import eel
 
 eel.init("web")
@@ -63,11 +67,12 @@ def say(string):
 
 @eel.expose
 def send_to_js():
-	global to_send_to_js, turnTTSOff, tts_off
-	tmp = turnTTSOff
-	turnTTSOff = False
-	if tmp: tts_off = True
-	return to_send_to_js, tmp
+	global to_send_to_js, turnTTSOff, tts_off, wait
+	if not wait:
+		tmp = turnTTSOff
+		turnTTSOff = False
+		if tmp: tts_off = True
+		return to_send_to_js, tmp
 
 @eel.expose
 def print_answer(string, end="\n"):
@@ -85,6 +90,11 @@ def print_answer(string, end="\n"):
 @eel.expose
 def remove_syntax(string):
 	return re.sub("[,.!?\"']*", "", string)
+
+@eel.expose
+def waiting():
+	global waiting_for_input
+	return waiting_for_input
 
 @eel.expose
 def toggle_tts():
@@ -144,7 +154,7 @@ def sleep(seconds):
 
 @eel.expose
 def generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word):
-	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff
+	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff, waiting_for_input, wait
 
 	answer = ""
 
@@ -251,6 +261,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 							print_answer(answer)
 							answered = True
 							break
+
 	# if user's input is a greeting
 	if greeting:
 		print("This is a greeting")
@@ -502,10 +513,32 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			if word in data["good"]:
 				answer = "I feel really happy about that." if not said and "feel" not in last_assistant else ")"
 				print_answer(answer)
-				said = True
+				said = not said
 			if word in data["bad"]:
 				answer = "What's wrong?"
 				print_answer(answer)
+
+		if user_input_without_syntax == "same" or re.match("i feel[ the]* same[\w ]*", user_input_without_syntax):
+			user_input = last_assistant
+			user_input_without_syntax = remove_syntax(last_assistant).lower().strip()
+			words = user_input_without_syntax.split()
+			question, greeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
+			answer = generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word)
+			print_answer(answer)
+			return answer
+
+		if re.match("i feel [\w\W]*", user_input_without_syntax):
+			print("here")
+			feeling = re.findall("i feel ([\w\W]*)", user_input_without_syntax)[0]
+			for word in feeling.split():
+				if word in data["bad"]:
+					answer = "I feel sorry for that"
+					print_answer(answer)
+					break
+				if word in data["good"]:
+					answer = "Glad you do"
+					print_answer(answer)
+					break
 
 		# if user's input is an explanation:
 		if explanation:
@@ -523,11 +556,16 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				data[category] = [to_remember]
 
 		if re.match(r"set[ a]* timer$", user_input_without_syntax):
+			wait = True
+			waiting_for_input = True
 			seconds = 0
 			while seconds <= 0:
 				answer = "How many seconds should I set timer for? "
+				wait = False
+				to_send_to_js = answer
 				print_answer(answer, end="")
-				seconds = input()
+				seconds = eel.send_to_python()
+				waiting_for_input = False
 				# TODO: fix the timers
 				if seconds.isdigit(): seconds = int(seconds)
 				else:
@@ -570,7 +608,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				answer = "Timer was canceled."
 				print_answer(answer)
 
-		elif re.match(r"[\w\W]*thank you[\w\W]*", user_input_without_syntax) or user_input_without_syntax == "thanks" or user_input_without_syntax.endswith("thanks"):
+		elif re.match(r"[\w\W]*thank you[\w\W]*", user_input_without_syntax) or user_input_without_syntax == "thanks" or user_input_without_syntax.endswith("thanks") or user_input_without_syntax.replace(" a ", " ").endswith("thanks ton") or user_input_without_syntax.startswith("thanks for"):
 			answer = "You are welcome"
 			print_answer(answer)
 
@@ -641,10 +679,10 @@ def recognize_type(user_input, user_input_without_syntax, words):
 	# if user's input is not a greeting
 	if not greeting:
 		
-		if len(user_input) > 3:
+		if len(user_input) > 2:
 			for word in data["self"]:
 				if word in words:
-					if word == "youre" or "are" in words:
+					if word == "youre" or word == "you" and "are" in words or word == "you're":
 						about_it = True
 						break
 
@@ -657,7 +695,7 @@ def recognize_type(user_input, user_input_without_syntax, words):
 				if not question:
 					if words[0].capitalize() in data["question_keywords"]:
 						question = True
-
+				
 				# last check
 				if not question:
 					if re.match("[\w\W]*and you", user_input_without_syntax) or re.match("[\w\W]*what[s]* about you", user_input_without_syntax):
