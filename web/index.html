@@ -86,7 +86,6 @@
             if (!e) e = window.event;
             var keyCode = e.code || e.key;
             if (keyCode == "Enter") {
-                // console.log(eel.waiting()());
                 if (eel.waiting()()) {
                     send(input.value);
                 } else {
@@ -128,16 +127,20 @@
                 question_GUI.innerHTML = command;
                 if (command < 3) question_GUI.style.marginTop = "-8%";
                 document.body.appendChild(question_GUI);
+                for (let i = 30; i >= 10; i--) {
+                    question_GUI.style.padding = i + "px" + " 20px 10px 18px";
+                    await new Promise(r => setTimeout(r, 1));
+                }
                 window.scrollTo(0, document.body.scrollHeight);
     
                 let temp = await eel.generate_answer(command, user_input_without_syntax, command_split, question, greeting, about_themselves, statement, about_it, greeting_word)();
-                console.log(eel.send_to_js()());
                 let response = await eel.send_to_js()();
                 let answer = response[0];
-                console.log(response[1]);
                 if (response[1]) {
-                    console.log("here")
-                    toggle_tts(true);
+                    if (tts) {
+                        toggle_tts();
+                        eel.toggle_tts();
+                    }
                 }
                 if (answer != "") {
                     answer_GUI = document.createElement("span");
@@ -151,12 +154,16 @@
                     answer_GUI.style.backgroundColor = "#686d75";
                     answer_GUI.style.padding = "10px 20px 10px 18px";
                     document.body.appendChild(answer_GUI);
+                    for (let i = 30; i >= 10; i--) {
+                        answer_GUI.style.padding = i + "px" + " 20px 10px 18px";
+                        await new Promise(r => setTimeout(r, 1));
+                    }
                     window.scrollTo(0, document.body.scrollHeight);
                 }
             }
         }
 
-        function toggle_tts(off) {
+        function toggle_tts() {
             let tts_button = document.getElementById("toggle_tts");
             if (tts) {
                 tts_button.innerHTML = '<path d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06zM6 5.04L4.312 6.39A.5.5 0 0 1 4 6.5H2v3h2a.5.5 0 0 1 .312.11L6 10.96V5.04zm7.854.606a.5.5 0 0 1 0 .708L12.207 8l1.647 1.646a.5.5 0 0 1-.708.708L11.5 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L10.793 8 9.146 6.354a.5.5 0 1 1 .708-.708L11.5 7.293l1.646-1.647a.5.5 0 0 1 .708 0z"/>';
@@ -165,8 +172,7 @@
                 tts_button.innerHTML = '<path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-.708.707A7.476 7.476 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/><path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.483 5.483 0 0 1 11.025 8a5.483 5.483 0 0 1-1.61 3.89l.706.706z"/><path d="M10.025 8a4.486 4.486 0 0 1-1.318 3.182L8 10.475A3.489 3.489 0 0 0 9.025 8c0-.966-.392-1.841-1.025-2.475l.707-.707A4.486 4.486 0 0 1 10.025 8zM7 4a.5.5 0 0 0-.812-.39L3.825 5.5H1.5A.5.5 0 0 0 1 6v4a.5.5 0 0 0 .5.5h2.325l2.363 1.89A.5.5 0 0 0 7 12V4zM4.312 6.39L6 5.04v5.92L4.312 9.61A.5.5 0 0 0 4 9.5H2v-3h2a.5.5 0 0 0 .312-.11z"/>';
                 tts = true;
             }
-            if (off) { if (tts) eel.toggle_tts(); }
-            else eel.toggle_tts();
+            eel.toggle_tts();
         }
         
         function sr() {
