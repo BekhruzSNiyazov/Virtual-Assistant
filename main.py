@@ -24,6 +24,8 @@ import time
 
 from subprocess import Popen
 
+import smtplib
+
 # importing dataset from data.py file
 from data import data
 
@@ -99,6 +101,26 @@ def done():
 	global to_send_to_js
 	to_send_to_js = None
 
+def get_input(string):
+	global answer, to_send_to_js
+	
+	answer = string
+	print_answer(answer)
+	to_send_to_js = answer
+	eel.get_input()
+	
+	value = eel.send_input_value()()
+	while not value:
+		value = eel.send_input_value()()
+	return value
+
+def send(string):
+	global answer, send_to_js
+	
+	answer = string
+	send_to_js = answer
+	print_answer(answer)
+
 def search(search_item, person):
 	answer = ""
 	if person:
@@ -148,7 +170,7 @@ def sleep(seconds):
 	if seconds > 15: print_answer("A timer was set. Countdown has started.")
 	elif seconds > 1: print_answer("A countdown has started")
 	time.sleep(seconds)
-	print_answer("Time is over.")
+	print_answer("Time is over")
 
 @eel.expose
 def generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word):
@@ -536,6 +558,43 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				except:
 					os.system(application)
 
+		if re.match(r"send[(a)|(an)\s]*[(email)|(message)\s]+[(please)|(cant you)\s]", user_input_without_syntax):
+			try:
+				email = data["email"]
+				password = data["password"]
+			except:
+				email = get_input("Please, type in your email address")
+				if email.lower() == "cancel": return
+				password = get_input("Please, type in your password")
+				if password.lower() == "cancel": return
+				remember = get_input("Do you want me to remember them? (y|n)")
+				if remember.lower() == "cancel": return
+				if remember == "y":
+					data["email"] = email
+					data["password"] = password
+					with open("data.py", "w") as file:
+						file.write("data = " + str(data))
+			to_email = get_input("Please, type the email address of a person you want to send this email to")
+			if to_email.lower() == "cancel": return
+			subject = get_input("Please, enter the subject of the email")
+			if subject.lower() == "cancel": return
+			body = get_input("Please, enter the body of the email")
+			if body.lower() == "cancel": return
+
+			server = smtplib.SMTP("smtp." + email[email.index("@")+1:], 587)
+			server.starttls()
+			try:
+				server.login(email, password)
+				message = "Subject: " + subject + "\n\n" + body
+				send("Sending email...")
+				server.sendmail(email, to_email, message)
+				send("Email was sent")
+			except Exception as e:
+				print(e)
+				answer = "Sorry, an error occurred"
+				to_send_to_js = answer
+				print_answer(answer)
+
 		# if user's input is an explanation:
 		if explanation:
 			index = user_input_without_syntax.index("means") if means else user_input_without_syntax.index("is")
@@ -552,13 +611,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				data[category] = [to_remember]
 
 		if re.match(r"set[ a]* timer$", user_input_without_syntax):
-			answer = "How many seconds should I set timer for? "
-			to_send_to_js = answer
-			seconds = 0
-			print_answer(answer, end="")
-			seconds = eel.send_input_value()()
-			while not seconds:
-				seconds = eel.send_input_value()()
+			seconds = get_input("How many seconds should I set timer for?")
 			# TODO: fix the timers # in progress
 			if seconds.isdigit(): seconds = int(seconds)
 			else:
