@@ -341,7 +341,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				print_answer(answer)
 				answered = True
 
-		if re.match(r"[\w\W]*glad[\w\W]*see[\w\W]*you", user_input_without_syntax) or re.match(r"[\w\W]*nice[\w\W]to[\w\W]*you[\w\W]*", user_input_without_syntax):
+		if re.match(r"[\w\W]*glad[\w\W]*see[\w\W]*you", user_input_without_syntax):
 			answer = "Thanks"
 			print_answer(answer)
 			answered = True
@@ -560,7 +560,6 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				answer = "Timer canceled."
 				to_send_to_js = answer
 				print_answer(answer)
-			# TODO: "nice to see you here"
 			# TODO: fix "I feel really happy about that"; the issue: says "I feel really happy about that" even though it was the last response
 			# TODO: fix "say something"
 
@@ -597,6 +596,10 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 
 		elif re.match(r"[\w\W]*thank you[\w\W]*", user_input_without_syntax) or user_input_without_syntax == "thanks" or user_input_without_syntax.endswith("thanks") or user_input_without_syntax.replace(" a ", " ").endswith("thanks ton") or user_input_without_syntax.startswith("thanks for"):
 			answer = "You are welcome"
+			print_answer(answer)
+
+		elif re.match(r"[\w\W]*nice[\w\W]to[\w\W]*you[\w\W]*", user_input_without_syntax):
+			answer = "Thanks"
 			print_answer(answer)
 
 	if not printed:
