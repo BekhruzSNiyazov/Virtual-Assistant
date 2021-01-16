@@ -397,9 +397,9 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 
 		print("This is a statement about themselves")
 		
-		if re.match(r"i feel [\w\s]+[,]*[\w\s]*", user_input_without_syntax):
+		if re.match(r"i feel [\w\s]+[,]*[\w\s]*", user_input_without_syntax, re.IGNORECASE):
 
-			their_feelings = re.findall(r"i feel ([\w\s]+)", user_input_without_syntax)[0]
+			their_feelings = re.findall(r"i feel ([\w\s]+)", user_input_without_syntax, re.IGNORECASE)[0]
 
 			answered = False
 
@@ -408,7 +408,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				word = word.strip()
 				
 				if word in data["good"]:
-					print_answer(":-)")
+					print_answer("Glad you do")
 					answered = True
 					break
 				
@@ -574,7 +574,6 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				to_send_to_js = answer
 				print_answer(answer)
 			# TODO: "nice to see you here"
-			# TODO: fix "shut up"
 			# TODO: fix "I feel really happy about that"; the issue: says "I feel really happy about that" even though it was the last response
 			# TODO: fix "say something"
 
@@ -706,10 +705,12 @@ def recognize_type(user_input, user_input_without_syntax, words):
 				if not question:
 					# checking, if user is saying something about themselves/their feelings
 					for word in words:
+						word = word.lower()
 						if word in data["themselves"]:
 							if word == "my":
 								if "is" in words: statement = True
 							about_themselves = True
+							break
 
 					# if user's input is not a greeting or a question or a statement about themselves/their feelings
 					if not about_themselves:
