@@ -397,9 +397,9 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 
 		print("This is a statement about themselves")
 		
-		if re.match(r"i feel [\w\s]+[,]*[\w\s]*", user_input_without_syntax, re.IGNORECASE):
+		if re.match(r"i [do ]*feel [\w\s]+[,]*[\w\s]*", user_input_without_syntax, re.IGNORECASE):
 
-			their_feelings = re.findall(r"i feel ([\w\s]+)", user_input_without_syntax, re.IGNORECASE)[0]
+			their_feelings = re.findall(r"i [do ]*feel ([\w\s]+)?,*[\w\s]*", user_input_without_syntax, re.IGNORECASE)[0]
 
 			answered = False
 
@@ -526,19 +526,6 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			answer = generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word)
 			print_answer(answer)
 			return answer
-
-		if re.match("i feel [\w\W]*", user_input_without_syntax):
-			print("here")
-			feeling = re.findall("i feel ([\w\W]*)", user_input_without_syntax)[0]
-			for word in feeling.split():
-				if word in data["bad"]:
-					answer = "I feel sorry for that"
-					print_answer(answer)
-					break
-				if word in data["good"]:
-					answer = "Glad you do"
-					print_answer(answer)
-					break
 
 		# if user's input is an explanation:
 		if explanation:
