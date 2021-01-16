@@ -193,7 +193,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		answer = last_assistant
 		print_answer(answer)
 
-	elif user_input_without_syntax == "say something":
+	elif re.match(r"[\w\s]*say [\w\s]*something[\w\s]*", user_input_without_syntax):
 		words = ["Hullo", "Sup", "Hulo", "Day", "Morning", "Evening", "Night", "Good morning!", "Good day!", "Good evening!", "Good night!", "Yo", "Afternoon", "Good afternoon!", "Halo", "Hallo", "Howdy"]
 		available_words = data["greeting"].copy()
 		for word in words: available_words.remove(word)
@@ -560,8 +560,6 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				answer = "Timer canceled."
 				to_send_to_js = answer
 				print_answer(answer)
-			# TODO: fix "I feel really happy about that"; the issue: says "I feel really happy about that" even though it was the last response
-			# TODO: fix "say something"
 
 			if type(seconds) == int:
 				if seconds > 0:							
