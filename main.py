@@ -26,6 +26,10 @@ from subprocess import Popen
 
 import smtplib
 
+import webbrowser
+
+import requests
+
 # importing dataset from data.py file
 from data import data
 
@@ -71,18 +75,20 @@ def send_to_js():
 	tmp = True if turnTTSOff else False
 	turnTTSOff = False
 	if tmp: tts_off = True
-	if to_send_to_js:
-		return to_send_to_js, tmp
+	to_send = to_send_to_js
+	to_send_to_js = None
+	if to_send:
+		return to_send, tmp
 
 @eel.expose
-def print_answer(string, end="\n"):
+def print_answer(string, end="\n", tts=True):
 	if string:
 		print("\nAssistant:", string, end=end)
 		global last_assistant, to_send_to_js, last_assistant2, to_send, printed, tts_off
 		printed = True
 		before_last_assistant = last_assistant
 		last_assistant = string
-		if not tts_off:
+		if not tts_off and tts:
 			thread = threading.Thread(target=say, args=(string,))
 			thread.start()
 		to_send_to_js = string
@@ -146,9 +152,9 @@ def search(search_item, person):
 				print_answer("Here are some definitions that I found: ")
 				answer = ""
 				for part in definition:
-					answer += "\t" + part + ":"
+					answer += part + ":<br>"
 					for meaning in definition[part]:
-						answer += "\t\t" + str(definition[part].index(meaning)+1) + ". " + meaning
+						answer += str(definition[part].index(meaning)+1) + ". " + meaning + ". <br>"
 				answered = True
 		except: pass
 		if not answered:
@@ -237,12 +243,12 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			search_item = user_input_without_syntax[user_input_without_syntax.index("does") + len("does") + 1 : user_input_without_syntax.index("mean")].strip()
 
 			answer = search(search_item, False)
-			print_answer(answer)
+			print_answer(answer, tts=False)
 		else:
 			if re.match(r"what is [\w\s]+", user_input_without_syntax) or re.match(r"who is [\w\s]+", user_input_without_syntax):
 				search_item = user_input_without_syntax[len(words[0]) + len(words[1]) + 2:].strip()
 				answer = search(search_item, False if words[0] == "what" else True)
-				print_answer(answer)
+				print_answer(answer, tts=False)
 
 		if re.match(r"[\w\W]*and you[\w\W]*", user_input_without_syntax) or re.match(r"[\w\W]*what about you[\w\W]*", user_input_without_syntax):
 			user_input = before_last_assistant
@@ -549,14 +555,17 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			return answer
 
 		if re.match(r"open [\w|\s]+", user_input.lower().strip()):
-			application = re.findall(r"open ([\w|\s]+)", user_input.lower().strip())[0].strip()
-			try:
-				Popen(application)
-			except:
+			application = re.findall(r"open ([\w\W]+)", user_input.lower().strip())[0].strip()
+			request = requests.get("http://" + application if not application.startswith("http") else application)
+			if request.status_code == 200:
+				webbrowser.open(application)
+			else:
 				try:
-					os.startfile(application)
-				except:
 					os.system(application)
+				except:
+					try:
+						Popen(application)
+					except: pass
 
 		if re.match(r"send[(a)|(an)\s]*[(email)|(message)\s]+[(please)|(cant you)\s]", user_input_without_syntax):
 			try:
@@ -762,9 +771,23 @@ def recognize_type(user_input, user_input_without_syntax, words):
 					if not about_themselves:
 						statement = True
 
+					# fix "who's joe biden" (only "who IS joe biden" works)
+					# add weather
+					# add "remember this" (should be a list)
+					# add built-in calculator
+					# add "what can you do"
+					# add "who are you"
+					# add jokes
+					# add all reminders in a list
+					# add translator
+					# add random number generator
+					# try to add some sort of built-in google search
+					# try to add a control over volume and brightness
+					# if I have enough time: add image and file sharing tool
+
 	return question, greeting, about_themselves, statement, about_it, greeting_word
 
 if __name__ == "__main__":
-	eel.start("index.html", size=(500, 800))
+	eel.start("index.html", size=(550, 900), mode="chrome")
 	main_thread = threading.Thread(target=main)
 	main_thread.start()
