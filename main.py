@@ -22,6 +22,8 @@ from sys import argv
 
 import time
 
+from subprocess import Popen
+
 # importing dataset from data.py file
 from data import data
 
@@ -58,7 +60,7 @@ def say(string):
 			filename = "speech" + str(random.randint(0, 1000000)) + ".mp3"
 			tts.save(filename)
 			playsound(filename)
-			os.system("rm " + filename)
+			os.remove(filename)
 		except Exception as e: print(e)
 
 @eel.expose
@@ -167,6 +169,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		available_words.remove("exit")
 		available_words.remove("cya")
 		available_words.remove("see you")
+		available_words.remove("see ya")
 		answer = random.choice(available_words).capitalize()
 		print_answer(answer)
 		exit()
@@ -522,6 +525,16 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			answer = generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word)
 			print_answer(answer)
 			return answer
+
+		if re.match(r"open [\w|\s]+", user_input.lower().strip()):
+			application = re.findall(r"open ([\w|\s]+)", user_input.lower().strip())[0].strip()
+			try:
+				Popen(application)
+			except:
+				try:
+					os.startfile(application)
+				except:
+					os.system(application)
 
 		# if user's input is an explanation:
 		if explanation:
