@@ -30,6 +30,8 @@ import webbrowser
 
 import requests
 
+import pyowm
+
 # importing dataset from data.py file
 from data import data
 
@@ -188,6 +190,11 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 
 	if user_input == "show me your knowledge":
 		answer = str(data)
+		print_answer(answer)
+
+	elif user_input_without_syntax == "weather":
+		temperature = pyowm.OWM("6d00d1d4e704068d70191bad2673e0cc").weather_manager().weather_at_place(eel.get_location()()).weather.temperature("celsius")["temp"]
+		answer = "Right now, in " + eel.get_location()() + " it is " + str(temperature) + "°C"
 		print_answer(answer)
 
 	elif user_input_without_syntax == "exit":
@@ -771,7 +778,6 @@ def recognize_type(user_input, user_input_without_syntax, words):
 					if not about_themselves:
 						statement = True
 
-					# fix "who's joe biden" (only "who IS joe biden" works)
 					# add weather
 					# add "remember this" (should be a list)
 					# add built-in calculator
