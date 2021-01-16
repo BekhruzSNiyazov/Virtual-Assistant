@@ -6,4 +6,3 @@ PyDictionary
 gTTS
 playsound
 eel
-smtp
