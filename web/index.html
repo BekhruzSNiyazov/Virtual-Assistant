@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Virtual Assistant</title>
 </head>
-<body style="background-color: #000000;">
+<body style="background-color: #000000;" onclick="get_answer();" onmousemove="get_answer();">
     <style>
         *:focus {
             outline: none;
@@ -80,7 +80,17 @@
 
         let tts = true;
 
+        var moved = false;
+
+        document.onmousemove = function(e) {
+            if (!moved) {
+                moved = true;
+                get_answer();
+            }
+        }
+
         input.onkeyup = async function(e) {
+            get_answer();
             if (!e) e = window.event;
             var keyCode = e.code || e.key;
             if (keyCode == "Enter") {
@@ -103,6 +113,14 @@
                 
             }
         }
+
+        input.onblur = function() {
+            get_answer();
+        }
+        input.onfocus = function() {
+            get_answer();
+        }
+
         async function send(command) {
             if (command != "") {
                 input.value = "";
@@ -116,18 +134,21 @@
                 statement = type[3];
                 about_it = type[4];
                 greeting_word = type[5];
-                let question_GUI = document.createElement("span");
-                question_GUI.innerHTML = command;
-                if (command < 3) question_GUI.style.marginTop = "-8%";
-                document.body.appendChild(question_GUI);
-                for (let i = 30; i >= 10; i--) {
-                    question_GUI.style.padding = i + "px" + " 20px 10px 18px";
-                    await new Promise(r => setTimeout(r, 1));
-                }
-                window.scrollTo(0, document.body.scrollHeight);
+                question_GUI(command);
                 let temp = await eel.generate_answer(command, user_input_without_syntax, command_split, question, greeting, about_themselves, statement, about_it, greeting_word)();
-                await get_answer()
             }
+        }
+        async function question_GUI(command) {
+            let question_GUI = document.createElement("span");
+            question_GUI.innerHTML = command;
+            if (command < 3) question_GUI.style.marginTop = "-8%";
+            document.body.appendChild(question_GUI);
+            for (let i = 30; i >= 10; i--) {
+                question_GUI.style.padding = i + "px" + " 20px 10px 18px";
+                await new Promise(r => setTimeout(r, 1));
+            }
+            window.scrollTo(0, document.body.scrollHeight);
+            await get_answer()
         }
         async function get_answer() {
             let response = await eel.send_to_js()();
@@ -151,6 +172,7 @@
                 answer_GUI.style.backgroundColor = "#686d75";
                 answer_GUI.style.padding = "10px 20px 10px 18px";
                 document.body.appendChild(answer_GUI);
+                eel.done();
                 for (let i = 30; i >= 10; i--) {
                     answer_GUI.style.padding = i + "px" + " 20px 10px 18px";
                     await new Promise(r => setTimeout(r, 1));
@@ -169,6 +191,16 @@
                 tts = true;
             }
             eel.toggle_tts();
+        }
+
+        eel.expose(send_input_value);
+        function send_input_value() {
+            let value = input.value;
+            if (value != "") {
+                question_GUI(value);
+                input.value = "";
+                return value;
+            }
         }
         
         function sr() {
