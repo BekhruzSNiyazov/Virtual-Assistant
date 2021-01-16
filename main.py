@@ -245,8 +245,8 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			answer = search(search_item, False)
 			print_answer(answer, tts=False)
 		else:
-			if re.match(r"what is [\w\s]+", user_input_without_syntax) or re.match(r"who is [\w\s]+", user_input_without_syntax):
-				search_item = user_input_without_syntax[len(words[0]) + len(words[1]) + 2:].strip()
+			if re.match(r"wh[\w]*[is\s]*[\w\s]+", user_input_without_syntax):
+				search_item = re.findall(r"wh[\w]*[is\s]*([\w\s]+)", user_input_without_syntax)[0]
 				answer = search(search_item, False if words[0] == "what" else True)
 				print_answer(answer, tts=False)
 
