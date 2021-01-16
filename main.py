@@ -67,7 +67,8 @@ def send_to_js():
 	tmp = True if turnTTSOff else False
 	turnTTSOff = False
 	if tmp: tts_off = True
-	return to_send_to_js, tmp
+	if to_send_to_js:
+		return to_send_to_js, tmp
 
 @eel.expose
 def print_answer(string, end="\n"):
@@ -90,6 +91,11 @@ def remove_syntax(string):
 def toggle_tts():
 	global tts_off
 	tts_off = not tts_off
+
+@eel.expose
+def done():
+	global to_send_to_js
+	to_send_to_js = None
 
 def search(search_item, person):
 	answer = ""
@@ -537,10 +543,10 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			to_send_to_js = answer
 			seconds = 0
 			print_answer(answer, end="")
-			seconds = eel.send_to_python()()
+			seconds = eel.send_input_value()()
 			while not seconds:
-				seconds = eel.send_to_python()()
-			# TODO: fix the timers
+				seconds = eel.send_input_value()()
+			# TODO: fix the timers # in progress
 			if seconds.isdigit(): seconds = int(seconds)
 			else:
 				answer = "Timer canceled."
