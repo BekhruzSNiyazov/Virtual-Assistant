@@ -80,18 +80,11 @@
 
         let tts = true;
 
-        let ready = false;
-
         input.onkeyup = async function(e) {
             if (!e) e = window.event;
             var keyCode = e.code || e.key;
             if (keyCode == "Enter") {
-                if (eel.waiting()()) {
-                    send(input.value);
-                } else {
-                    ready = true;
-                    send_to_python();
-                }
+                send(input.value);
             }
             if (input.value != "") {
                 let sr = document.getElementById("sr");
@@ -132,34 +125,37 @@
                     await new Promise(r => setTimeout(r, 1));
                 }
                 window.scrollTo(0, document.body.scrollHeight);
-    
                 let temp = await eel.generate_answer(command, user_input_without_syntax, command_split, question, greeting, about_themselves, statement, about_it, greeting_word)();
-                let response = await eel.send_to_js()();
-                let answer = response[0];
-                if (response[1]) {
-                    if (tts) {
-                        toggle_tts();
-                        eel.toggle_tts();
-                    }
+                await get_answer()
+            }
+        }
+        async function get_answer() {
+            let response = await eel.send_to_js()();
+            let answer = response[0];
+            console.log(answer);
+            if (response[1]) {
+                if (tts) {
+                    toggle_tts();
+                    eel.toggle_tts();
                 }
-                if (answer != "") {
-                    answer_GUI = document.createElement("span");
-                    answer_GUI.innerHTML = answer;
-                    answer_GUI.style.float = "left";
-                    answer_GUI.style.marginLeft = "6%";
-                    answer_GUI.style.marginRight = "30%";
-                    answer_GUI.style.marginTop = "-17%";
-                    if (answer.length < 3) answer_GUI.style.marginTop = "-8%";
-                    answer_GUI.style.borderRadius = "25px 25px 25px 5px";
-                    answer_GUI.style.backgroundColor = "#686d75";
-                    answer_GUI.style.padding = "10px 20px 10px 18px";
-                    document.body.appendChild(answer_GUI);
-                    for (let i = 30; i >= 10; i--) {
-                        answer_GUI.style.padding = i + "px" + " 20px 10px 18px";
-                        await new Promise(r => setTimeout(r, 1));
-                    }
-                    window.scrollTo(0, document.body.scrollHeight);
+            }
+            if (answer != "") {
+                answer_GUI = document.createElement("span");
+                answer_GUI.innerHTML = answer;
+                answer_GUI.style.float = "left";
+                answer_GUI.style.marginLeft = "6%";
+                answer_GUI.style.marginRight = "30%";
+                answer_GUI.style.marginTop = "-17%";
+                if (answer.length < 3) answer_GUI.style.marginTop = "-8%";
+                answer_GUI.style.borderRadius = "25px 25px 25px 5px";
+                answer_GUI.style.backgroundColor = "#686d75";
+                answer_GUI.style.padding = "10px 20px 10px 18px";
+                document.body.appendChild(answer_GUI);
+                for (let i = 30; i >= 10; i--) {
+                    answer_GUI.style.padding = i + "px" + " 20px 10px 18px";
+                    await new Promise(r => setTimeout(r, 1));
                 }
+                window.scrollTo(0, document.body.scrollHeight);
             }
         }
 
@@ -201,13 +197,6 @@
             
             // start recognition
             recognition.start();
-        }
-
-        eel.expose(send_to_python);
-        function send_to_python() {
-            if (ready) {
-                return input.value;
-            }
         }
     </script>
 </body>
