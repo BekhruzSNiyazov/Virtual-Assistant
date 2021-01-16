@@ -43,10 +43,6 @@ said = False
 
 turnTTSOff = False
 
-waiting_for_input = False
-
-wait = False
-
 import eel
 
 eel.init("web")
@@ -67,12 +63,11 @@ def say(string):
 
 @eel.expose
 def send_to_js():
-	global to_send_to_js, turnTTSOff, tts_off, wait
-	if not wait:
-		tmp = True if turnTTSOff else False
-		turnTTSOff = False
-		if tmp: tts_off = True
-		return to_send_to_js, tmp
+	global to_send_to_js, turnTTSOff, tts_off
+	tmp = True if turnTTSOff else False
+	turnTTSOff = False
+	if tmp: tts_off = True
+	return to_send_to_js, tmp
 
 @eel.expose
 def print_answer(string, end="\n"):
@@ -90,11 +85,6 @@ def print_answer(string, end="\n"):
 @eel.expose
 def remove_syntax(string):
 	return re.sub("[,.!?\"']*", "", string)
-
-@eel.expose
-def waiting():
-	global waiting_for_input
-	return waiting_for_input
 
 @eel.expose
 def toggle_tts():
@@ -154,7 +144,7 @@ def sleep(seconds):
 
 @eel.expose
 def generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word):
-	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff, waiting_for_input, wait
+	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff
 
 	answer = ""
 
@@ -543,17 +533,13 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				data[category] = [to_remember]
 
 		if re.match(r"set[ a]* timer$", user_input_without_syntax):
-			wait = True
-			waiting_for_input = True
 			answer = "How many seconds should I set timer for? "
-			wait = False
 			to_send_to_js = answer
 			seconds = 0
 			print_answer(answer, end="")
 			seconds = eel.send_to_python()()
 			while not seconds:
 				seconds = eel.send_to_python()()
-			waiting_for_input = False
 			# TODO: fix the timers
 			if seconds.isdigit(): seconds = int(seconds)
 			else:
