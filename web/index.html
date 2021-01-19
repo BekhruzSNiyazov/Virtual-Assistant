@@ -159,8 +159,8 @@
                     input.value = "";
                     let question, greeting, about_themselves, statement, about_it, greeting_word
                     let user_input_without_syntax = await eel.remove_syntax(command)();
-                    let command_split = command.split(" ");
-                    let type = await eel.recognize_type(command, user_input_without_syntax, command_split)();
+                    let command_split = command.toLowerCase().split(" ");
+                    let type = await eel.recognize_type(command.toLowerCase(), user_input_without_syntax, command_split)();
                     question = type[0];
                     greeting = type[1];
                     about_themselves = type[2];
@@ -168,20 +168,40 @@
                     about_it = type[4];
                     greeting_word = type[5];
                     question_GUI(command);
-                    let temp = await eel.generate_answer(command, user_input_without_syntax, command_split, question, greeting, about_themselves, statement, about_it, greeting_word)();
+                    let temp = await eel.generate_answer(command.toLowerCase(), user_input_without_syntax, command_split, question, greeting, about_themselves, statement, about_it, greeting_word)();
                 }
             } else {
                 done = true;
             }
         }
         async function question_GUI(command) {
+            let br = document.createElement("br");
+            document.body.appendChild(br);
+            if (command.length < 4) {
+                for (let i = 0; i < 2; i++) {
+                    let br = document.createElement("br");
+                    document.body.appendChild(br);
+                }
+            }
             let question_GUI = document.createElement("span");
-            question_GUI.innerHTML = command;
-            if (command < 3) question_GUI.style.marginTop = "-8%";
+            if (input.type == "text") {
+                question_GUI.innerHTML = command;
+            } else {
+                let string = "";
+                for (let i = 0; i < command.length; i++) {
+                    string += "•";
+                }
+                command = string;
+                input.type = "text";
+                question_GUI.innerHTML = command;
+            }
             document.body.appendChild(question_GUI);
             for (let i = 30; i >= 10; i--) {
                 question_GUI.style.padding = i + "px" + " 20px 10px 18px";
                 await new Promise(r => setTimeout(r, 1));
+            }
+            if (command.length < 4) {
+                question_GUI.style.marginTop = "-10%";
             }
             window.scrollTo(0, document.body.scrollHeight);
             await get_answer()
@@ -197,13 +217,19 @@
                 }
             }
             if (answer != "") {
+                let br = document.createElement("br");
+                document.body.appendChild(br);
+                if (answer.length < 4) {
+                    for (let i = 0; i < 2; i++) {
+                        let br = document.createElement("br");
+                        document.body.appendChild(br);
+                    }
+                }
                 answer_GUI = document.createElement("span");
                 answer_GUI.innerHTML = answer;
                 answer_GUI.style.float = "left";
                 answer_GUI.style.marginLeft = "6%";
                 answer_GUI.style.marginRight = "30%";
-                answer_GUI.style.marginTop = "-17%";
-                if (answer.length < 3) answer_GUI.style.marginTop = "-8%";
                 answer_GUI.style.borderRadius = "25px 25px 25px 5px";
                 answer_GUI.style.backgroundColor = "#686d75";
                 answer_GUI.style.padding = "10px 20px 10px 18px";
@@ -212,6 +238,12 @@
                 for (let i = 30; i >= 10; i--) {
                     answer_GUI.style.padding = i + "px" + " 20px 10px 18px";
                     await new Promise(r => setTimeout(r, 1));
+                }
+                if (answer.length < 4) {
+                    answer_GUI.style.marginTop = "-10%";
+                }
+                if (answer == "Please, type in your password") {
+                    input.type = "password";
                 }
                 window.scrollTo(0, document.body.scrollHeight);
             }
@@ -238,7 +270,7 @@
                     input.value = "";
                     inpt = false;
                     done = false;
-                    return value;
+                    return value.toLowerCase();
                 }
             }
         }
