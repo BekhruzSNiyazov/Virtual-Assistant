@@ -18,9 +18,8 @@
             margin-left: 30%;
             background-color: #393e46;
             border-radius: 25px 25px 5px 25px;
-            padding: 10px 18px 10px 20px;
             margin-bottom: 20%;
-            margin-top: -18.25%;
+            margin-top: -18%;
             padding-left: 20px;
             padding-right: 20px;
         }
@@ -54,7 +53,7 @@
             color: #aca9a9;
         }
     </style>
-    <div style="margin-bottom: 25%;"></div>
+    <div style="margin-bottom: 23%;"></div>
     <input id="input" style="position: fixed; bottom: 0; width: 77%; margin: 1%; border-radius: 25px; height: 50px; font-size: 130%; padding-left: 15px; border: none; background-color: #393e46; color: #eeeeee; opacity: 95%; margin-left: 11%;" placeholder="Type a command" autofocus>
 
     <div id="sendAndMicrophone">
@@ -176,13 +175,14 @@
         }
         async function question_GUI(command) {
             let br = document.createElement("br");
+            br.style.clear = "both";
             document.body.appendChild(br);
-            if (command.length < 4) {
-                for (let i = 0; i < 2; i++) {
-                    let br = document.createElement("br");
-                    document.body.appendChild(br);
-                }
-            }
+            // if (command.length < 4) {
+            //     for (let i = 0; i < 2; i++) {
+            //         let br = document.createElement("br");
+            //         document.body.appendChild(br);
+            //     }
+            // }
             let question_GUI = document.createElement("span");
             if (input.type == "text") {
                 question_GUI.innerHTML = command;
@@ -200,9 +200,6 @@
                 question_GUI.style.padding = i + "px" + " 20px 10px 18px";
                 await new Promise(r => setTimeout(r, 1));
             }
-            if (command.length < 4) {
-                question_GUI.style.marginTop = "-10%";
-            }
             window.scrollTo(0, document.body.scrollHeight);
             await get_answer()
         }
@@ -218,13 +215,14 @@
             }
             if (answer != "") {
                 let br = document.createElement("br");
+                br.style.clear = "both";
                 document.body.appendChild(br);
-                if (answer.length < 4) {
-                    for (let i = 0; i < 2; i++) {
-                        let br = document.createElement("br");
-                        document.body.appendChild(br);
-                    }
-                }
+                // if (answer.length < 4) {
+                //     for (let i = 0; i < 2; i++) {
+                //         let br = document.createElement("br");
+                //         document.body.appendChild(br);
+                //     }
+                // }
                 answer_GUI = document.createElement("span");
                 answer_GUI.innerHTML = answer;
                 answer_GUI.style.float = "left";
@@ -238,9 +236,6 @@
                 for (let i = 30; i >= 10; i--) {
                     answer_GUI.style.padding = i + "px" + " 20px 10px 18px";
                     await new Promise(r => setTimeout(r, 1));
-                }
-                if (answer.length < 4) {
-                    answer_GUI.style.marginTop = "-10%";
                 }
                 if (answer == "Please, type in your password") {
                     input.type = "password";
