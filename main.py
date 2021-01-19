@@ -219,7 +219,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		answer = random.choice(available_words).capitalize()
 		print_answer(answer)
 
-	elif re.match(r"[\w\W]*shut[\w\W]*", user_input_without_syntax) and "mouth" in words or re.match(r"[\w\W]*shut up[\w\W]*", user_input_without_syntax):
+	elif re.match(r"[\w\W]*shut[\w\W]*", user_input_without_syntax) and "mouth" in words or re.match(r"[\w\W]*shut up[\w\W]*", user_input_without_syntax) or user_input_without_syntax == "silence" or user_input_without_syntax == "quiet" or re.match(r"[\w\W]*be quiet[\w\W]*", user_input_without_syntax):
 		tts_off = True
 		answer = "Okay"
 		turnTTSOff = True
@@ -590,6 +590,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				if remember == "y":
 					data["email"] = email
 					data["password"] = password
+					# TODO: if sign in failed: remove password and email from data and change the data.py file
 					with open("data.py", "w") as file:
 						file.write("data = " + str(data))
 			to_email = get_input("Please, type the email address of a person you want to send this email to")
@@ -768,6 +769,8 @@ def recognize_type(user_input, user_input_without_syntax, words):
 					# try to add some sort of built-in google search
 					# try to add a control over volume and brightness
 					# if I have enough time: add image and file sharing tool
+					# add wake word
+					# fix words that are less than 3 characters long
 
 	return question, greeting, about_themselves, statement, about_it, greeting_word
 
