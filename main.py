@@ -184,6 +184,8 @@ def sleep(seconds):
 def generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word):
 	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff
 
+	user_input = user_input.lower()
+
 	answer = ""
 
 	printed = False
@@ -223,7 +225,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		turnTTSOff = True
 		print_answer(answer)
 
-	elif user_input_without_syntax == "what":
+	elif user_input_without_syntax == "what" or "say again" in user_input_without_syntax:
 		answer = last_assistant
 		print_answer(answer)
 
@@ -677,32 +679,6 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 	if not printed:
 		to_send_to_js = ""
 
-def main():
-	# chatting with user forever until they type "exit" or
-	# another word in "exit" category
-	while True:
-
-		# getting an input from the user and removing white spaces
-		user_input = input("\nUser: ").strip()
-
-		# creating a variable that stores user's input without useless syntax and lowercased and without white spaces
-		user_input_without_syntax = remove_syntax(user_input).lower().strip()
-
-		# splitting user's input into seperate words
-		words = user_input_without_syntax.split()
-
-		# creating variables that will hold information about user's input
-		question = False
-		greeting = False
-		about_themselves = False
-		statement = False
-		about_it = False
-
-		question, greeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
-
-		answer = generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word)
-		print_answer(answer)
-
 @eel.expose
 def recognize_type(user_input, user_input_without_syntax, words):
 	question = False
@@ -710,6 +686,8 @@ def recognize_type(user_input, user_input_without_syntax, words):
 	about_themselves = False
 	statement = False
 	about_it = False
+
+	user_input = user_input.lower()
 
 	# initializing variables that may become useful in the future
 	greeting_word = ""
@@ -795,5 +773,3 @@ def recognize_type(user_input, user_input_without_syntax, words):
 
 if __name__ == "__main__":
 	eel.start("index.html", size=(550, 900), mode="chrome")
-	main_thread = threading.Thread(target=main)
-	main_thread.start()
