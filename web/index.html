@@ -158,8 +158,8 @@
                     input.value = "";
                     let question, greeting, about_themselves, statement, about_it, greeting_word
                     let user_input_without_syntax = await eel.remove_syntax(command)();
-                    let command_split = command.toLowerCase().split(" ");
-                    let type = await eel.recognize_type(command.toLowerCase(), user_input_without_syntax, command_split)();
+                    let command_split = command.split(" ");
+                    let type = await eel.recognize_type(command, user_input_without_syntax, command_split)();
                     question = type[0];
                     greeting = type[1];
                     about_themselves = type[2];
@@ -167,7 +167,7 @@
                     about_it = type[4];
                     greeting_word = type[5];
                     question_GUI(command);
-                    let temp = await eel.generate_answer(command.toLowerCase(), user_input_without_syntax, command_split, question, greeting, about_themselves, statement, about_it, greeting_word)();
+                    let temp = await eel.generate_answer(command, user_input_without_syntax, command_split, question, greeting, about_themselves, statement, about_it, greeting_word)();
                 }
             } else {
                 done = true;
@@ -177,12 +177,6 @@
             let br = document.createElement("br");
             br.style.clear = "both";
             document.body.appendChild(br);
-            // if (command.length < 4) {
-            //     for (let i = 0; i < 2; i++) {
-            //         let br = document.createElement("br");
-            //         document.body.appendChild(br);
-            //     }
-            // }
             let question_GUI = document.createElement("span");
             if (input.type == "text") {
                 question_GUI.innerHTML = command;
@@ -191,9 +185,8 @@
                 for (let i = 0; i < command.length; i++) {
                     string += "•";
                 }
-                command = string;
                 input.type = "text";
-                question_GUI.innerHTML = command;
+                question_GUI.innerHTML = string;
             }
             document.body.appendChild(question_GUI);
             for (let i = 30; i >= 10; i--) {
@@ -217,12 +210,6 @@
                 let br = document.createElement("br");
                 br.style.clear = "both";
                 document.body.appendChild(br);
-                // if (answer.length < 4) {
-                //     for (let i = 0; i < 2; i++) {
-                //         let br = document.createElement("br");
-                //         document.body.appendChild(br);
-                //     }
-                // }
                 answer_GUI = document.createElement("span");
                 answer_GUI.innerHTML = answer;
                 answer_GUI.style.float = "left";
@@ -265,7 +252,7 @@
                     input.value = "";
                     inpt = false;
                     done = false;
-                    return value.toLowerCase();
+                    return value;
                 }
             }
         }
@@ -290,8 +277,10 @@
             // This runs when the speech recognition service returns result
             recognition.onresult = function(event) {
                 command = event.results[0][0].transcript;
+                input.value = command;
                 send(command);
-                var confidence = event.results[0][0].confidence;
+                // create a bool inside of send_input_value
+                // if true -> send_input_value command, not send command
             };
             
             // start recognition
