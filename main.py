@@ -602,6 +602,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 
 			server = smtplib.SMTP("smtp." + email[email.index("@")+1:], 587)
 			server.starttls()
+			print(email, password)
 			try:
 				server.login(email, password)
 				message = "Subject: " + subject + "\n\n" + body
