@@ -53,6 +53,8 @@ said = False
 
 turnTTSOff = False
 
+last_joke = ""
+
 import eel
 
 eel.init("web")
@@ -62,7 +64,7 @@ if len(argv) > 1:
 		tts_off = True
 
 def say(string):
-	if len(string) < 100 and len(string) > 1:
+	if len(string) < 150 and len(string) > 1:
 		tts = gTTS(text=string)
 		try:
 			filename = "speech" + str(random.randint(0, 1000000)) + ".mp3"
@@ -182,7 +184,7 @@ def sleep(seconds):
 
 @eel.expose
 def generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word):
-	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff
+	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff, last_joke
 
 	user_input = user_input.lower()
 
@@ -197,6 +199,13 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 	elif "weather" in words:
 		temperature = pyowm.OWM("6d00d1d4e704068d70191bad2673e0cc").weather_manager().weather_at_place(eel.get_location()()).weather.temperature("celsius")["temp"]
 		answer = "Right now, in " + eel.get_location()() + " it is " + str(temperature) + "°C"
+		print_answer(answer)
+
+	elif "joke" in words and "not" not in words:
+		jokes = data["jokes"].copy()
+		if last_joke in jokes: jokes.remove(last_joke)
+		answer = random.choice(jokes)
+		last_joke = answer
 		print_answer(answer)
 
 	elif "time" in words:
@@ -612,7 +621,6 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				server.starttls()
 				server.login(email, password)
 				message = "Subject: " + subject + "\n\n" + body
-				send("Sending email...")
 				server.sendmail(email, to_email, message)
 				send("Email was sent")
 			except Exception as e:
@@ -771,7 +779,6 @@ def recognize_type(user_input, user_input_without_syntax, words):
 					# TODO: add built-in calculator
 					# TODO: add "what can you do"
 					# TODO: add "who are you"
-					# TODO: add jokes
 					# TODO: add all reminders in a list
 					# TODO: add translator
 					# TODO: add random number generator
