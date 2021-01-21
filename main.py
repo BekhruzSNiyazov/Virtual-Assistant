@@ -1,36 +1,24 @@
 #!/usr/bin/python3
 
 # importing needed modules
-import re
-import random
-
-from googlesearch import search as gSearch
-
-import wikipedia
-from PyDictionary import PyDictionary
-
-from datetime import datetime
-
-from gtts import gTTS
-from playsound import playsound
-
-import threading
-
 import os
-
+import random
+import re
+import smtplib
+import threading
+import time
+import webbrowser
+from datetime import datetime
+from subprocess import Popen
 from sys import argv
 
-import time
-
-from subprocess import Popen
-
-import smtplib
-
-import webbrowser
-
-import requests
-
 import pyowm
+import requests
+import wikipedia
+from googlesearch import search as gSearch
+from gtts import gTTS
+from playsound import playsound
+from PyDictionary import PyDictionary
 
 # importing dataset from data.py file
 from data import data
@@ -54,6 +42,8 @@ said = False
 turnTTSOff = False
 
 last_joke = ""
+
+timers = []
 
 import eel
 
@@ -184,7 +174,7 @@ def sleep(seconds):
 
 @eel.expose
 def generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word):
-	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff, last_joke
+	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff, last_joke, timers
 
 	user_input = user_input.lower()
 
@@ -570,6 +560,14 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			if word in data["bad"]:
 				answer = "What's wrong?"
 				print_answer(answer)
+		
+		if "timers" in words and "show" in words:
+			answer = ""
+			print(timers)
+			for timer in timers:
+				answer += "Timer " + str(timers.index(timer)+1) + " was created on " + str(timer[0]) + ":" + str(timer[1]) + ":" + str(timer[2]) + ". It was set for " + str(timer[3]) + " seconds." + "<br>"
+			print(answer)
+			send(answer)
 
 		if user_input_without_syntax == "same" or re.match("i feel[ the]* same[\w ]*", user_input_without_syntax):
 			user_input = last_assistant
@@ -657,8 +655,9 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				print_answer(answer)
 
 			if type(seconds) == int:
-				if seconds > 0:							
+				if seconds > 0:
 					timer_thread = threading.Thread(target=sleep, args=(seconds,))
+					timers.append((datetime.now().hour, datetime.now().minute, datetime.now().second, seconds, timer_thread))
 					timer_thread.start()
 				else:
 					answer = "Timer was canceled."
@@ -682,6 +681,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 
 			if time > 0:
 				timer_thread = threading.Thread(target=sleep, args=(time,))
+				timers.append((datetime.now().hour, datetime.now().minute, datetime.now().second, time, timer_thread))
 				timer_thread.start()
 			else:
 				answer = "Timer was canceled."
@@ -775,6 +775,7 @@ def recognize_type(user_input, user_input_without_syntax, words):
 					if not about_themselves:
 						statement = True
 
+					# TODO: cancel timer
 					# TODO: add "remember this" (should be a list)
 					# TODO: add built-in calculator
 					# TODO: add "what can you do"
