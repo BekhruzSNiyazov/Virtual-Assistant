@@ -3,7 +3,7 @@ This is a virtual assistant created by Bekhruz Niyazov for 3rd Code Jam hosted b
 # Requirements
 You need to have Python 3.x installed.
 # Setup
-1. Download main.py and data.py files. **Do not delete data.py file. It should be in the same directory as main.py file**.
+1. Download all repository code (`git clone https://github.com/BekhruzSNiyazov/Virtual-Assistant.git` or you can click Code->Download ZIP). **Do not delete data.py file. It should be in the same directory as main.py file**.
 2. Install needed libraries like so:
 #### Windows
 ```
