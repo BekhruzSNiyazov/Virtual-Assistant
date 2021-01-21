@@ -40,5 +40,9 @@ Also, if you ask for weather assistant will use your geolocation to give you the
 
 # What can this assistant do?
 Pretty much everything. Feel free to chat with it.
-#
+
+# License
+This code is licensed with Apache License 2.0
+
+
 I hope you will enjoy using this virtual assistant!
