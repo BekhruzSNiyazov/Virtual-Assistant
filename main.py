@@ -166,11 +166,22 @@ def search_wikipedia(search_item):
 def found_on_wikipedia():
 	print_answer("Here is what I found on Wikipedia:")
 
-def sleep(seconds):
+def sleep(seconds, index):
+	global timers
 	if seconds > 15: print_answer("A timer was set. Countdown has started.")
 	elif seconds > 1: print_answer("A countdown has started")
-	time.sleep(seconds)
-	print_answer("Time is over")
+	timer = timers[index]
+	for i in range(seconds):
+		if timer[5]:
+			time.sleep(1)
+		else:
+			timers.remove(timer)
+			print_answer("The timer " + str(index+1) + " was canceled.")
+			break
+	try:
+		timers[index]
+		print_answer("Time is over")
+	except: pass
 
 @eel.expose
 def generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word):
@@ -563,11 +574,23 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		
 		if "timers" in words and "show" in words:
 			answer = ""
-			print(timers)
-			for timer in timers:
-				answer += "Timer " + str(timers.index(timer)+1) + " was created on " + str(timer[0]) + ":" + str(timer[1]) + ":" + str(timer[2]) + ". It was set for " + str(timer[3]) + " seconds." + "<br>"
-			print(answer)
+			if timers:
+				for timer in timers:
+					answer += "Timer " + str(timers.index(timer)+1) + " was created on " + str(timer[0]) + ":" + str(timer[1]) + ":" + str(timer[2]) + ". It was set for " + str(timer[3]) + " seconds." + "<br>"
+			else:
+				answer = "There are no timers set."			
 			send(answer)
+
+		if "timer" in words and "cancel" in words:
+			index = re.findall(r"(\d+)", user_input_without_syntax)
+			if index:
+				print("index: " + str(index))
+				index = int(index[0])-1
+				print(index)
+				timers[index][-1] = False
+				print(timers)
+			else:
+				timers[index][-1] = False
 
 		if user_input_without_syntax == "same" or re.match("i feel[ the]* same[\w ]*", user_input_without_syntax):
 			user_input = last_assistant
@@ -656,8 +679,8 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 
 			if type(seconds) == int:
 				if seconds > 0:
-					timer_thread = threading.Thread(target=sleep, args=(seconds,))
-					timers.append((datetime.now().hour, datetime.now().minute, datetime.now().second, seconds, timer_thread))
+					timer_thread = threading.Thread(target=sleep, args=(seconds, len(timers)))
+					timers.append([datetime.now().hour, datetime.now().minute, datetime.now().second, seconds, timer_thread, True])
 					timer_thread.start()
 				else:
 					answer = "Timer was canceled."
@@ -680,8 +703,8 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			time += hours * 3600
 
 			if time > 0:
-				timer_thread = threading.Thread(target=sleep, args=(time,))
-				timers.append((datetime.now().hour, datetime.now().minute, datetime.now().second, time, timer_thread))
+				timer_thread = threading.Thread(target=sleep, args=(time, len(timers)))
+				timers.append([datetime.now().hour, datetime.now().minute, datetime.now().second, time, timer_thread, True])
 				timer_thread.start()
 			else:
 				answer = "Timer was canceled."
@@ -775,7 +798,6 @@ def recognize_type(user_input, user_input_without_syntax, words):
 					if not about_themselves:
 						statement = True
 
-					# TODO: cancel timer
 					# TODO: add "remember this" (should be a list)
 					# TODO: add built-in calculator
 					# TODO: add "what can you do"
