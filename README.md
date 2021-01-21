@@ -35,7 +35,8 @@ chmod +x main.py # you only need to type this first time
 If you try to send an email using this assistant it will ask you for your email address and password.
 Your email and password will not be saved unless you tell assistant to do so.
 In this case, your email and password will be only saved **locally** and they **will not be uploaded anywhere**.
-So, feel free to send emails using this assistant. Also, if you ask for weather assistant will use your geolocation to give you the current weather in your city. Your geolocation **will not be saved** and it **will not be uploaded anywhere**.
+
+Also, if you ask for weather assistant will use your geolocation to give you the current weather in your city. Your geolocation **will not be saved** and it **will not be uploaded anywhere**.
 
 # What can this assistant do?
 Pretty much everything. Feel free to chat with it.
