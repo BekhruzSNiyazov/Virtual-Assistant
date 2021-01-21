@@ -194,9 +194,17 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		answer = str(data)
 		print_answer(answer)
 
-	elif user_input_without_syntax == "weather":
+	elif "weather" in words:
 		temperature = pyowm.OWM("6d00d1d4e704068d70191bad2673e0cc").weather_manager().weather_at_place(eel.get_location()()).weather.temperature("celsius")["temp"]
 		answer = "Right now, in " + eel.get_location()() + " it is " + str(temperature) + "°C"
+		print_answer(answer)
+
+	elif "time" in words:
+		answer = "Right now it is " + str(datetime.now().time())[:8]
+		print_answer(answer)
+
+	elif "date" in words:
+		answer = "Right now it is " + str(datetime.now().date())
 		print_answer(answer)
 
 	elif user_input_without_syntax == "exit":
@@ -590,7 +598,6 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				if remember == "y":
 					data["email"] = email
 					data["password"] = password
-					# TODO: if sign in failed: remove password and email from data and change the data.py file
 					with open("data.py", "w") as file:
 						file.write("data = " + str(data))
 			to_email = get_input("Please, type the email address of a person you want to send this email to")
@@ -600,10 +607,9 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			body = get_input("Please, enter the body of the email")
 			if body.lower() == "cancel": return
 
-			server = smtplib.SMTP("smtp." + email[email.index("@")+1:], 587)
-			server.starttls()
-			print(email, password)
 			try:
+				server = smtplib.SMTP("smtp." + email[email.index("@")+1:], 587)
+				server.starttls()
 				server.login(email, password)
 				message = "Subject: " + subject + "\n\n" + body
 				send("Sending email...")
@@ -611,6 +617,10 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				send("Email was sent")
 			except Exception as e:
 				print(e)
+				data.pop("email", "")
+				data.pop("password", "")
+				with open("data.py", "w") as file:
+					file.write("data = " + str(data))
 				answer = "Sorry, an error occurred"
 				to_send_to_js = answer
 				print_answer(answer)
@@ -632,7 +642,6 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 
 		if re.match(r"set[ a]* timer$", user_input_without_syntax):
 			seconds = get_input("How many seconds should I set timer for?")
-			# TODO: fix the timers # in progress
 			if seconds.isdigit(): seconds = int(seconds)
 			else:
 				answer = "Timer canceled."
@@ -758,22 +767,20 @@ def recognize_type(user_input, user_input_without_syntax, words):
 					if not about_themselves:
 						statement = True
 
-					# add weather
-					# add "remember this" (should be a list)
-					# add built-in calculator
-					# add "what can you do"
-					# add "who are you"
-					# add jokes
-					# add all reminders in a list
-					# add translator
-					# add random number generator
-					# try to add some sort of built-in google search
-					# try to add a control over volume and brightness
-					# if I have enough time: add image and file sharing tool
-					# add wake word
-					# fix words that are less than 3 characters long
+					# TODO: add "remember this" (should be a list)
+					# TODO: add built-in calculator
+					# TODO: add "what can you do"
+					# TODO: add "who are you"
+					# TODO: add jokes
+					# TODO: add all reminders in a list
+					# TODO: add translator
+					# TODO: add random number generator
+					# TODO: try to add some sort of built-in google search
+					# TODO: try to add a control over volume and brightness
+					# TODO: if I have enough time: add image and file sharing tool
+					# TODO: add wake word
 
 	return question, greeting, about_themselves, statement, about_it, greeting_word
 
 if __name__ == "__main__":
-	eel.start("index.html", size=(550, 900), mode="chrome")
+	eel.start("index.html", size=(550, 900))
