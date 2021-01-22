@@ -247,11 +247,15 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			if language == row["Language"]: code = row["Code"]
 		if "translate" in words:
 			text = ""
-			for word in words:
-				if words.index(word) > words.index("translate") and words.index(word) < words.index("to"):
-					text += word + " "
+			if "to" in words:
+				for word in words:
+					if words.index(word) > words.index("translate") and words.index(word) < words.index("to"):
+						text += word + " "
+			elif "in" in words:
+					if words.index(word) > words.index("translate") and words.index(word) < words.index("in"):
+						text += word + " "
 		else:
-			text = user_input_without_syntax[:user_input_without_syntax.index(language.lower())].strip()
+			text = user_input_without_syntax[:user_input_without_syntax.index(language.lower())-3].strip()
 		translation = translate(text=text, dest=code)
 		print_answer("Translation: " + translation.text + "<div style='color: #e3e3e3;'>Pronunciation: " + translation.pronunciation + "</div>", tts=False)
 
@@ -838,17 +842,18 @@ def recognize_type(user_input, user_input_without_syntax, words):
 					if not about_themselves:
 						statement = True
 
-					# TODO: add "remember this" (should be a list)
-					# TODO: add built-in calculator
-					# TODO: add "what can you do"
-					# TODO: add "who are you"
-					# TODO: add all reminders in a list
-					# TODO: try to add some sort of built-in google search
-					# TODO: try to add a control over volume and brightness
-					# TODO: if I have enough time: add image and file sharing tool
-					# TODO: add wake word
-
 	return question, greeting, about_themselves, statement, about_it, greeting_word
 
 if __name__ == "__main__":
 	eel.start("index.html", size=(550, 900))
+
+# TODO: add "remember this" (should be a list)
+# TODO: add built-in calculator
+# TODO: add "what can you do"
+# TODO: add "who are you"
+# TODO: add all reminders in a list
+# TODO: try to add some sort of built-in google search
+# TODO: try to add a control over volume and brightness
+# TODO: if I have enough time: add image and file sharing tool
+# TODO: add wake word
+# TODO: fix "not good" bug
