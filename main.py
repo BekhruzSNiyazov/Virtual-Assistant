@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 # importing needed modules
+import csv
 import os
 import random
 import re
@@ -16,6 +17,7 @@ import pyowm
 import requests
 import wikipedia
 from googlesearch import search as gSearch
+from googletrans import Translator
 from gtts import gTTS
 from playsound import playsound
 from PyDictionary import PyDictionary
@@ -61,7 +63,7 @@ def say(string):
 			tts.save(filename)
 			playsound(filename)
 			os.remove(filename)
-		except Exception as e: print(e)
+		except Exception as e: pass
 
 @eel.expose
 def send_to_js():
@@ -121,6 +123,11 @@ def send(string):
 	send_to_js = answer
 	print_answer(answer)
 
+def translate(text, dest="en"):
+	translator = Translator()
+	translation = translator.translate(text, dest=dest)
+	return translation
+
 def search(search_item, person):
 	answer = ""
 	if person:
@@ -179,7 +186,7 @@ def sleep(seconds, index):
 			print_answer("The timer " + str(index+1) + " was canceled.")
 			break
 	try:
-		timers[index]
+		timers.remove(timer)
 		print_answer("Time is over")
 	except: pass
 
@@ -216,6 +223,35 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 	elif "date" in words:
 		answer = "Right now it is " + str(datetime.now().date())
 		print_answer(answer)
+
+	trnslt = False
+	language = ""
+	code = ""
+	file = open("languages.csv", "r")
+	reader = csv.DictReader(file)
+	rows = list(reader)
+	file.close()
+
+	for wrd in words:
+		if not trnslt:
+			for row in rows:
+				if wrd == row["Language"].lower():
+					language = row["Language"]
+					trnslt = True
+					break
+		else: break
+
+	if trnslt and "to" in words or "in" in words:
+		if "to" in words:
+			if "translate" in words:
+				for row in rows:
+					if language == row["Language"]: code = row["Code"]
+				text = ""
+				for word in words:
+					if words.index(word) > words.index("translate") and words.index(word) < words.index("to"):
+						text += word + " "
+				translation = translate(text=text, dest=code)
+				print_answer("Translation: " + translation.text + "<div style='color: #e3e3e3;'>Pronunciation: " + translation.pronunciation + "</div>", tts=False)
 
 	elif user_input_without_syntax == "exit":
 		with open("data.py", "w") as file:
@@ -584,11 +620,8 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		if "timer" in words and "cancel" in words:
 			index = re.findall(r"(\d+)", user_input_without_syntax)
 			if index:
-				print("index: " + str(index))
 				index = int(index[0])-1
-				print(index)
 				timers[index][-1] = False
-				print(timers)
 			else:
 				timers[index][-1] = False
 
@@ -645,7 +678,6 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				server.sendmail(email, to_email, message)
 				send("Email was sent")
 			except Exception as e:
-				print(e)
 				data.pop("email", "")
 				data.pop("password", "")
 				with open("data.py", "w") as file:
@@ -803,7 +835,6 @@ def recognize_type(user_input, user_input_without_syntax, words):
 					# TODO: add "what can you do"
 					# TODO: add "who are you"
 					# TODO: add all reminders in a list
-					# TODO: add translator
 					# TODO: add random number generator
 					# TODO: try to add some sort of built-in google search
 					# TODO: try to add a control over volume and brightness
