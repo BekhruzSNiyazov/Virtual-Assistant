@@ -47,3 +47,6 @@ This code is licensed with Apache License 2.0
 
 #
 I hope you will enjoy using this virtual assistant!
+
+
+Thanks to Peter Repiev for constant feedback.
