@@ -255,6 +255,12 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		translation = translate(text=text, dest=code)
 		print_answer("Translation: " + translation.text + "<div style='color: #e3e3e3;'>Pronunciation: " + translation.pronunciation + "</div>", tts=False)
 
+	elif user_input_without_syntax == "0 or 1" or user_input_without_syntax == "1 or 0" or user_input_without_syntax == "1 or 2" or user_input_without_syntax == "2 or 1":
+		print_answer("1!")
+
+	elif "random" in words and "number" in words:
+		print_answer(str(random.randint(0, 100000000000000)))
+
 	elif user_input_without_syntax == "exit":
 		with open("data.py", "w") as file:
 			file.write("data = " + str(data))
@@ -837,7 +843,6 @@ def recognize_type(user_input, user_input_without_syntax, words):
 					# TODO: add "what can you do"
 					# TODO: add "who are you"
 					# TODO: add all reminders in a list
-					# TODO: add random number generator
 					# TODO: try to add some sort of built-in google search
 					# TODO: try to add a control over volume and brightness
 					# TODO: if I have enough time: add image and file sharing tool
