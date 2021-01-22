@@ -242,16 +242,18 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		else: break
 
 	if trnslt and "to" in words or "in" in words:
-		if "to" in words:
-			if "translate" in words:
-				for row in rows:
-					if language == row["Language"]: code = row["Code"]
-				text = ""
-				for word in words:
-					if words.index(word) > words.index("translate") and words.index(word) < words.index("to"):
-						text += word + " "
-				translation = translate(text=text, dest=code)
-				print_answer("Translation: " + translation.text + "<div style='color: #e3e3e3;'>Pronunciation: " + translation.pronunciation + "</div>", tts=False)
+		text = ""
+		for row in rows:
+			if language == row["Language"]: code = row["Code"]
+		if "translate" in words:
+			text = ""
+			for word in words:
+				if words.index(word) > words.index("translate") and words.index(word) < words.index("to"):
+					text += word + " "
+		else:
+			text = user_input_without_syntax[:user_input_without_syntax.index(language.lower())].strip()
+		translation = translate(text=text, dest=code)
+		print_answer("Translation: " + translation.text + "<div style='color: #e3e3e3;'>Pronunciation: " + translation.pronunciation + "</div>", tts=False)
 
 	elif user_input_without_syntax == "exit":
 		with open("data.py", "w") as file:
@@ -290,7 +292,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		answer = random.choice(available_words)
 		print_answer(answer)
 
-	if len(user_input) == 1:
+	elif len(user_input) == 1:
 		if user_input == ")":
 			answer = ")"
 			print_answer(answer)
@@ -299,7 +301,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			print_answer(answer)
 
 	# if user's input is a question
-	if question:
+	elif question:
 		print("This is a question")
 		if re.match(r"what does [\w\s]+ mean", user_input_without_syntax):
 
@@ -327,7 +329,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			print_answer(answer)
 			return answer
 	# if user said something about assistant
-	if about_it:
+	elif about_it:
 		print("They said something about assistant")
 		
 		answered = False
@@ -353,7 +355,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 							break
 
 	# if user's input is a greeting
-	if greeting:
+	elif greeting:
 		print("This is a greeting")
 		
 		answered = False
@@ -483,7 +485,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				print_answer(answer)
 
 	# if user's input is a statement about themselves
-	if about_themselves:
+	elif about_themselves:
 
 		print("This is a statement about themselves")
 		
@@ -581,7 +583,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 						break
 
 	# if user's input is a statement
-	if statement:
+	elif statement:
 		
 		print("This is a statement")
 
