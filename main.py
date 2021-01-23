@@ -761,6 +761,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 
 		# if user's input is an explanation:
 		if explanation:
+			
 			if "remember" in user_input_without_syntax: user_input_without_syntax = user_input_without_syntax.replace("remember", "")
 			if "that" in user_input_without_syntax: user_input_without_syntax = user_input_without_syntax.replace("that", "")
 			if "this" in user_input_without_syntax: user_input_without_syntax = user_input_without_syntax.replace("this", "")
