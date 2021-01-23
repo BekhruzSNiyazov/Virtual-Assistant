@@ -659,9 +659,9 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		if "means" in words:
 			explanation = True
 			means = True
-		elif "is" in words:
+		elif "is" in words or "'s" in user_input:
 			explanation = True
-		elif "are" in words:
+		elif "are" in words or "'re" in user_input:
 			explanation = True
 			are = True
 
