@@ -47,6 +47,8 @@ last_joke = ""
 
 timers = []
 
+last_user = ""
+
 import eel
 
 eel.init("web")
@@ -193,7 +195,7 @@ def sleep(seconds, index):
 
 @eel.expose
 def generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word):
-	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff, last_joke, timers
+	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff, last_joke, timers, last_user
 
 	user_input = user_input.lower()
 
@@ -270,9 +272,19 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		print_answer(str(random.randint(0, 100000000000000)))
 
 	elif "remember" in words:
-		pass
+		print_answer("Sure! Just say something like \"Remember the door code is 4453\" and then ask \"What is the door code\"")
 
-	elif re.match(r"[\w\W]*[\d\+\-\*\/]+[\w\W]*", user_input_without_syntax) and "timer" not in words and "timers" not in words:
+	if "one more" in user_input_without_syntax or "another one" in user_input_without_syntax:
+		user_input = last_user
+		user_input_without_syntax = remove_syntax(last_user).lower().strip()
+		words = user_input_without_syntax.split()
+		question, greeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
+		answer = generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word)
+		print_answer(answer)
+		return answer
+	else: last_user = user_input
+
+	if re.match(r"[\w\W]*[\d]+[\+\-\*\/]+[\w\W]*", user_input_without_syntax) and "timer" not in words and "timers" not in words:
 		user_input_without_syntax = user_input_without_syntax.replace("^", "**")
 		to_calculate = re.findall(r"([\d\+\-\*\/]+)", user_input_without_syntax)[0]
 		print_answer(str(eval(to_calculate)))
