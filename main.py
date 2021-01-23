@@ -55,9 +55,9 @@ if len(argv) > 1:
 	if argv[1] == "--tts-off":
 		tts_off = True
 
-def say(string):
+def say(string, lang="en"):
 	if len(string) < 150 and len(string) > 1:
-		tts = gTTS(text=string)
+		tts = gTTS(text=string, lang=lang)
 		try:
 			filename = "speech" + str(random.randint(0, 1000000)) + ".mp3"
 			tts.save(filename)
@@ -257,13 +257,23 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		else:
 			text = user_input_without_syntax[:user_input_without_syntax.index(language.lower())-3].strip()
 		translation = translate(text=text, dest=code)
-		print_answer("Translation: " + translation.text + "<div style='color: #e3e3e3;'>Pronunciation: " + translation.pronunciation + "</div>", tts=False)
+		answer = "Translation: " + translation.text
+		answer += "<div style='color: #e3e3e3;'>Pronunciation: " + translation.pronunciation + "</div>" if translation.pronunciation else ""
+		print_answer(answer, tts=False)
+		say(translation.text, lang=code)
 
 	elif user_input_without_syntax == "0 or 1" or user_input_without_syntax == "1 or 0" or user_input_without_syntax == "1 or 2" or user_input_without_syntax == "2 or 1":
 		print_answer("1!")
 
 	elif "random" in words and "number" in words:
 		print_answer(str(random.randint(0, 100000000000000)))
+
+	elif "remember" in words:
+		pass
+
+	elif re.match(r"[\w\W]*[\d\+\-\*\/]+[\w\W]*", user_input_without_syntax):
+		to_calculate = re.findall(r"([\d\+\-\*\/]+)", user_input_without_syntax)[0]
+		print_answer(str(eval(to_calculate)))
 
 	elif user_input_without_syntax == "exit":
 		with open("data.py", "w") as file:
@@ -359,7 +369,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				if not answered:
 					for word in data["good"]:
 						if noun.startswith(word) or noun.endswith(word):
-							answer = "Thanks a ton!"
+							answer = random.choice(["Thanks a ton!", "Happy to help!"])
 							print_answer(answer)
 							answered = True
 							break
@@ -477,7 +487,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				answer += random.choice(available_words)
 
 				# answering to the user
-				print_answer(answer)
+				print_answer(random.choice([answer, "I'm doing great now that I'm chatting with you. How about yourself?"]))
 
 			# if user did not ask "what's up?" nor "how are you" or "how do you do" or "how are you doing"
 			else:
@@ -489,6 +499,9 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				if greeting_word not in words: greetings.remove(greeting_word)
 				for wrd in words:
 					greetings.remove(wrd)
+
+				greetings.append("How can I help you?")
+				greetings.append("What can I help you with?")
 
 				# answering to the user
 				answer = random.choice(greetings)
@@ -613,7 +626,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		if len(words) == 1:
 			word = words[0]
 			if word in data["good"]:
-				answer = "I feel really happy about that." if not said and "feel" not in last_assistant else ")"
+				answer = "I feel really happy about that." if not said and "feel" not in last_assistant else random.choice([")", "Happy to help!", "Glad you like it"])
 				print_answer(answer)
 				said = not said
 			if word in data["bad"]:
@@ -649,14 +662,14 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		if re.match(r"open [\w|\s]+", user_input.lower().strip()):
 			application = re.findall(r"open ([\w\W]+)", user_input.lower().strip())[0].strip()
 			request = requests.get("http://" + application if not application.startswith("http") else application)
-			if request.status_code == 200:
+			if request.status_code != 404:
 				webbrowser.open(application)
 			else:
 				try:
 					os.system(application)
 				except:
 					try:
-						Popen(application)
+						Popen([application, ""])
 					except: pass
 
 		if re.match(r"send[(a)|(an)\s]*[(email)|(message)\s]+[(please)|(cant you)\s]", user_input_without_syntax):
@@ -848,7 +861,6 @@ if __name__ == "__main__":
 	eel.start("index.html", size=(550, 900))
 
 # TODO: add "remember this" (should be a list)
-# TODO: add built-in calculator
 # TODO: add "what can you do"
 # TODO: add "who are you"
 # TODO: add all reminders in a list
