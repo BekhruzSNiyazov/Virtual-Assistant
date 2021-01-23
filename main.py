@@ -304,6 +304,52 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		print_answer(answer)
 		return
 
+	elif re.match(r"[\w\W]*create [\w\W]* reminder[\w\W]*", user_input_without_syntax):
+		reminder = get_input("What's the reminder?")
+		month_day_time = get_input("Got it, \"" + reminder + "\". When do you want to be reminded?")
+		months = {"january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6, "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12}
+		month = None
+		for word in month_day_time.split():
+			if word.lower() in months:
+				month = word.lower()
+				break
+		date = str(datetime.now().date().year) + "-"
+		if months[month] < 10: month = "0" + str(months[month]) + "-"
+		else: month = str(months[month]) + "-"
+		date += month
+		day = None
+		time = None
+		hour = None
+		minutes = None
+		if re.match(r"[a-zA-Z\s]+(\d+)[a-zA-Z\s]+(\d+[:\d]*)[a-zA-Z\s]*", month_day_time):
+			day_time = re.findall(r"[a-zA-Z\s]+(\d+)[a-zA-Z\s]+(\d+[:\d]*)[a-zA-Z\s]*", month_day_time)[0]
+			if len(day_time) < 2:
+				print_answer("Please, provide the time in the following format: month day time. Reminder canceled")
+				return
+			else:
+				day = day_time[0]
+				if len(day) < 2: day = "0" + day
+				time = day_time[1]
+				if ":" in time:
+					hour = time[:time.index(":")]
+					if len(hour) < 2: hour = "0" + hour
+					if "pm" in month_day_time.lower(): hour = str(int(hour)+12)
+					minutes = time[time.index(":")+1:]
+					if len(minutes) < 2: minutes = "0" + minutes
+		else:
+			print_answer("You should provide the month, the day and the time. Reminder canceled.")
+			return
+		if day:
+			date += day + " " + hour + ":" + minutes
+		else:
+			date += "00"
+		yes = get_input("So, that's \"" + reminder + "\" on " + date + "?")
+		if yes[0] != "n":
+			print_answer("Reminder saved")
+		else:
+			print_answer("Reminder canceled")
+		return
+
 	elif user_input_without_syntax == "exit":
 		with open("data.py", "w") as file:
 			file.write("data = " + str(data))
@@ -786,6 +832,8 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			else:
 				# create it and append to it the word
 				data[category] = [to_remember]
+			with open("data.py", "w") as file:
+				file.write("data = " + str(data))
 			print_answer("Got it! " + to_remember + " is " + category)
 			return
 
