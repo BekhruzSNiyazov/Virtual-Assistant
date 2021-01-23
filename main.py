@@ -263,7 +263,9 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		answer = "Translation: " + translation.text
 		answer += "<div style='color: #e3e3e3;'>Pronunciation: " + translation.pronunciation + "</div>" if translation.pronunciation else ""
 		print_answer(answer, tts=False)
-		say(translation.text, lang=code)
+		pronunciation = threading.Thread(target=say, args=(translation.text, code))
+		pronunciation.start()
+		return answer
 
 	elif user_input_without_syntax == "0 or 1" or user_input_without_syntax == "1 or 0" or user_input_without_syntax == "1 or 2" or user_input_without_syntax == "2 or 1":
 		print_answer("1!")
@@ -271,7 +273,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 	elif "random" in words and "number" in words:
 		print_answer(str(random.randint(0, 100000000000000)))
 
-	elif "remember" in words:
+	elif user_input_without_syntax == "remember this":
 		print_answer("Sure! Just say something like \"Remember the door code is 4453\" and then ask \"What is the door code\"")
 
 	if "one more" in user_input_without_syntax or "another one" in user_input_without_syntax:
