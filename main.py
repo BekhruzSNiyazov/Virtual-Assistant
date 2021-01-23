@@ -56,7 +56,7 @@ if len(argv) > 1:
 		tts_off = True
 
 def say(string, lang="en"):
-	if len(string) < 150 and len(string) > 1:
+	if len(string) < 150:
 		tts = gTTS(text=string, lang=lang)
 		try:
 			filename = "speech" + str(random.randint(0, 1000000)) + ".mp3"
@@ -79,6 +79,7 @@ def send_to_js():
 @eel.expose
 def print_answer(string, end="\n", tts=True):
 	if string:
+		string = string.replace("\n", "<br>")
 		print("\nAssistant:", string, end=end)
 		global last_assistant, to_send_to_js, last_assistant2, to_send, printed, tts_off
 		printed = True
@@ -271,10 +272,6 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 	elif "remember" in words:
 		pass
 
-	elif re.match(r"[\w\W]*[\d\+\-\*\/]+[\w\W]*", user_input_without_syntax):
-		to_calculate = re.findall(r"([\d\+\-\*\/]+)", user_input_without_syntax)[0]
-		print_answer(str(eval(to_calculate)))
-
 	elif user_input_without_syntax == "exit":
 		with open("data.py", "w") as file:
 			file.write("data = " + str(data))
@@ -301,7 +298,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		turnTTSOff = True
 		print_answer(answer)
 
-	elif user_input_without_syntax == "what" or "say again" in user_input_without_syntax:
+	elif user_input_without_syntax == "what" or "say again" in user_input_without_syntax or user_input_without_syntax == "what do you say" or user_input_without_syntax == "what do you mean":
 		answer = last_assistant
 		print_answer(answer)
 
@@ -323,7 +320,11 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 	# if user's input is a question
 	elif question:
 		print("This is a question")
-		if re.match(r"what does [\w\s]+ mean", user_input_without_syntax):
+		if re.match(r"[\w\W]*[\d\+\-\*\/]+[\w\W]*", user_input_without_syntax):
+			user_input_without_syntax = user_input_without_syntax.replace("^", "**")
+			to_calculate = re.findall(r"([\d\+\-\*\/]+)", user_input_without_syntax)[0]
+			print_answer(str(eval(to_calculate)))
+		elif re.match(r"what does [\w\s]+ mean", user_input_without_syntax):
 
 			search_item = user_input_without_syntax[user_input_without_syntax.index("does") + len("does") + 1 : user_input_without_syntax.index("mean")].strip()
 
@@ -642,13 +643,18 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				answer = "There are no timers set."			
 			send(answer)
 
-		if "timer" in words and "cancel" in words:
+		elif "timer" in words and "cancel" in words:
 			index = re.findall(r"(\d+)", user_input_without_syntax)
 			if index:
 				index = int(index[0])-1
 				timers[index][-1] = False
 			else:
 				timers[index][-1] = False
+
+		elif re.match(r"[\w\W]*[\d\+\-\*\/]+[\w\W]*", user_input_without_syntax):
+			user_input_without_syntax = user_input_without_syntax.replace("^", "**")
+			to_calculate = re.findall(r"([\d\+\-\*\/]+)", user_input_without_syntax)[0]
+			print_answer(str(eval(to_calculate)))
 
 		if user_input_without_syntax == "same" or re.match("i feel[ the]* same[\w ]*", user_input_without_syntax):
 			user_input = last_assistant
