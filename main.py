@@ -154,7 +154,7 @@ def search(search_item, person):
 				for item in data[category]:
 					if item.startswith(search_item) or item.endswith(search_item) or search_item.startswith(item) or search_item.endswith(item):					
 						answer = search_item + " is a " + category if search_item != category else search_item + " means " + random.choice(data[category])
-						return
+						return answer
 		except: pass
 		if not answered:
 			search_item = search_item.replace("a ", "").strip()
@@ -166,11 +166,11 @@ def search(search_item, person):
 					answer += part + ":<br>"
 					for meaning in definition[part]:
 						answer += str(definition[part].index(meaning)+1) + ". " + meaning + ". <br>"
-				return
+				return answer
 	
 		if not answered:
 			answer = "Sorry, I don't know that yet. But you can teach me."
-	return
+	return answer
 
 def search_wikipedia(search_item):
 	return wikipedia.summary(search_item)
@@ -766,10 +766,10 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			if "this" in user_input_without_syntax: user_input_without_syntax = user_input_without_syntax.replace("this", "")
 			index = None
 			if means:
-				index = user_input_without_syntax("means")
+				index = user_input_without_syntax.index("means")
 			else:
-				if are: index = user_input_without_syntax("are")
-				else: index = user_input_without_syntax("is")
+				if are: index = user_input_without_syntax.index("are")
+				else: index = user_input_without_syntax.index("is")
 			to_remember = user_input_without_syntax[:index].strip()
 			length = None
 			if means:
