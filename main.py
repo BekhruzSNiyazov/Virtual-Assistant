@@ -238,7 +238,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 	for wrd in words:
 		if not trnslt:
 			for row in rows:
-				if wrd == row["Language"].lower():
+				if wrd.lower() == row["Language"].lower():
 					language = row["Language"]
 					trnslt = True
 					break
@@ -258,7 +258,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 					if words.index(word) > words.index("translate") and words.index(word) < words.index("in"):
 						text += word + " "
 		else:
-			text = user_input_without_syntax[:user_input_without_syntax.index(language.lower())-3].strip()
+			text = user_input_without_syntax[:user_input_without_syntax.lower().index(language.lower())-3].strip()
 		translation = translate(text=text, dest=code)
 		answer = "Translation: " + translation.text
 		answer += "<div style='color: #e3e3e3;'>Pronunciation: " + translation.pronunciation + "</div>" if translation.pronunciation else ""
