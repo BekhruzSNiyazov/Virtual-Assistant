@@ -57,7 +57,7 @@ if len(argv) > 1:
 
 def say(string, lang="en"):
 	if len(string) < 150:
-		tts = gTTS(text=string, lang=lang)
+		tts = gTTS(text=string.replace("<br>", " "), lang=lang)
 		try:
 			filename = "speech" + str(random.randint(0, 1000000)) + ".mp3"
 			tts.save(filename)
@@ -272,6 +272,11 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 	elif "remember" in words:
 		pass
 
+	elif re.match(r"[\w\W]*[\d\+\-\*\/]+[\w\W]*", user_input_without_syntax) and "timer" not in words and "timers" not in words:
+		user_input_without_syntax = user_input_without_syntax.replace("^", "**")
+		to_calculate = re.findall(r"([\d\+\-\*\/]+)", user_input_without_syntax)[0]
+		print_answer(str(eval(to_calculate)))
+
 	elif user_input_without_syntax == "exit":
 		with open("data.py", "w") as file:
 			file.write("data = " + str(data))
@@ -320,11 +325,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 	# if user's input is a question
 	elif question:
 		print("This is a question")
-		if re.match(r"[\w\W]*[\d\+\-\*\/]+[\w\W]*", user_input_without_syntax):
-			user_input_without_syntax = user_input_without_syntax.replace("^", "**")
-			to_calculate = re.findall(r"([\d\+\-\*\/]+)", user_input_without_syntax)[0]
-			print_answer(str(eval(to_calculate)))
-		elif re.match(r"what does [\w\s]+ mean", user_input_without_syntax):
+		if re.match(r"what does [\w\s]+ mean", user_input_without_syntax):
 
 			search_item = user_input_without_syntax[user_input_without_syntax.index("does") + len("does") + 1 : user_input_without_syntax.index("mean")].strip()
 
@@ -627,7 +628,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		if len(words) == 1:
 			word = words[0]
 			if word in data["good"]:
-				answer = "I feel really happy about that." if not said and "feel" not in last_assistant else random.choice([")", "Happy to help!", "Glad you like it"])
+				answer = "I feel really happy about that" if not said and "feel" not in last_assistant else random.choice([")", "Happy to help!", "Glad you like it"])
 				print_answer(answer)
 				said = not said
 			if word in data["bad"]:
@@ -650,11 +651,6 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				timers[index][-1] = False
 			else:
 				timers[index][-1] = False
-
-		elif re.match(r"[\w\W]*[\d\+\-\*\/]+[\w\W]*", user_input_without_syntax):
-			user_input_without_syntax = user_input_without_syntax.replace("^", "**")
-			to_calculate = re.findall(r"([\d\+\-\*\/]+)", user_input_without_syntax)[0]
-			print_answer(str(eval(to_calculate)))
 
 		if user_input_without_syntax == "same" or re.match("i feel[ the]* same[\w ]*", user_input_without_syntax):
 			user_input = last_assistant
