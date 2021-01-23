@@ -150,6 +150,13 @@ def search(search_item, person):
 	else:
 		answered = False
 		try:
+			for category in data:
+				for item in data[category]:
+					if item.startswith(search_item) or item.endswith(search_item) or search_item.startswith(item) or search_item.endswith(item):					
+						answer = search_item + " is a " + category if search_item != category else search_item + " means " + random.choice(data[category])
+						return
+		except: pass
+		if not answered:
 			search_item = search_item.replace("a ", "").strip()
 			definition = dictionary.meaning(search_item)
 			if definition:
@@ -159,16 +166,11 @@ def search(search_item, person):
 					answer += part + ":<br>"
 					for meaning in definition[part]:
 						answer += str(definition[part].index(meaning)+1) + ". " + meaning + ". <br>"
-				answered = True
-		except: pass
-		if not answered:
-			for category in data:
-				if search_item in data[category]:
-					answer = search_item + " is a " + category if search_item != category else search_item + " means " + random.choice(data[category])
-					answered = True
+				return
+	
 		if not answered:
 			answer = "Sorry, I don't know that yet. But you can teach me."
-	return answer
+	return
 
 def search_wikipedia(search_item):
 	return wikipedia.summary(search_item)
@@ -206,11 +208,13 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 	if user_input == "show me your knowledge":
 		answer = str(data)
 		print_answer(answer)
+		return
 
 	elif "weather" in words:
 		temperature = pyowm.OWM("6d00d1d4e704068d70191bad2673e0cc").weather_manager().weather_at_place(eel.get_location()()).weather.temperature("celsius")["temp"]
 		answer = "Right now, in " + eel.get_location()() + " it is " + str(temperature) + "°C"
 		print_answer(answer)
+		return
 
 	elif "joke" in words and "not" not in words:
 		jokes = data["jokes"].copy()
@@ -218,14 +222,17 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		answer = random.choice(jokes)
 		last_joke = answer
 		print_answer(answer)
+		return
 
 	elif "time" in words:
 		answer = "Right now it is " + str(datetime.now().time())[:8]
 		print_answer(answer)
+		return
 
 	elif "date" in words:
 		answer = "Right now it is " + str(datetime.now().date())
 		print_answer(answer)
+		return
 
 	trnslt = False
 	language = ""
@@ -265,16 +272,20 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		print_answer(answer, tts=False)
 		pronunciation = threading.Thread(target=say, args=(translation.text, code))
 		pronunciation.start()
-		return answer
+		return
 
 	elif user_input_without_syntax == "0 or 1" or user_input_without_syntax == "1 or 0" or user_input_without_syntax == "1 or 2" or user_input_without_syntax == "2 or 1":
 		print_answer("1!")
+		return "1!"
 
 	elif "random" in words and "number" in words:
-		print_answer(str(random.randint(0, 100000000000000)))
+		number = str(random.randint(0, 100000000000000))
+		print_answer(number)
+		return number
 
-	elif user_input_without_syntax == "remember this":
-		print_answer("Sure! Just say something like \"Remember the door code is 4453\" and then ask \"What is the door code\"")
+	elif "remember this" in user_input_without_syntax or "remember" in user_input_without_syntax and "thing" in user_input_without_syntax:
+		answer = "Sure! Just say something like \"Remember the door code is 4453\" and then ask \"What is the door code\""
+		print_answer(answer)
 
 	if "one more" in user_input_without_syntax or "another one" in user_input_without_syntax:
 		user_input = last_user
@@ -283,13 +294,15 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		question, greeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
 		answer = generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word)
 		print_answer(answer)
-		return answer
+		return
 	else: last_user = user_input
 
 	if re.match(r"[\w\W]*[\d]+[\+\-\*\/]+[\w\W]*", user_input_without_syntax) and "timer" not in words and "timers" not in words:
 		user_input_without_syntax = user_input_without_syntax.replace("^", "**")
 		to_calculate = re.findall(r"([\d\+\-\*\/]+)", user_input_without_syntax)[0]
-		print_answer(str(eval(to_calculate)))
+		answer = str(eval(to_calculate))
+		print_answer(answer)
+		return
 
 	elif user_input_without_syntax == "exit":
 		with open("data.py", "w") as file:
@@ -310,16 +323,19 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		available_words.remove("see you")
 		answer = random.choice(available_words).capitalize()
 		print_answer(answer)
+		return
 
 	elif re.match(r"[\w\W]*shut[\w\W]*", user_input_without_syntax) and "mouth" in words or re.match(r"[\w\W]*shut up[\w\W]*", user_input_without_syntax) or user_input_without_syntax == "silence" or user_input_without_syntax == "quiet" or re.match(r"[\w\W]*be quiet[\w\W]*", user_input_without_syntax):
 		tts_off = True
 		answer = "Okay"
 		turnTTSOff = True
 		print_answer(answer)
+		return
 
 	elif user_input_without_syntax == "what" or "say again" in user_input_without_syntax or user_input_without_syntax == "what do you say" or user_input_without_syntax == "what do you mean":
 		answer = last_assistant
 		print_answer(answer)
+		return
 
 	elif re.match(r"[\w\s]*say [\w\s]*something[\w\s]*", user_input_without_syntax):
 		words = ["Hullo", "Sup", "Hulo", "Day", "Morning", "Evening", "Night", "Good morning!", "Good day!", "Good evening!", "Good night!", "Yo", "Afternoon", "Good afternoon!", "Halo", "Hallo", "Howdy"]
@@ -327,14 +343,17 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		for word in words: available_words.remove(word)
 		answer = random.choice(available_words)
 		print_answer(answer)
+		return
 
 	elif len(user_input) == 1:
 		if user_input == ")":
 			answer = ")"
 			print_answer(answer)
+			return
 		elif user_input == "(":
 			answer = "("
 			print_answer(answer)
+			return
 
 	# if user's input is a question
 	elif question:
@@ -345,11 +364,13 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 
 			answer = search(search_item, False)
 			print_answer(answer, tts=False)
+			return
 		else:
 			if re.match(r"wh[\w]*[is\s]*[\w\s]+", user_input_without_syntax):
 				search_item = re.findall(r"wh[\w]*[is\s]*([\w\s]+)", user_input_without_syntax)[0]
 				answer = search(search_item, False if words[0] == "what" else True)
 				print_answer(answer, tts=False)
+				return
 
 		if re.match(r"[\w\W]*and you[\w\W]*", user_input_without_syntax) or re.match(r"[\w\W]*what about you[\w\W]*", user_input_without_syntax):
 			user_input = before_last_assistant
@@ -363,7 +384,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				question, greeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
 			answer = generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word)
 			print_answer(answer)
-			return answer
+			return
 	# if user said something about assistant
 	elif about_it:
 		print("They said something about assistant")
@@ -376,8 +397,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 					if noun.startswith(word) or noun.endswith(word):
 						answer = "Please, contact @bekhruzniyazov on Tim's Discord and tell him the reason why you didn't like me. :("
 						print_answer(answer)
-						answered = True
-						break
+						return
 			else:
 				break
 		if not answered:
@@ -387,8 +407,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 						if noun.startswith(word) or noun.endswith(word):
 							answer = random.choice(["Thanks a ton!", "Happy to help!"])
 							print_answer(answer)
-							answered = True
-							break
+							return
 
 	# if user's input is a greeting
 	elif greeting:
@@ -403,76 +422,77 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				if hour < 17:
 					answer = "It is no longer morning, I believe. It is already afternoon."
 					print_answer(answer)
-					answered = True
+					return
 				elif hour < 20:
 					answer = "It is evening now. Good evening to you!"
 					print_answer(answer)
-					answered = True
+					return
 				else:
 					answer = "Good night. It's night now."
 					print_answer(answer)
-					answered = True
+					return
 			else:
 				answer = "Good morning!"
 				print_answer(answer)
-				answered = True
+				return
 
 		elif greeting_word == "Good day!" or greeting_word == "Day" or greeting_word == "Good afternoon!" or greeting_word == "Afternoon":
 			if hour < 12 or hour > 17:
 				if hour < 12:
 					answer = "It is only morning yet, I believe. Good morning to you!"
 					print_answer(answer)
-					answered = True
+					return
 				elif hour > 17:
 					answer = "It is evening now."
 					print_answer(answer)
-					answered = True
+					return
 				elif hour > 20:
 					answer = "Good night. It is night now."
 					print_answer(answer)
-					answered = True
+					return
 			else:
 				answer = "Good afternoon!"
 				print_answer(answer)
-				answered = True
+				return
 
 		elif greeting_word == "Good evening" or greeting_word == "Evening":
 			if hour < 17 or hour > 20:
 				if hour < 12:
 					answer = "It is only morning now. Good morning!"
 					print_answer(answer)
+					return
 				elif hour < 17:
 					answer = "It is not evening yet. Good day to you!"
 					print_answer(answer)
-					answered = True
+					return
 				elif hour > 20:
 					answer = "It is night now. Good night to you!"
 					print_answer(answer)
-					answered = True
+					return
 			else:
 				answer = "Good evening!"
 				print_answer(answer)
-				answered = True
+				return
 
 		elif greeting_word == "Good night!" or greeting_word == "Night":
 			if hour < 20 or hour > 6:
 				if hour < 20:
 					answer = "It is not night yet."
 					print_answer(answer)
-					answered = True
+					return
 				elif hour > 6:
 					answer = "It is no longer night."
 					print_answer(answer)
-					answered = True
+					return
 			else:
 				answer = "Good night to you!"
 				print_answer(answer)
-				answered = True
+				return
 
 		if re.match(r"[\w\W]*glad[\w\W]*see[\w\W]*you", user_input_without_syntax):
 			answer = "Thanks"
 			print_answer(answer)
-			answered = True
+			return
 
 		if not answered:
 			# answering to the user
@@ -482,6 +502,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				responses = ["Nothing", "Not much", "All right"]
 				answer = random.choice(responses)
 				print_answer(answer)
+				return
 
 			# if user did not ask "what's up?" but they asked "how are you" or "how do you do" or "how are you doing"
 			elif greeting_word == "How are you?" or greeting_word == "How do you do?" or greeting_word == "How are you doing?":
@@ -504,6 +525,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 
 				# answering to the user
 				print_answer(random.choice([answer, "I'm doing great now that I'm chatting with you. How about yourself?"]))
+				return
 
 			# if user did not ask "what's up?" nor "how are you" or "how do you do" or "how are you doing"
 			else:
@@ -522,6 +544,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				# answering to the user
 				answer = random.choice(greetings)
 				print_answer(answer)
+				return
 
 	# if user's input is a statement about themselves
 	elif about_themselves:
@@ -540,18 +563,17 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				
 				if word in data["good"]:
 					print_answer("Glad you do")
-					answered = True
-					break
+					return
 				
 				elif word in data["bad"]:
 					answer = "Can I cheer you up somehow? You can ask me for a joke."
 					print_answer(answer)
-					answered = True
-					break
+					return
 
 			if not answered:
 				answer = "Sorry, but I don't know what \"" + their_feelings + "\" means."
 				print_answer(answer)
+				return
 
 		if re.match(r"i am a[n]* [\w\s]+", user_input_without_syntax):
 
@@ -566,18 +588,17 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				if word in data["good"]:
 					answer = "I agree with you."
 					print_answer(answer)
-					answered = True
-					break
+					return
 
 				elif word in data["bad"]:
 					answer = "I feel so sorry about that. Can I help you somehow?"
 					print_answer(answer)
-					answered = True
-					break
+					return
 
 			if not answered:
 				answer = "I am sorry, but I do not know what \"" + noun + "\" means."
 				print_answer(answer)
+				return
 
 		if re.match(r"my [\w\W]+ is [\w\W]+", user_input_without_syntax):
 
@@ -596,10 +617,12 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 					available_words.append("really well")
 					answer = random.choice(available_words).capitalize()
 					print_answer(answer)
+					return
 
 				elif word in data["bad"]:
 					answer = ":("
 					print_answer(answer)
+					return
 
 		if re.match(r"i am doing \w+ [\w\W]*", user_input_without_syntax):
 			noun = re.findall(r"i am doing (\w+) [\w\W]*", user_input_without_syntax)[0]
@@ -610,7 +633,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 					if _not:
 						answer = "Can I help you somehow?"
 						print_answer(answer)
-						break
+						return
 					else:
 						available_words = data["good"].copy()
 						words_to_remove = ["terrific", "exceptional", "outstanding"]
@@ -619,7 +642,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 							available_words.remove(word)
 						answer = "That's " + random.choice(available_words) + "!"
 						print_answer(answer)
-						break
+						return
 
 	# if user's input is a statement
 	elif statement:
@@ -631,25 +654,30 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 
 		# initializing variables that will be useful in the future
 		means = False
+		are = False
 
 		if "means" in words:
 			explanation = True
 			means = True
 		elif "is" in words:
-			if words[words.index("is")+1] == "a" or words[words.index("is")+1] == "an":
-				explanation = True
+			explanation = True
+		elif "are" in words:
+			explanation = True
+			are = True
 
-		if len(words) == 1:
+		elif len(words) == 1:
 			word = words[0]
 			if word in data["good"]:
 				answer = "I feel really happy about that" if not said and "feel" not in last_assistant else random.choice([")", "Happy to help!", "Glad you like it"])
 				print_answer(answer)
 				said = not said
+				return
 			if word in data["bad"]:
 				answer = "What's wrong?"
 				print_answer(answer)
+				return
 		
-		if "timers" in words and "show" in words:
+		elif "timers" in words and "show" in words:
 			answer = ""
 			if timers:
 				for timer in timers:
@@ -657,6 +685,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			else:
 				answer = "There are no timers set."			
 			send(answer)
+			return
 
 		elif "timer" in words and "cancel" in words:
 			index = re.findall(r"(\d+)", user_input_without_syntax)
@@ -665,17 +694,18 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				timers[index][-1] = False
 			else:
 				timers[index][-1] = False
+			return
 
-		if user_input_without_syntax == "same" or re.match("i feel[ the]* same[\w ]*", user_input_without_syntax):
+		elif user_input_without_syntax == "same" or re.match("i feel[ the]* same[\w ]*", user_input_without_syntax):
 			user_input = last_assistant
 			user_input_without_syntax = remove_syntax(last_assistant).lower().strip()
 			words = user_input_without_syntax.split()
 			question, greeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
 			answer = generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word)
 			print_answer(answer)
-			return answer
+			return
 
-		if re.match(r"open [\w|\s]+", user_input.lower().strip()):
+		elif re.match(r"open [\w|\s]+", user_input.lower().strip()):
 			application = re.findall(r"open ([\w\W]+)", user_input.lower().strip())[0].strip()
 			request = requests.get("http://" + application if not application.startswith("http") else application)
 			if request.status_code != 404:
@@ -687,8 +717,9 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 					try:
 						Popen([application, ""])
 					except: pass
+			return
 
-		if re.match(r"send[(a)|(an)\s]*[(email)|(message)\s]+[(please)|(cant you)\s]", user_input_without_syntax):
+		elif re.match(r"send[(a)|(an)\s]*[(email)|(message)\s]+[(please)|(cant you)\s]", user_input_without_syntax):
 			try:
 				email = data["email"]
 				password = data["password"]
@@ -726,12 +757,26 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				answer = "Sorry, an error occurred"
 				to_send_to_js = answer
 				print_answer(answer)
+				return
 
 		# if user's input is an explanation:
 		if explanation:
-			index = user_input_without_syntax.index("means") if means else user_input_without_syntax.index("is")
+			if "remember" in user_input_without_syntax: user_input_without_syntax = user_input_without_syntax.replace("remember", "")
+			if "that" in user_input_without_syntax: user_input_without_syntax = user_input_without_syntax.replace("that", "")
+			if "this" in user_input_without_syntax: user_input_without_syntax = user_input_without_syntax.replace("this", "")
+			index = None
+			if means:
+				index = user_input_without_syntax("means")
+			else:
+				if are: index = user_input_without_syntax("are")
+				else: index = user_input_without_syntax("is")
 			to_remember = user_input_without_syntax[:index].strip()
-			length = len("means") if means else len("is") + len(words[words.index("is")+1]) + 1
+			length = None
+			if means:
+				length = len("means")
+			else:
+				if are: length = len("are")
+				else: length = len("is")
 			category = user_input_without_syntax[index+length:].strip()
 			# if category already exists
 			if category in data:
@@ -741,6 +786,8 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			else:
 				# create it and append to it the word
 				data[category] = [to_remember]
+			print_answer("Got it! " + to_remember + " is " + category)
+			return
 
 		if re.match(r"set[ a]* timer$", user_input_without_syntax):
 			seconds = get_input("How many seconds should I set timer for?")
@@ -749,15 +796,18 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				answer = "Timer canceled."
 				to_send_to_js = answer
 				print_answer(answer)
+				return
 
 			if type(seconds) == int:
 				if seconds > 0:
 					timer_thread = threading.Thread(target=sleep, args=(seconds, len(timers)))
 					timers.append([datetime.now().hour, datetime.now().minute, datetime.now().second, seconds, timer_thread, True])
 					timer_thread.start()
+					return
 				else:
 					answer = "Timer was canceled."
 					print_answer(answer)
+					return
 		
 		elif re.match(r"set[ \w]* timer for [\d]*[ hours\W]*[and ]*[\d]*[ minutes\W]*[and ]*[\d]*[ seconds\W]", user_input_without_syntax):
 			hours, minutes, seconds = 0, 0, 0
@@ -779,17 +829,21 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				timer_thread = threading.Thread(target=sleep, args=(time, len(timers)))
 				timers.append([datetime.now().hour, datetime.now().minute, datetime.now().second, time, timer_thread, True])
 				timer_thread.start()
+				return
 			else:
 				answer = "Timer was canceled."
 				print_answer(answer)
+				return
 
 		elif re.match(r"[\w\W]*thank you[\w\W]*", user_input_without_syntax) or user_input_without_syntax == "thanks" or user_input_without_syntax.endswith("thanks") or user_input_without_syntax.replace(" a ", " ").endswith("thanks ton") or user_input_without_syntax.startswith("thanks for"):
 			answer = "You are welcome"
 			print_answer(answer)
+			return
 
 		elif re.match(r"[\w\W]*nice[\w\W]to[\w\W]*you[\w\W]*", user_input_without_syntax):
 			answer = "Thanks"
 			print_answer(answer)
+			return
 
 	if not printed:
 		to_send_to_js = ""
@@ -876,7 +930,6 @@ def recognize_type(user_input, user_input_without_syntax, words):
 if __name__ == "__main__":
 	eel.start("index.html", size=(550, 900))
 
-# TODO: add "remember this" (should be a list)
 # TODO: add "what can you do"
 # TODO: add "who are you"
 # TODO: add all reminders in a list
