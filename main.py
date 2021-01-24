@@ -320,7 +320,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		day = None
 		time = None
 		hour = None
-		minutes = None
+		minutes = "00"
 		if re.match(r"[a-zA-Z\s]+(\d+)[a-zA-Z\s]+(\d+[:\d]*)[a-zA-Z\s]*", month_day_time):
 			day_time = re.findall(r"[a-zA-Z\s]+(\d+)[a-zA-Z\s]+(\d+[:\d]*)[a-zA-Z\s]*", month_day_time)[0]
 			if len(day_time) < 2:
@@ -332,10 +332,11 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				time = day_time[1]
 				if ":" in time:
 					hour = time[:time.index(":")]
-					if len(hour) < 2: hour = "0" + hour
-					if "pm" in month_day_time.lower(): hour = str(int(hour)+12)
 					minutes = time[time.index(":")+1:]
 					if len(minutes) < 2: minutes = "0" + minutes
+				else: hour = time
+				if len(hour) < 2: hour = "0" + hour
+				if "pm" in month_day_time.lower(): hour = str(int(hour)+12)
 		else:
 			print_answer("You should provide the month, the day and the time. Reminder canceled.")
 			return
@@ -346,6 +347,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		yes = get_input("So, that's \"" + reminder + "\" on " + date + "?")
 		if yes[0] != "n":
 			print_answer("Reminder saved")
+			# TODO: complete reminders
 		else:
 			print_answer("Reminder canceled")
 		return
@@ -980,7 +982,6 @@ if __name__ == "__main__":
 
 # TODO: add "what can you do"
 # TODO: add "who are you"
-# TODO: add all reminders in a list
 # TODO: try to add some sort of built-in google search
 # TODO: try to add a control over volume and brightness
 # TODO: if I have enough time: add image and file sharing tool
