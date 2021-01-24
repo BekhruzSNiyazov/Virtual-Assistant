@@ -195,9 +195,33 @@ def sleep(seconds, index):
 		print_answer("Time is over")
 	except: pass
 
+def check_reminder(reminder, date, index):
+	date, time = date.split()
+	while True:
+		date_now = str(datetime.now().date())
+		time_now = str(datetime.now().time())
+		if date_now == date:
+			if time.startswith(time):
+				break
+			elif int(time.split(":")[0]) > int(time.split(":")[0]) or int(time_now.split(":")[1]) > int(time.split(":")[1]):
+				break
+		elif int(date.split("-")[1]) > int(date.split("-")[1]) or int(date_now.split("-")[2]) > int(date.split("-")[2]):
+			break
+	print_answer("Reminder: " + reminder + " on " + date + " " + time)
+	reminder_tts = threading.Thread(target=say, args=("Reminder :" + reminder + " on " + date + " " + time))
+	data["reminder_threads"][0].pop(index)
+	data["reminder_threads"].remove({})
+	with open("data.py", "w") as file:
+		file.write("data = " + str(data))
+
 @eel.expose
 def generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word):
 	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff, last_joke, timers, last_user
+
+	if "reminder_threads" in data:
+		for thread in data["reminder_threads"]:
+			try: data["reminder_threads"][thread][0].start()
+			except Exception as e: print(e)
 
 	user_input = user_input.lower()
 
@@ -297,14 +321,14 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		return
 	else: last_user = user_input
 
-	if re.match(r"[\w\W]*[\d]+[\+\-\*\/]+[\w\W]*", user_input_without_syntax) and "timer" not in words and "timers" not in words:
+	if re.match(r"[\w\W]*[\d]+[\+\-\*\/]+[\w\W]*", user_input_without_syntax, re.IGNORECASE) and "timer" not in words and "timers" not in words:
 		user_input_without_syntax = user_input_without_syntax.replace("^", "**")
-		to_calculate = re.findall(r"([\d\+\-\*\/]+)", user_input_without_syntax)[0]
+		to_calculate = re.findall(r"([\d\+\-\*\/]+)", user_input_without_syntax, re.IGNORECASE)[0]
 		answer = str(eval(to_calculate))
 		print_answer(answer)
 		return
 
-	elif re.match(r"[\w\W]*create [\w\W]* reminder[\w\W]*", user_input_without_syntax):
+	elif re.match(r"[\w\W]*[(set)|(create)] [\w\W]* reminder[\w\W]*", user_input_without_syntax, re.IGNORECASE):
 		reminder = get_input("What's the reminder?")
 		month_day_time = get_input("Got it, \"" + reminder + "\". When do you want to be reminded?")
 		months = {"january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6, "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12}
@@ -314,42 +338,52 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				month = word.lower()
 				break
 		date = str(datetime.now().date().year) + "-"
-		if months[month] < 10: month = "0" + str(months[month]) + "-"
-		else: month = str(months[month]) + "-"
-		date += month
-		day = None
-		time = None
-		hour = None
-		minutes = "00"
-		if re.match(r"[a-zA-Z\s]+(\d+)[a-zA-Z\s]+(\d+[:\d]*)[a-zA-Z\s]*", month_day_time):
-			day_time = re.findall(r"[a-zA-Z\s]+(\d+)[a-zA-Z\s]+(\d+[:\d]*)[a-zA-Z\s]*", month_day_time)[0]
-			if len(day_time) < 2:
-				print_answer("Please, provide the time in the following format: month day time. Reminder canceled")
-				return
+		if month:
+			if months[month] < 10: month = "0" + str(months[month]) + "-"
+			else: month = str(months[month]) + "-"
+			date += month
+			day = None
+			time = None
+			hour = None
+			minutes = "00"
+			if re.match(r"[a-zA-Z\s]+(\d+)[a-zA-Z\s]+(\d+[:\d]*)[a-zA-Z\s]*", month_day_time, re.IGNORECASE):
+				day_time = re.findall(r"[a-zA-Z\s]+(\d+)[a-zA-Z\s]+(\d+[:\d]*)[a-zA-Z\s]*", month_day_time, re.IGNORECASE)[0]
+				if len(day_time) < 2:
+					print_answer("Please, provide the time in the following format: month day time. Reminder canceled")
+					return
+				else:
+					day = day_time[0]
+					if len(day) < 2: day = "0" + day
+					time = day_time[1]
+					if ":" in time:
+						hour = time[:time.index(":")]
+						minutes = time[time.index(":")+1:]
+						if len(minutes) < 2: minutes = "0" + minutes
+					else: hour = time
+					if len(hour) < 2: hour = "0" + hour
+					if "pm" in month_day_time.lower(): hour = str(int(hour)+12)
 			else:
-				day = day_time[0]
-				if len(day) < 2: day = "0" + day
-				time = day_time[1]
-				if ":" in time:
-					hour = time[:time.index(":")]
-					minutes = time[time.index(":")+1:]
-					if len(minutes) < 2: minutes = "0" + minutes
-				else: hour = time
-				if len(hour) < 2: hour = "0" + hour
-				if "pm" in month_day_time.lower(): hour = str(int(hour)+12)
-		else:
-			print_answer("You should provide the month, the day and the time. Reminder canceled.")
-			return
-		if day:
-			date += day + " " + hour + ":" + minutes
-		else:
-			date += "00"
-		yes = get_input("So, that's \"" + reminder + "\" on " + date + "?")
-		if yes[0] != "n":
-			print_answer("Reminder saved")
-			# TODO: complete reminders
-		else:
-			print_answer("Reminder canceled")
+				print_answer("You should provide the month, the day and the time. Reminder canceled.")
+				return
+			if day:
+				date += day + " " + hour + ":" + minutes
+			else:
+				date += "00"
+			yes = get_input("So, that's \"" + reminder + "\" on " + date + "?")
+			if yes[0] == "y":
+				index = str(len(data["reminder_threads"])) if "reminder_threads" in data else "0"
+				reminder_thread = threading.Thread(target=check_reminder, args=(reminder, date, index))
+				reminder_thread.start()
+				if "reminder_threads" in data:
+					data["reminder_threads"].append({index: [reminder_thread]})
+				else:
+					data["reminder_threads"] = [{index: [reminder_thread]}]
+				with open("data.py", "w") as file:
+					file.write("data = " + str(data))
+				print_answer("Reminder saved")
+			else:
+				print_answer("Reminder canceled")
+		else: print_answer("Reminder canceled")
 		return
 
 	elif user_input_without_syntax == "exit":
@@ -373,7 +407,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		print_answer(answer)
 		return
 
-	elif re.match(r"[\w\W]*shut[\w\W]*", user_input_without_syntax) and "mouth" in words or re.match(r"[\w\W]*shut up[\w\W]*", user_input_without_syntax) or user_input_without_syntax == "silence" or user_input_without_syntax == "quiet" or re.match(r"[\w\W]*be quiet[\w\W]*", user_input_without_syntax):
+	elif re.match(r"[\w\W]*shut[\w\W]*", user_input_without_syntax, re.IGNORECASE) and "mouth" in words or re.match(r"[\w\W]*shut up[\w\W]*", user_input_without_syntax, re.IGNORECASE) or user_input_without_syntax == "silence" or user_input_without_syntax == "quiet" or re.match(r"[\w\W]*be quiet[\w\W]*", user_input_without_syntax, re.IGNORECASE):
 		tts_off = True
 		answer = "Okay"
 		turnTTSOff = True
@@ -385,7 +419,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		print_answer(answer)
 		return
 
-	elif re.match(r"[\w\s]*say [\w\s]*something[\w\s]*", user_input_without_syntax):
+	elif re.match(r"[\w\s]*say [\w\s]*something[\w\s]*", user_input_without_syntax, re.IGNORECASE):
 		words = ["Hullo", "Sup", "Hulo", "Day", "Morning", "Evening", "Night", "Good morning!", "Good day!", "Good evening!", "Good night!", "Yo", "Afternoon", "Good afternoon!", "Halo", "Hallo", "Howdy"]
 		available_words = data["greeting"].copy()
 		for word in words: available_words.remove(word)
@@ -406,7 +440,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 	# if user's input is a question
 	elif question:
 		print("This is a question")
-		if re.match(r"what does [\w\s]+ mean", user_input_without_syntax):
+		if re.match(r"what does [\w\s]+ mean", user_input_without_syntax, re.IGNORECASE):
 
 			search_item = user_input_without_syntax[user_input_without_syntax.index("does") + len("does") + 1 : user_input_without_syntax.index("mean")].strip()
 
@@ -414,13 +448,13 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			print_answer(answer, tts=False)
 			return
 		else:
-			if re.match(r"wh[\w]*[is\s]*[\w\s]+", user_input_without_syntax):
-				search_item = re.findall(r"wh[\w]*[is\s]*([\w\s]+)", user_input_without_syntax)[0]
+			if re.match(r"wh[\w]*[is\s]*[\w\s]+", user_input_without_syntax, re.IGNORECASE):
+				search_item = re.findall(r"wh[\w]*[is\s]*([\w\s]+)", user_input_without_syntax, re.IGNORECASE)[0]
 				answer = search(search_item, False if words[0] == "what" else True)
 				print_answer(answer, tts=False)
 				return
 
-		if re.match(r"[\w\W]*and you[\w\W]*", user_input_without_syntax) or re.match(r"[\w\W]*what about you[\w\W]*", user_input_without_syntax):
+		if re.match(r"[\w\W]*and you[\w\W]*", user_input_without_syntax, re.IGNORECASE) or re.match(r"[\w\W]*what about you[\w\W]*", user_input_without_syntax, re.IGNORECASE):
 			user_input = before_last_assistant
 			user_input_without_syntax = remove_syntax(before_last_assistant).lower().strip()
 			words = user_input_without_syntax.split()
@@ -537,7 +571,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				print_answer(answer)
 				return
 
-		if re.match(r"[\w\W]*glad[\w\W]*see[\w\W]*you", user_input_without_syntax):
+		if re.match(r"[\w\W]*glad[\w\W]*see[\w\W]*you", user_input_without_syntax, re.IGNORECASE):
 			answer = "Thanks"
 			print_answer(answer)
 			return
@@ -609,13 +643,20 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 
 				word = word.strip()
 				
-				if word in data["good"]:
+				if word in data["good"] and "not" not in words:
 					print_answer("Glad you do")
+					return
+				 
+				elif word in data["good"] and "not" in words:
+					print_answer("Can I cheer you up somehow? You can ask me for a joke.")
 					return
 				
 				elif word in data["bad"]:
-					answer = "Can I cheer you up somehow? You can ask me for a joke."
 					print_answer(answer)
+					return
+				
+				elif word in data["bad"] and "not" in words:
+					print_answer("Glad you do")
 					return
 
 			if not answered:
@@ -623,18 +664,18 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				print_answer(answer)
 				return
 
-		if re.match(r"i am a[n]* [\w\s]+", user_input_without_syntax):
+		if re.match(r"i[anm\s]* [\w\s]+", user_input_without_syntax, re.IGNORECASE):
 
 			answered = False
 
-			noun = re.findall(r"i am a[n]* ([\w\s]+)", user_input_without_syntax)[0]
+			noun = re.findall(r"i[anm\s]* ([\w\s]+)", user_input_without_syntax, re.IGNORECASE)[0]
 
 			for word in noun.split():
 
 				word = word.strip()
 
 				if word in data["good"]:
-					answer = "I agree with you."
+					answer = "I agree with you"
 					print_answer(answer)
 					return
 
@@ -648,9 +689,9 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				print_answer(answer)
 				return
 
-		if re.match(r"my [\w\W]+ is [\w\W]+", user_input_without_syntax):
+		if re.match(r"my [\w\W]+ is [\w\W]+", user_input_without_syntax, re.IGNORECASE):
 
-			noun = re.findall(r"my [\w\W]+ is ([\w\W]+)", user_input_without_syntax)[0]
+			noun = re.findall(r"my [\w\W]+ is ([\w\W]+)", user_input_without_syntax, re.IGNORECASE)[0]
 
 			for word in noun.split():
 
@@ -672,8 +713,8 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 					print_answer(answer)
 					return
 
-		if re.match(r"i am doing \w+ [\w\W]*", user_input_without_syntax):
-			noun = re.findall(r"i am doing (\w+) [\w\W]*", user_input_without_syntax)[0]
+		if re.match(r"i am doing \w+ [\w\W]*", user_input_without_syntax, re.IGNORECASE):
+			noun = re.findall(r"i am doing (\w+) [\w\W]*", user_input_without_syntax, re.IGNORECASE)[0]
 			_not = False
 			for word in data["good"]:
 				if word == "not": _not = True
@@ -767,7 +808,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 					except: pass
 			return
 
-		elif re.match(r"send[(a)|(an)\s]*[(email)|(message)\s]+[(please)|(cant you)\s]", user_input_without_syntax):
+		elif re.match(r"send[(a)|(an)\s]*[(email)|(message)\s]+[(please)|(cant you)\s]", user_input_without_syntax, re.IGNORECASE):
 			try:
 				email = data["email"]
 				password = data["password"]
@@ -839,7 +880,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			print_answer("Got it! " + to_remember + " is " + category)
 			return
 
-		if re.match(r"set[ a]* timer$", user_input_without_syntax):
+		if re.match(r"set[ a]* timer$", user_input_without_syntax, re.IGNORECASE):
 			seconds = get_input("How many seconds should I set timer for?")
 			if seconds.isdigit(): seconds = int(seconds)
 			else:
@@ -859,7 +900,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 					print_answer(answer)
 					return
 		
-		elif re.match(r"set[ \w]* timer for [\d]*[ hours\W]*[and ]*[\d]*[ minutes\W]*[and ]*[\d]*[ seconds\W]", user_input_without_syntax):
+		elif re.match(r"set[ \w]* timer for [\d]*[ hours\W]*[and ]*[\d]*[ minutes\W]*[and ]*[\d]*[ seconds\W]", user_input_without_syntax, re.IGNORECASE):
 			hours, minutes, seconds = 0, 0, 0
 			if "hours" in words or "hour" in words:
 				try: hours = int(re.findall(r"\s([\d]+) hour", user_input_without_syntax)[0])
@@ -885,12 +926,12 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				print_answer(answer)
 				return
 
-		elif re.match(r"[\w\W]*thank you[\w\W]*", user_input_without_syntax) or user_input_without_syntax == "thanks" or user_input_without_syntax.endswith("thanks") or user_input_without_syntax.replace(" a ", " ").endswith("thanks ton") or user_input_without_syntax.startswith("thanks for"):
+		elif re.match(r"[\w\W]*thank you[\w\W]*", user_input_without_syntax, re.IGNORECASE) or user_input_without_syntax == "thanks" or user_input_without_syntax.endswith("thanks") or user_input_without_syntax.replace(" a ", " ").endswith("thanks ton") or user_input_without_syntax.startswith("thanks for"):
 			answer = "You are welcome"
 			print_answer(answer)
 			return
 
-		elif re.match(r"[\w\W]*nice[\w\W]to[\w\W]*you[\w\W]*", user_input_without_syntax):
+		elif re.match(r"[\w\W]*nice[\w\W]to[\w\W]*you[\w\W]*", user_input_without_syntax, re.IGNORECASE):
 			answer = "Thanks"
 			print_answer(answer)
 			return
@@ -978,7 +1019,7 @@ def recognize_type(user_input, user_input_without_syntax, words):
 	return question, greeting, about_themselves, statement, about_it, greeting_word
 
 if __name__ == "__main__":
-	eel.start("index.html", size=(550, 900))
+	eel.start("index.html", size=(475, 750))
 
 # TODO: add "what can you do"
 # TODO: add "who are you"
