@@ -49,6 +49,10 @@ timers = []
 
 last_user = ""
 
+API_KEY = "AIzaSyCJwTqEZBqNmLru1kCSnQZOoPjDLXgqWko"
+
+SEARCH_ENGINE_ID = "74b00f5aa1b238403"
+
 import eel
 
 eel.init("web")
@@ -131,9 +135,30 @@ def translate(text, dest="en"):
 	translation = translator.translate(text, dest=dest)
 	return translation
 
-def search(search_item, person):
+def search(search_item, person, news=False):
 	answer = ""
-	if person:
+	if news:
+		try:
+			page = 1
+			start = (page - 1) * 10 + 1
+			url = f"https://www.googleapis.com/customsearch/v1?key={API_KEY}&cx={SEARCH_ENGINE_ID}&q={search_item}&start={start}"
+			data = requests.get(url).json()
+			search_items = data.get("items")
+			for i, search_item in enumerate(search_items, start=1):
+				if i < 4:
+					# get the page title
+					title = search_item.get("title")
+					# page snippet
+					snippet = search_item.get("snippet")
+					# alternatively, you can get the HTML snippet (bolded keywords)
+					html_snippet = search_item.get("htmlSnippet")
+					# extract the page url
+					link = search_item.get("link")
+					# print the results
+					answer += "<a class='news' href='" + link + "'>" + "<h2>" + title + "</h2>" + snippet + "</a><br><br>"
+				else: break
+		except: pass
+	elif person:
 		try:
 			answer = search_wikipedia(search_item)
 			found_on_wikipedia()
@@ -329,6 +354,17 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		answer = str(eval(to_calculate))
 		print_answer(answer)
 		return
+
+	elif "news" in words:
+		if "about" in words or "on" in words:
+			index = None
+			if "about" in words:
+				index = user_input_without_syntax.index("about")
+			elif "on" in words:
+				index = user_input_without_syntax.index("on")
+			query = user_input_without_syntax[index:].strip()
+			news = search(query, False, news=True)
+			print_answer(news)
 
 	elif re.match(r"[\w\W]*[(set)|(create)] [\w\W]* reminder[\w\W]*", user_input_without_syntax, re.IGNORECASE):
 		reminder = get_input("What's the reminder?")
