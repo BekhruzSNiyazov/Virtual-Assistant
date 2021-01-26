@@ -41,19 +41,19 @@ Also, if you ask for weather assistant will use your geolocation to give you the
 
 # What can this assistant do?
 List of things this assistant can do:
-- tell current weather
-- tell jokes
-- send emails
-- translate from and to pretty much every language
-- look up a word in dictionary
-- search for people on Wikipedia
-- chat with you
-- get news from Google
-- create reminders
-- create timers
-- cancel timers
-- display the timers
-- *search for anything you might possibly want*
+- tell current weather (`what's the weather` or anything similar to that)
+- tell jokes (`tell me a joke` or anything similar to that)
+- send emails (`send an email` or anything similar to that)
+- translate from and to pretty much every language (`translate hello world to English` or anything similar to that)
+- look up a word in dictionary (`what does hello mean` or anything similar to that)
+- search for people on Wikipedia (`who is Joe Biden` or anything similar to that)
+- chat with you (`anything`)
+- get news from Google (`news about Joe Biden` or anything similar to that)
+- create reminders (`create a reminder` or anything similar to that)
+- create timers (`set a timer` or anything similar to that)
+- cancel timers (`cancel the 1st timer` or anything similar to that)
+- display the timers (`show me the timers` or anything similar to that)
+- *search for anything you might possibly want* (`search for Joe Biden` or anything similar to that)
 
 # License
 This code is licensed with Apache License 2.0
