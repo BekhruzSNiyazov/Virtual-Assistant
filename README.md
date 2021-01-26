@@ -39,31 +39,37 @@ In this case, your email and password will be only saved **locally** and they **
 
 Also, if you ask for weather assistant will use your geolocation to give you the current weather in your city. Your geolocation **will not be saved** and it **will not be uploaded anywhere**.
 
-# What can this assistant do?
+# What this assistant is capable of?
+List of things that you will find after installing this assistant:
+- Speech recognition
+- Text to speech
+- Graphical user interface
+- Mute assistant button
+- Input field for typing the commands
+- Speech recognition button
+
 List of things this assistant can do:
-- tell current weather (`what's the weather` you can say this in other words)
-- tell time (`what's the time` you can say this in other words)
-- tell date (`what's the date` you can say this in other words)
-- perform calculations (`what is 2 + 2` you can say this in other words)
-- open websites and apps (`open youtube.com` you can say this in other words)
-- tell jokes (`tell me a joke` you can say this in other words)
-- send emails (`send an email` you can say this in other words)
-- translate from and to pretty much every language (`translate hello world to German` you can say this in other words)
-- look up a word in dictionary (`what does hello mean` you can say this in other words)
-- search for people on Wikipedia (`who is Joe Biden` you can say this in other words)
+- tell current weather (`what's the weather` *you can say this in other words*)
+- tell time (`what's the time` *you can say this in other words*)
+- tell date (`what's the date` *you can say this in other words*)
+- perform calculations (`what is 2 + 2` *you can say this in other words*)
+- open websites and apps (`open youtube.com` *you can say this in other words*)
+- tell jokes (`tell me a joke` *you can say this in other words*)
+- send emails (`send an email` *you can say this in other words*)
+- translate from and to pretty much every language (`translate hello world to German` *you can say this in other words*)
+- look up a word in dictionary (`what does hello mean` *you can say this in other words*)
+- search for people on Wikipedia (`who is Joe Biden` *you can say this in other words*)
 - chat with you (`anything`)
-- get news from Google (`news about Joe Biden` you can say this in other words)
-- create reminders (`create a reminder` you can say this in other words)
-- create timers (`set a timer` you can say this in other words)
-- cancel timers (`cancel the 1st timer` you can say this in other words)
-- display the timers (`show me the timers` you can say this in other words)
-- *search for anything you might possibly want* (`search for Joe Biden` you can say this in other words)
+- get news from Google (`news about Joe Biden` *you can say this in other words*)
+- create reminders (`create a reminder` *you can say this in other words*)
+- create timers (`set a timer` *you can say this in other words*)
+- cancel timers (`cancel the 1st timer` *you can say this in other words*)
+- display the timers (`show me the timers` *you can say this in other words*)
+- have text to speech turned off (`shut up` *you can say this in other words*)
+- **search for anything you might possibly want** (`search for Joe Biden` *you can say this in other words*)
 
 # License
 This code is licensed with Apache License 2.0
 
 
 I hope you will enjoy using this virtual assistant!
-
-
-Thanks to Peter Repiev for constant feedback.
