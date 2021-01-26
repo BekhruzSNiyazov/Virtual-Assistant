@@ -218,6 +218,8 @@ def check_reminder(reminder, date, index):
 def generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word):
 	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff, last_joke, timers, last_user
 
+	user_input_without_syntax = user_input_without_syntax.replace("whats", "what is").replace("whatre", "what are").replace("whos", "who is").replace("whore", "who are")
+
 	if "reminder_threads" in data:
 		for thread in data["reminder_threads"]:
 			try: data["reminder_threads"][thread][0].start()
@@ -439,7 +441,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 
 	# if user's input is a question
 	elif question:
-		print("This is a question")
+
 		if re.match(r"what does [\w\s]+ mean", user_input_without_syntax, re.IGNORECASE):
 
 			search_item = user_input_without_syntax[user_input_without_syntax.index("does") + len("does") + 1 : user_input_without_syntax.index("mean")].strip()
@@ -469,7 +471,6 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			return
 	# if user said something about assistant
 	elif about_it:
-		print("They said something about assistant")
 		
 		answered = False
 
@@ -492,9 +493,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 							return
 
 	# if user's input is a greeting
-	elif greeting:
-		print("This is a greeting")
-		
+	elif greeting:		
 		answered = False
 
 		hour = datetime.now().time().hour
@@ -631,8 +630,6 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 	# if user's input is a statement about themselves
 	elif about_themselves:
 
-		print("This is a statement about themselves")
-		
 		if re.match(r"i [do ]*feel [\w\s]+[,]*[\w\s]*", user_input_without_syntax, re.IGNORECASE):
 
 			their_feelings = re.findall(r"i [do ]*feel ([\w\s]+)?,*[\w\s]*", user_input_without_syntax, re.IGNORECASE)[0]
@@ -736,8 +733,6 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 	# if user's input is a statement
 	elif statement:
 		
-		print("This is a statement")
-
 		# creating variables that will hold information about user's input
 		explanation = False
 
