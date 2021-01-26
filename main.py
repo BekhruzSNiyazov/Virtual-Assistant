@@ -243,7 +243,7 @@ def check_reminder(reminder, date, index):
 def generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word):
 	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff, last_joke, timers, last_user
 
-	user_input_without_syntax = user_input_without_syntax.replace("whats", "what is").replace("whatre", "what are").replace("whos", "who is").replace("whore", "who are")
+	user_input_without_syntax = user_input_without_syntax.replace("whats", "what is").replace("whatre", "what are").replace("whos", "who is").replace("whore", "who are").replace(" r ", " are ").replace(" u ", " you ")
 
 	if "reminder_threads" in data:
 		for thread in data["reminder_threads"]:
@@ -370,7 +370,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			print_answer(news)
 
 	elif "google" in words or "search" in words:
-		query = user_input_without_syntax.lower().replace("google", "").replace("search", "").strip()
+		query = user_input_without_syntax.lower().replace("google", "").replace("search for", "").replace("search", "").strip()
 		search_result = search(query, False, google=True)
 		print_answer(search_result)
 
@@ -816,7 +816,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			send(answer)
 			return
 
-		elif ("timer" in words or "timers" in words) and "cancel" in words:
+		elif ("timer" in words or "timers" in words) and ("cancel" in words or "remove" in words):
 			if re.match(r"[\w\W]*\d+[\w\W]*", user_input_without_syntax):
 				index = re.findall(r"(\d+)", user_input_without_syntax)
 				if index:
