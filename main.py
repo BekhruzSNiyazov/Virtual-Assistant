@@ -365,6 +365,9 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			query = user_input_without_syntax[index:].strip()
 			news = search(query, False, news=True)
 			print_answer(news)
+		else:
+			news = search("latest news", False, news=True)
+			print_answer(news)
 
 	elif re.match(r"[\w\W]*[(set)|(create)] [\w\W]* reminder[\w\W]*", user_input_without_syntax, re.IGNORECASE):
 		reminder = get_input("What's the reminder?")
