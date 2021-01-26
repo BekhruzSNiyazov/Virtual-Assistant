@@ -8,3 +8,4 @@ playsound
 eel
 pyowm
 googletrans==3.1.0a0
+pyscreenshot
