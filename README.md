@@ -40,12 +40,25 @@ In this case, your email and password will be only saved **locally** and they **
 Also, if you ask for weather assistant will use your geolocation to give you the current weather in your city. Your geolocation **will not be saved** and it **will not be uploaded anywhere**.
 
 # What can this assistant do?
-Pretty much everything. Feel free to chat with it.
+List of things this assistant can do:
+- tell current weather
+- tell jokes
+- send emails
+- translate from and to pretty much every language
+- look up a word in dictionary
+- search for people on Wikipedia
+- chat with you
+- get news from Google
+- create reminders
+- create timers
+- cancel timers
+- display the timers
+- *search for anything you might possibly want*
 
 # License
 This code is licensed with Apache License 2.0
 
-#
+
 I hope you will enjoy using this virtual assistant!
 
 
