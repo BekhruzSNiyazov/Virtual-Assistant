@@ -1072,5 +1072,3 @@ if __name__ == "__main__":
 # TODO: try to add a control over volume and brightness
 # TODO: if I have enough time: add image and file sharing tool
 # TODO: add wake word
-# TODO: fix r u issue
-# TODO: complete reminders
