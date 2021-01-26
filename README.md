@@ -40,14 +40,6 @@ In this case, your email and password will be only saved **locally** and they **
 Also, if you ask for weather assistant will use your geolocation to give you the current weather in your city. Your geolocation **will not be saved** and it **will not be uploaded anywhere**.
 
 # What this assistant is capable of?
-List of things that you will find after installing this assistant:
-- Speech recognition
-- Text to speech
-- Graphical user interface
-- Mute assistant button
-- Input field for typing the commands
-- Speech recognition button
-
 List of things this assistant can do:
 - tell current weather (`what's the weather` *you can say this in other words*)
 - tell time (`what's the time` *you can say this in other words*)
