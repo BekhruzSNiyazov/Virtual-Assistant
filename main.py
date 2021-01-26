@@ -362,7 +362,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 				index = user_input_without_syntax.index("about")
 			elif "on" in words:
 				index = user_input_without_syntax.index("on")
-			query = user_input_without_syntax[index:].strip()
+			query = user_input_without_syntax[index:].strip() + " news"
 			news = search(query, False, google=True)
 			print_answer(news)
 		else:
@@ -449,6 +449,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		available_words.remove("exit")
 		available_words.remove("cya")
 		available_words.remove("see you")
+		available_words.remove("see ya")
 		answer = random.choice(available_words).capitalize()
 		print_answer(answer)
 		return
@@ -815,14 +816,20 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			send(answer)
 			return
 
-		elif "timer" in words and "cancel" in words:
-			index = re.findall(r"(\d+)", user_input_without_syntax)
-			if index:
-				index = int(index[0])-1
-				timers[index][-1] = False
+		elif ("timer" in words or "timers" in words) and "cancel" in words:
+			if re.match(r"[\w\W]*\d+[\w\W]*", user_input_without_syntax):
+				index = re.findall(r"(\d+)", user_input_without_syntax)
+				if index:
+					index = int(index[0])-1
+					timers[index][-1] = False
+				else:
+					timers[index][-1] = False
+				return
 			else:
-				timers[index][-1] = False
-			return
+				if "all" in words:
+					for i in range(len(timers)):
+						timers[i][-1] = False
+				print_answers("All timers were canceled")
 
 		elif user_input_without_syntax == "same" or re.match("i feel[ the]* same[\w ]*", user_input_without_syntax):
 			user_input = last_assistant
@@ -1065,3 +1072,5 @@ if __name__ == "__main__":
 # TODO: try to add a control over volume and brightness
 # TODO: if I have enough time: add image and file sharing tool
 # TODO: add wake word
+# TODO: fix r u issue
+# TODO: complete reminders
