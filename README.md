@@ -48,7 +48,7 @@ List of things this assistant can do:
 - open websites and apps (`open youtube.com` you can say this in other words)
 - tell jokes (`tell me a joke` you can say this in other words)
 - send emails (`send an email` you can say this in other words)
-- translate from and to pretty much every language (`translate hello world to English` you can say this in other words)
+- translate from and to pretty much every language (`translate hello world to German` you can say this in other words)
 - look up a word in dictionary (`what does hello mean` you can say this in other words)
 - search for people on Wikipedia (`who is Joe Biden` you can say this in other words)
 - chat with you (`anything`)
