@@ -135,9 +135,9 @@ def translate(text, dest="en"):
 	translation = translator.translate(text, dest=dest)
 	return translation
 
-def search(search_item, person, news=False):
+def search(search_item, person, google=False):
 	answer = ""
-	if news:
+	if google:
 		try:
 			page = 1
 			start = (page - 1) * 10 + 1
@@ -155,7 +155,7 @@ def search(search_item, person, news=False):
 					# extract the page url
 					link = search_item.get("link")
 					# print the results
-					answer += "<a class='news' href='" + link + "'>" + "<h2>" + title + "</h2>" + snippet + "</a><br><br>"
+					answer += "<a class='news' target='_blank' href='" + link + "'>" + "<h2>" + title + "</h2>" + snippet + "</a><br><br>"
 				else: break
 		except: pass
 	elif person:
@@ -363,11 +363,16 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			elif "on" in words:
 				index = user_input_without_syntax.index("on")
 			query = user_input_without_syntax[index:].strip()
-			news = search(query, False, news=True)
+			news = search(query, False, google=True)
 			print_answer(news)
 		else:
-			news = search("latest news", False, news=True)
+			news = search("latest news", False, google=True)
 			print_answer(news)
+
+	elif "google" in words or "search" in words:
+		query = user_input_without_syntax.lower().replace("google", "").replace("search", "").strip()
+		search_result = search(query, False, google=True)
+		print_answer(search_result)
 
 	elif re.match(r"[\w\W]*[(set)|(create)] [\w\W]* reminder[\w\W]*", user_input_without_syntax, re.IGNORECASE):
 		reminder = get_input("What's the reminder?")
@@ -1057,7 +1062,6 @@ if __name__ == "__main__":
 
 # TODO: add "what can you do"
 # TODO: add "who are you"
-# TODO: try to add some sort of built-in google search
 # TODO: try to add a control over volume and brightness
 # TODO: if I have enough time: add image and file sharing tool
 # TODO: add wake word
