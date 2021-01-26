@@ -42,6 +42,9 @@ Also, if you ask for weather assistant will use your geolocation to give you the
 # What can this assistant do?
 List of things this assistant can do:
 - tell current weather (`what's the weather` or anything similar to that)
+- tell time (`what's the time` or anything similar to that)
+- tell date (`what's the date` or anything similar to that)
+- perform calculations (`what is 2 + 2` or anything similar to that)
 - tell jokes (`tell me a joke` or anything similar to that)
 - send emails (`send an email` or anything similar to that)
 - translate from and to pretty much every language (`translate hello world to English` or anything similar to that)
