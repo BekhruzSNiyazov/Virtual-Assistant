@@ -159,7 +159,7 @@
                     input.value = "";
                     let question, greeting, about_themselves, statement, about_it, greeting_word
                     let user_input_without_syntax = await eel.remove_syntax(command)();
-                    let command_split = command.split(" ");
+                    let command_split = user_input_without_syntax.split(" ");
                     let type = await eel.recognize_type(command, user_input_without_syntax, command_split)();
                     question = type[0];
                     greeting = type[1];
