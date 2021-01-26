@@ -14,6 +14,7 @@ from subprocess import Popen
 from sys import argv
 
 import pyowm
+import pyscreenshot
 import requests
 import wikipedia
 from googlesearch import search as gSearch
@@ -239,9 +240,34 @@ def check_reminder(reminder, date, index):
 	with open("data.py", "w") as file:
 		file.write("data = " + str(data))
 
+def take_screenshot(seconds):
+	time.sleep(seconds)
+	image = pyscreenshot.grab()
+	say_thread = threading.Thread(target=say, args=("Screenshot was taken. Press CTRL S or CTRL SHIFT S to save it",))
+	say_thread.start()
+	image.show()
+
 @eel.expose
 def generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word):
 	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff, last_joke, timers, last_user
+
+
+	trnslt = False
+	language = ""
+	code = ""
+	file = open("languages.csv", "r")
+	reader = csv.DictReader(file)
+	rows = list(reader)
+	file.close()
+
+	for wrd in words:
+		if not trnslt:
+			for row in rows:
+				if wrd.lower() == row["Language"].lower():
+					language = row["Language"]
+					trnslt = True
+					break
+		else: break
 
 	user_input_without_syntax = user_input_without_syntax.replace("whats", "what is").replace("whatre", "what are").replace("whos", "who is").replace("whore", "who are").replace(" r ", " are ").replace(" u ", " you ")
 
@@ -267,6 +293,18 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		print_answer(answer)
 		return
 
+	elif "screenshot" in words:
+		if "seconds" in words:
+			seconds = re.findall(r"(\d+)", user_input_without_syntax)
+			if seconds:
+				seconds = seconds[0]
+				say("Taking screenshot in " + seconds + " seconds")
+				take_screenshot(int(seconds))
+		else:
+			say("Taking screenshot in 3 seconds")
+			take_screenshot(3)
+
+
 	elif "joke" in words and "not" not in words:
 		jokes = data["jokes"].copy()
 		if last_joke in jokes: jokes.remove(last_joke)
@@ -285,24 +323,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		print_answer(answer)
 		return
 
-	trnslt = False
-	language = ""
-	code = ""
-	file = open("languages.csv", "r")
-	reader = csv.DictReader(file)
-	rows = list(reader)
-	file.close()
-
-	for wrd in words:
-		if not trnslt:
-			for row in rows:
-				if wrd.lower() == row["Language"].lower():
-					language = row["Language"]
-					trnslt = True
-					break
-		else: break
-
-	if trnslt and "to" in words or "in" in words:
+	elif trnslt and "to" in words or "in" in words:
 		text = ""
 		for row in rows:
 			if language == row["Language"]: code = row["Code"]
@@ -338,7 +359,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		answer = "Sure! Just say something like \"Remember the door code is 4453\" and then ask \"What is the door code\""
 		print_answer(answer)
 
-	if "one more" in user_input_without_syntax or "another one" in user_input_without_syntax:
+	elif "one more" in user_input_without_syntax or "another one" in user_input_without_syntax:
 		user_input = last_user
 		user_input_without_syntax = remove_syntax(last_user).lower().strip()
 		words = user_input_without_syntax.split()
