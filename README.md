@@ -40,26 +40,26 @@ In this case, your email and password will be only saved **locally** and they **
 Also, if you ask for weather assistant will use your geolocation to give you the current weather in your city. Your geolocation **will not be saved** and it **will not be uploaded anywhere**.
 
 # What this assistant is capable of?
-List of things this assistant can do:
-- tell current weather (`what's the weather` *you can say this in other words*)
-- take a screenshot (`take a screenshot` *you can say this in other words*)
-- tell time (`what's the time` *you can say this in other words*)
-- tell date (`what's the date` *you can say this in other words*)
-- perform calculations (`what is 2 + 2` *you can say this in other words*)
-- open websites and apps (`open youtube.com` *you can say this in other words*)
-- tell jokes (`tell me a joke` *you can say this in other words*)
-- send emails (`send an email` *you can say this in other words*)
-- translate from and to pretty much every language (`translate hello world to German` *you can say this in other words*)
-- look up a word in dictionary (`what does hello mean` *you can say this in other words*)
-- search for people on Wikipedia (`who is Joe Biden` *you can say this in other words*)
+List of things this assistant can do *(you **don't** have to remember these commands, talk to it like to a human)*:
+- tell current weather (`what's the weather`)
+- take a screenshot (`take a screenshot`)
+- tell time (`what's the time`)
+- tell date (`what's the date`)
+- perform calculations (`what is 2 + 2`)
+- open websites and apps (`open youtube.com`)
+- tell jokes (`tell me a joke`)
+- send emails (`send an email`)
+- translate from and to pretty much every language (`translate hello world to German`)
+- look up a word in dictionary (`what does hello mean`)
+- search for people on Wikipedia (`who is Joe Biden`)
 - chat with you (`anything`)
-- get news from Google (`news about Joe Biden` *you can say this in other words*)
-- create reminders (`create a reminder` *you can say this in other words*)
-- create timers (`set a timer` *you can say this in other words*)
-- cancel timers (`cancel the 1st timer` *you can say this in other words*)
-- display the timers (`show me the timers` *you can say this in other words*)
-- have text to speech turned off (`shut up` *you can say this in other words*)
-- **search for anything you might possibly want** (`search for Joe Biden` *you can say this in other words*)
+- get news from Google (`news about Joe Biden`)
+- create reminders (`create a reminder`)
+- create timers (`set a timer`)
+- cancel timers (`cancel the 1st timer`)
+- display the timers (`show me the timers`)
+- have text to speech turned off (`shut up`)
+- **search for anything you might possibly want** (`search for Joe Biden`)
 
 # License
 This code is licensed with Apache License 2.0
