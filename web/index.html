@@ -10,7 +10,7 @@
         *:focus {
             outline: none;
         }
-        span {
+        .span {
             color: #eeeeee;
             float: right;
             font-size: 120%;
@@ -202,6 +202,7 @@
             br.style.clear = "both";
             document.body.appendChild(br);
             let question_GUI = document.createElement("span");
+            question_GUI.classList.add("span");
             if (input.type == "text") {
                 question_GUI.innerHTML = command;
             } else {
@@ -236,6 +237,7 @@
                 br.style.clear = "both";
                 document.body.appendChild(br);
                 answer_GUI = document.createElement("span");
+                answer_GUI.classList.add("span");
                 answer_GUI.innerHTML = answer;
                 answer_GUI.style.float = "left";
                 answer_GUI.style.marginLeft = "6%";
