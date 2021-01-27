@@ -47,7 +47,7 @@ List of things this assistant can do *(you **don't** have to remember these comm
 - tell date (`what's the date`)
 - perform calculations (`what is 2 + 2`)
 - open websites and apps (`open youtube.com`)
-- tell jokes (`tell me a joke`)
+- tell jokes (`tell me a joke` (they really are excellent, you have to try them))
 - send emails (`send an email`)
 - translate from and to pretty much every language (`translate hello world to German`)
 - look up a word in dictionary (`what does hello mean`)
