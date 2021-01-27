@@ -205,6 +205,7 @@
             await get_answer()
         }
         async function get_answer() {
+            await new Promise(r => setTimeout(r, 1000));
             let response = await eel.send_to_js()();
             let answer = response[0];
             console.log(answer);
