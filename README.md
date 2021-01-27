@@ -29,7 +29,7 @@ python3 main.py
 ```
 or
 ```
-chmod +x main.py # you only need to type this first time
+chmod +x main.py # you only need to type this the first time
 ./main.py
 ```
 # Privace notice
