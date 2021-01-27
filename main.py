@@ -349,7 +349,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		elif "storm" in status: status_icon += "🌪 "
 		answer = "Temperature: " + temperature + "<br>Maximum temperature: <span style='color: lightcoral;'>" + temperature + "</span><br>Minimum temperature: <span style='color: blue;'>" + min_temperature + "</span><br>Feels like: " + feels_like + "<br>Humidity: 💧" + humidity + "<br>Weather status: " + status_icon + status
 		print_answer(answer, tts=False)
-		say_thread = threading.Thread(target=say, args=(f"Right now, in {eel.get_location()()} it is {temperature}",))
+		say_thread = threading.Thread(target=say, args=(f"Right now, it is {temperature}",))
 		say_thread.start()
 
 	elif "screenshot" in words:
