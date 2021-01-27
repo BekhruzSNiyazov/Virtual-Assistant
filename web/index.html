@@ -59,6 +59,10 @@
         .news:hover {
             color: #d4d4d4;
         }
+        .more:hover {
+            color: #d4d4d4;
+            cursor: pointer;
+        }
     </style>
     <link rel="icon" href="A.png">
     <div style="margin-bottom: 23%;"></div>
@@ -96,6 +100,18 @@
         let inpt = false;
 
         let lc = "";
+
+        let more_news;
+
+        eel.expose(update_news);
+        function update_news(news) {
+            more_news = news;
+        }
+
+        function expand() {
+            let element_div = document.getElementsByClassName('more')[document.getElementsByClassName('more').length - 1];
+            element_div.innerHTML = more_news;
+        }
 
         document.onmousemove = function(e) {
             if (!moved) {
