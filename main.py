@@ -64,7 +64,9 @@ if len(argv) > 1:
 
 def say(string, lang="en"):
 	if len(string) < 150:
-		tts = gTTS(text=string.replace("<br>", " "), lang=lang)
+		string = re.sub(r"<[\w\W]*?>", "", string)
+		for i in range(10): print(string)
+		tts = gTTS(text=string, lang=lang)
 		try:
 			filename = "speech" + str(random.randint(0, 1000000)) + ".mp3"
 			tts.save(filename)
@@ -157,7 +159,7 @@ def search(search_item, person, google=False):
 					answer += "<a class='news' target='_blank' href='" + link + "'>" + "<h2>" + title + "</h2>" + snippet + "</a><br><br>"
 				else: more += "<a class='news' target='_blank' href='" + link + "'>" + "<h2>" + title + "</h2>" + snippet + "</a><br><br>"
 			eel.update_news(more)()
-			answer += "<div class='more' onclick='expand();'>Click for more news</div>"
+			answer += "<div class='more' onclick='expand();'>Click for more</div>"
 			print(answer)
 		except Exception as e: print(e)
 	elif person:
@@ -173,7 +175,8 @@ def search(search_item, person, google=False):
 					answer = search_wikipedia(search_item.split()[0])
 					found_on_wikipedia()
 				except:
-					answer = "Sorry, I don't know who " + search_item + " is."
+					answer = search(search_item, False, google=True)
+					return
 	else:
 		answered = False
 		try:
@@ -196,7 +199,7 @@ def search(search_item, person, google=False):
 				return answer
 	
 		if not answered:
-			answer = "Sorry, I don't know that yet. But you can teach me."
+			answer = search(search_item, False, google=True)
 	return answer
 
 def search_wikipedia(search_item):
@@ -304,11 +307,51 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			max_temperature = str(weather.temperature("celsius")["temp_max"]) + "°C"
 			min_temperature = str(weather.temperature("celsius")["temp_min"]) + "°C"
 			feels_like = str(weather.temperature("celsius")["feels_like"]) + "°C"
+		temperature_C = str(weather.temperature("celsius")["temp"]) + "°C"
+		max_temperature_C = str(weather.temperature("celsius")["temp_max"]) + "°C"
+		min_temperature_C = str(weather.temperature("celsius")["temp_min"]) + "°C"
+		feels_like_C = str(weather.temperature("celsius")["feels_like"]) + "°C"
+		if float(temperature_C.replace("°C", "")) > 0:
+			if float(temperature_C.replace("°C", "")) > 15:
+				temperature = "<span style='color: lightcoral;'>+" + temperature + "</span>"
+			else:
+				temperature = "<span style='color: lightyellow;'>+" + temperature + "</span>"
+		else:
+			temperature =  "<span style='color: lightblue;'>" + temperature + "</span>"
+		if float(max_temperature_C.replace("°C", "")) > 0:
+			if float(max_temperature_C.replace("°C", "")) > 15:
+				max_temperature = "<span style='color: lightcoral;'>+" + max_temperature + "</span>"
+			else:
+				max_temperature = "<span style='color: lightyellow;'>+" + max_temperature + "</span>"
+		else:
+			max_temperature =  "<span style='color: lightblue;'>" + max_temperature + "</span>"
+		if float(min_temperature_C.replace("°C", "")) > 0:
+			if float(min_temperature_C.replace("°C", "")) > 15:
+				min_temperature = "<span style='color: lightcoral;'>+" + min_temperature + "</span>"
+			else:
+				min_temperature = "<span style='color: lightyellow;'>+" + min_temperature + "</span>"
+		else:
+			min_temperature =  "<span style='color: lightblue;'>" + min_temperature + "</span>"
+		if float(feels_like_C.replace("°C", "")) > 0:
+			if float(feels_like_C.replace("°C", "")) > 15:
+				feels_like = "<span style='color: lightcoral;'>+" + feels_like + "</span>"
+			else:
+				feels_like = "<span style='color: lightyellow;'>+" + feels_like + "</span>"
+		else:
+			feels_like =  "<span style='color: lightblue;'>" + feels_like + "</span>"
+
 		humidity = str(weather.humidity)
 		status = weather.detailed_status
-		answer = "Temperature: " + temperature + "<br>Maximum temperature: " + temperature + "<br>Minimum temperature: " + min_temperature + "<br>Feels like: " + feels_like + "<br>Humidity: " + humidity + "<br>Weather status: " + status
+		status_icon = ""
+		if "sunny" in status: status_icon += "☀ "
+		elif "cloud" in status: status_icon += "🌥 "
+		elif "rain" in status: status_icon += "🌧 "
+		elif "snow" in status: status_icon += "🌧 "
+		elif "storm" in status: status_icon += "🌪 "
+		answer = "Temperature: " + temperature + "<br>Maximum temperature: <span style='color: lightcoral;'>" + temperature + "</span><br>Minimum temperature: <span style='color: blue;'>" + min_temperature + "</span><br>Feels like: " + feels_like + "<br>Humidity: 💧" + humidity + "<br>Weather status: " + status_icon + status
 		print_answer(answer, tts=False)
-		say(f"Right now, in {eel.get_location()()} it is {temperature}")
+		say_thread = threading.Thread(target=say, args=(f"Right now, in {eel.get_location()()} it is {temperature}",))
+		say_thread.start()
 		return
 
 	elif "screenshot" in words:
@@ -1109,5 +1152,4 @@ if __name__ == "__main__":
 # TODO: add "what can you do"
 # TODO: add "who are you"
 # TODO: try to add a control over volume and brightness
-# TODO: if I have enough time: add image and file sharing tool
 # TODO: add wake word
