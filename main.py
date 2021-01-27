@@ -289,9 +289,26 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		return
 
 	elif "weather" in words:
-		temperature = pyowm.OWM("6d00d1d4e704068d70191bad2673e0cc").weather_manager().weather_at_place(eel.get_location()()).weather.temperature("celsius")["temp"]
-		answer = "Right now, in " + eel.get_location()() + " it is " + str(temperature) + "°C"
-		print_answer(answer)
+		weather = pyowm.OWM("6d00d1d4e704068d70191bad2673e0cc").weather_manager().weather_at_place(eel.get_location()()).weather
+		temperature = ""
+		max_temperature = ""
+		min_temperature = ""
+		feels_like = ""
+		if "fahrenheit" in words:
+			temperature = str(weather.temperature("fahrenheit")["temp"]) + "°F"
+			max_temperature = str(weather.temperature("fahrenheit")["temp_max"]) + "°F"
+			min_temperature = str(weather.temperature("fahrenheit")["temp_min"]) + "°F"
+			feels_like = str(weather.temperature("fahrenheit")["feels_like"]) + "°F"
+		else:
+			temperature = str(weather.temperature("celsius")["temp"]) + "°C"
+			max_temperature = str(weather.temperature("celsius")["temp_max"]) + "°C"
+			min_temperature = str(weather.temperature("celsius")["temp_min"]) + "°C"
+			feels_like = str(weather.temperature("celsius")["feels_like"]) + "°C"
+		humidity = str(weather.humidity)
+		status = weather.detailed_status
+		answer = "Temperature: " + temperature + "<br>Maximum temperature: " + temperature + "<br>Minimum temperature: " + min_temperature + "<br>Feels like: " + feels_like + "<br>Humidity: " + humidity + "<br>Weather status: " + status
+		print_answer(answer, tts=False)
+		say(f"Right now, in {eel.get_location()()} it is {temperature}")
 		return
 
 	elif "screenshot" in words:
