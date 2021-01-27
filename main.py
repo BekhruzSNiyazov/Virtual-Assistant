@@ -140,25 +140,26 @@ def search(search_item, person, google=False):
 	answer = ""
 	if google:
 		try:
+			more = ""
 			page = 1
 			start = (page - 1) * 10 + 1
 			url = f"https://www.googleapis.com/customsearch/v1?key={API_KEY}&cx={SEARCH_ENGINE_ID}&q={search_item}&start={start}"
 			data = requests.get(url).json()
 			search_items = data.get("items")
 			for i, search_item in enumerate(search_items, start=1):
+				# get the page title
+				title = search_item.get("title")
+				# page snippet
+				snippet = search_item.get("snippet")
+				# extract the page url
+				link = search_item.get("link")
 				if i < 4:
-					# get the page title
-					title = search_item.get("title")
-					# page snippet
-					snippet = search_item.get("snippet")
-					# alternatively, you can get the HTML snippet (bolded keywords)
-					html_snippet = search_item.get("htmlSnippet")
-					# extract the page url
-					link = search_item.get("link")
-					# print the results
 					answer += "<a class='news' target='_blank' href='" + link + "'>" + "<h2>" + title + "</h2>" + snippet + "</a><br><br>"
-				else: break
-		except: pass
+				else: more += "<a class='news' target='_blank' href='" + link + "'>" + "<h2>" + title + "</h2>" + snippet + "</a><br><br>"
+			eel.update_news(more)()
+			answer += "<div class='more' onclick='expand();'>Click for more news</div>"
+			print(answer)
+		except Exception as e: print(e)
 	elif person:
 		try:
 			answer = search_wikipedia(search_item)
