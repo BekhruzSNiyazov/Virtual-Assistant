@@ -13,6 +13,7 @@ from datetime import datetime
 from subprocess import Popen
 from sys import argv
 
+import pyjokes
 import pyowm
 import pyscreenshot
 import requests
@@ -65,7 +66,6 @@ if len(argv) > 1:
 def say(string, lang="en"):
 	if len(string) < 150:
 		string = re.sub(r"<[\w\W]*?>", "", string)
-		for i in range(10): print(string)
 		tts = gTTS(text=string, lang=lang)
 		try:
 			filename = "speech" + str(random.randint(0, 1000000)) + ".mp3"
@@ -369,9 +369,12 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 	elif "joke" in words and "not" not in words:
 		jokes = data["jokes"].copy()
 		if last_joke in jokes: jokes.remove(last_joke)
-		answer = random.choice(jokes)
-		last_joke = answer
-		print_answer(answer)
+		if random.choice([True, False]):
+			print_answer(pyjokes.get_joke())
+		else:
+			answer = random.choice(jokes)
+			last_joke = answer
+			print_answer(answer)
 		return
 
 	elif "time" in words:
