@@ -255,7 +255,6 @@ def take_screenshot(seconds):
 def generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word):
 	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff, last_joke, timers, last_user
 
-
 	trnslt = False
 	language = ""
 	code = ""
@@ -352,7 +351,6 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		print_answer(answer, tts=False)
 		say_thread = threading.Thread(target=say, args=(f"Right now, in {eel.get_location()()} it is {temperature}",))
 		say_thread.start()
-		return
 
 	elif "screenshot" in words:
 		if "seconds" in words:
@@ -365,27 +363,24 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			say("Taking screenshot in 3 seconds")
 			take_screenshot(3)
 
-
-	elif "joke" in words and "not" not in words:
-		jokes = data["jokes"].copy()
-		if last_joke in jokes: jokes.remove(last_joke)
+	elif "joke" in words and "not" not in words or "humor" in words:
 		if random.choice([True, False]):
-			print_answer(pyjokes.get_joke())
+			answer = pyjokes.get_joke()
+			print_answer("CS HUMOR: " + answer)
 		else:
+			jokes = data["jokes"].copy()
+			if last_joke in jokes: jokes.remove(last_joke)
 			answer = random.choice(jokes)
 			last_joke = answer
 			print_answer(answer)
-		return
 
 	elif "time" in words:
 		answer = "Right now it is " + str(datetime.now().time())[:8]
 		print_answer(answer)
-		return
 
 	elif "date" in words:
 		answer = "Right now it is " + str(datetime.now().date())
 		print_answer(answer)
-		return
 
 	elif trnslt and "to" in words or "in" in words:
 		text = ""
@@ -408,16 +403,13 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		print_answer(answer, tts=False)
 		pronunciation = threading.Thread(target=say, args=(translation.text, code))
 		pronunciation.start()
-		return
 
 	elif user_input_without_syntax == "0 or 1" or user_input_without_syntax == "1 or 0" or user_input_without_syntax == "1 or 2" or user_input_without_syntax == "2 or 1":
 		print_answer("1!")
-		return "1!"
 
 	elif "random" in words and "number" in words:
 		number = str(random.randint(0, 100000000000000))
 		print_answer(number)
-		return number
 
 	elif "remember this" in user_input_without_syntax or "remember" in user_input_without_syntax and "thing" in user_input_without_syntax:
 		answer = "Sure! Just say something like \"Remember the door code is 4453\" and then ask \"What is the door code\""
@@ -431,14 +423,14 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		answer = generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word)
 		print_answer(answer)
 		return
-	else: last_user = user_input
-
+	
+	last_user = user_input
+	
 	if re.match(r"[\w\W]*[\d]+[\+\-\*\/]+[\w\W]*", user_input_without_syntax, re.IGNORECASE) and "timer" not in words and "timers" not in words:
 		user_input_without_syntax = user_input_without_syntax.replace("^", "**")
 		to_calculate = re.findall(r"([\d\+\-\*\/]+)", user_input_without_syntax, re.IGNORECASE)[0]
 		answer = str(eval(to_calculate))
 		print_answer(answer)
-		return
 
 	elif "news" in words:
 		if "about" in words or "on" in words:
