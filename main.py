@@ -252,8 +252,24 @@ def take_screenshot(seconds):
 	image.show()
 
 @eel.expose
-def generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word):
+def generate_answer(user_input, user_input_without_syntax):
 	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff, last_joke, timers, last_user
+
+	words = user_input_without_syntax.split()
+	user_input_without_syntax = user_input_without_syntax.replace("whats", "what is").replace("whatre", "what are").replace("whos", "who is").replace("whore", "who are").replace(" r ", " are ").replace(" u ", " you ").lower()
+	if words[-1] == "u": user_input_without_syntax = user_input_without_syntax[:len(user_input_without_syntax)-2] + " you"
+	user_input = user_input.replace("whats", "what is").replace("whatre", "what are").replace("whos", "who is").replace("whore", "who are").replace(" r ", " are ").replace(" u ", " you ")
+	if words[-1] == "u": user_input = user_input[:len(user_input)-2] + " you"
+	words = user_input_without_syntax.split()
+
+	types = recognize_type(user_input, user_input_without_syntax, words)
+
+	question = types[0]
+	greeting = types[1]
+	about_themselves = types[2]
+	statement = types[3]
+	about_it = types[4]
+	greeting_word = types[5]
 
 	trnslt = False
 	language = ""
@@ -271,8 +287,6 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 					trnslt = True
 					break
 		else: break
-
-	user_input_without_syntax = user_input_without_syntax.replace("whats", "what is").replace("whatre", "what are").replace("whos", "who is").replace("whore", "who are").replace(" r ", " are ").replace(" u ", " you ")
 
 	if "reminder_threads" in data:
 		for thread in data["reminder_threads"]:
@@ -347,6 +361,7 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 		elif "rain" in status: status_icon += "🌧 "
 		elif "snow" in status: status_icon += "🌧 "
 		elif "storm" in status: status_icon += "🌪 "
+		elif "clear" in status: status_icon += "☀ "
 		answer = "Temperature: " + temperature + "<br>Maximum temperature: <span style='color: lightcoral;'>" + temperature + "</span><br>Minimum temperature: <span style='color: blue;'>" + min_temperature + "</span><br>Feels like: " + feels_like + "<br>Humidity: 💧" + humidity + "<br>Weather status: " + status_icon + status
 		print_answer(answer, tts=False)
 		if not tts_off:
@@ -364,8 +379,8 @@ def generate_answer(user_input, user_input_without_syntax, words, question, gree
 			say("Taking screenshot in 3 seconds")
 			take_screenshot(3)
 
-	elif "joke" in words and "not" not in words or "humor" in words:
-		if random.choice([True, False]):
+	elif "joke" in words and "not" not in words or "humor" in words or "make me laugh" in user_input_without_syntax:
+		if random.choice([True, False]) or "humor" in words:
 			answer = pyjokes.get_joke()
 			print_answer("CS HUMOR: " + answer)
 		else:
