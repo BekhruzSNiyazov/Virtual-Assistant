@@ -70,7 +70,7 @@ def say(string, lang="en"):
 			tts.save(filename)
 			playsound(filename)
 			os.remove(filename)
-		except Exception as e: pass
+		except: pass
 
 @eel.expose
 def send_to_js():
@@ -157,7 +157,7 @@ def search(search_item, person, google=False):
 				else: more += "<a class='news' target='_blank' href='" + link + "'>" + "<h2>" + title + "</h2>" + snippet + "</a><br><br>"
 			eel.update_news(more)()
 			answer += "<div class='more' onclick='expand();'>Click for more</div>"
-		except Exception as e: pass
+		except: pass
 	elif person:
 		try:
 			answer = search_wikipedia(search_item)
@@ -425,7 +425,7 @@ def generate_answer(user_input, user_input_without_syntax):
 		user_input_without_syntax = remove_syntax(last_user).lower().strip()
 		words = user_input_without_syntax.split()
 		question, greeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
-		answer = generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word)
+		answer = generate_answer(user_input, user_input_without_syntax)
 		print_answer(answer)
 		return
 	
@@ -593,7 +593,7 @@ def generate_answer(user_input, user_input_without_syntax):
 				user_input_without_syntax = remove_syntax(last_assistant).lower().strip()
 				words = user_input_without_syntax.split()
 				question, greeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
-			answer = generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word)
+			answer = generate_answer(user_input, user_input_without_syntax)
 			print_answer(answer)
 			return
 	# if user said something about assistant
@@ -918,7 +918,7 @@ def generate_answer(user_input, user_input_without_syntax):
 			user_input_without_syntax = remove_syntax(last_assistant).lower().strip()
 			words = user_input_without_syntax.split()
 			question, greeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
-			answer = generate_answer(user_input, user_input_without_syntax, words, question, greeting, about_themselves, statement, about_it, greeting_word)
+			answer = generate_answer(user_input, user_input_without_syntax)
 			print_answer(answer)
 			return
 
@@ -966,7 +966,7 @@ def generate_answer(user_input, user_input_without_syntax):
 				message = "Subject: " + subject + "\n\n" + body
 				server.sendmail(email, to_email, message)
 				send("Email was sent")
-			except Exception as e:
+			except:
 				data.pop("email", "")
 				data.pop("password", "")
 				with open("data.py", "w") as file:
