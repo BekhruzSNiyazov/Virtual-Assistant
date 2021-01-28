@@ -45,8 +45,6 @@ said = False
 
 turnTTSOff = False
 
-last_joke = ""
-
 timers = []
 
 last_user = ""
@@ -253,7 +251,7 @@ def take_screenshot(seconds):
 
 @eel.expose
 def generate_answer(user_input, user_input_without_syntax):
-	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff, last_joke, timers, last_user
+	global tts_off, last_assistant, word_to_remove, printed, to_send_to_js, said, turnTTSOff, timers, last_user
 
 	words = user_input_without_syntax.split()
 	user_input_without_syntax = user_input_without_syntax.replace("whats", "what is").replace("whatre", "what are").replace("whos", "who is").replace("whore", "who are").replace(" r ", " are ").replace(" u ", " you ").lower()
@@ -379,15 +377,8 @@ def generate_answer(user_input, user_input_without_syntax):
 			say("Taking screenshot in 3 seconds")
 			take_screenshot(3)
 
-	elif "joke" in words and "not" not in words or "humor" in words or "make me laugh" in user_input_without_syntax:
-		if random.choice([True, False]) or "humor" in words:
+	elif "joke" in words and "not" not in words or "humor" in words or "make me laugh" in user_input_without_syntax or ("tell" in words and "funny" in words):
 			answer = pyjokes.get_joke()
-			print_answer("CS HUMOR: " + answer)
-		else:
-			jokes = data["jokes"].copy()
-			if last_joke in jokes: jokes.remove(last_joke)
-			answer = random.choice(jokes)
-			last_joke = answer
 			print_answer(answer)
 
 	elif "time" in words:
