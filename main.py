@@ -593,7 +593,7 @@ def generate_answer(user_input, user_input_without_syntax):
 				user_input_without_syntax = remove_syntax(last_assistant).lower().strip()
 				words = user_input_without_syntax.split()
 				question, greeting, about_themselves, statement, about_it, greeting_word = recognize_type(user_input, user_input_without_syntax, words)
-			answer = =answer(user_input, user_input_without_syntax)
+			answer = generate_answer(user_input, user_input_without_syntax)
 			print_answer(answer)
 			return
 			# TODO: if "wikipedia" in words and "google" not in words: search in wikipedia
