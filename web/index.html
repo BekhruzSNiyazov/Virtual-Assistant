@@ -182,16 +182,8 @@
                     input.value = "";
                     let question, greeting, about_themselves, statement, about_it, greeting_word
                     let user_input_without_syntax = await eel.remove_syntax(command)();
-                    let command_split = user_input_without_syntax.split(" ");
-                    let type = await eel.recognize_type(command, user_input_without_syntax, command_split)();
-                    question = type[0];
-                    greeting = type[1];
-                    about_themselves = type[2];
-                    statement = type[3];
-                    about_it = type[4];
-                    greeting_word = type[5];
                     question_GUI(command);
-                    let temp = await eel.generate_answer(command, user_input_without_syntax, command_split, question, greeting, about_themselves, statement, about_it, greeting_word)();
+                    let temp = await eel.generate_answer(command, user_input_without_syntax)();
                 }
             } else {
                 done = true;
