@@ -886,19 +886,27 @@ def generate_answer(user_input, user_input_without_syntax):
 			explanation = True
 			are = True
 
-		elif len(words) == 1:
-			word = words[0]
-			if word in data["good"]:
+		for word in words:
+			if word in data["good"] and "not" not in words:
 				answer = "I feel really happy about that" if not said and "feel" not in last_assistant else random.choice([")", "Happy to help!", "Glad you like it"])
 				print_answer(answer)
 				said = not said
 				return
-			if word in data["bad"]:
+			elif word in data["good"] and "not" in words:
 				answer = "What's wrong?"
 				print_answer(answer)
 				return
+			elif word in data["bad"] and "not" not in words:
+				answer = "What's wrong?"
+				print_answer(answer)
+				return
+			elif word in data["bad"] and "not" in words:
+				answer = "I feel really happy about that" if not said and "feel" not in last_assistant else random.choice([")", "Happy to help!", "Glad you like it"])
+				print_answer(answer)
+				said = not said
+				return
 		
-		elif "timers" in words and "show" in words:
+		if "timers" in words and "show" in words:
 			answer = ""
 			if timers:
 				for timer in timers:
