@@ -451,10 +451,14 @@ def generate_answer(user_input, user_input_without_syntax):
 			news = search("latest news", False, google=True)
 			print_answer(news)
 
-	elif "google" in words or "search" in words:
+	elif "google" in words or "search" in words or "wikipedia" in words:
 		query = user_input_without_syntax.lower().replace("google", "").replace("search for", "").replace("search", "").strip()
-		search_result = search(query, False, google=True)
-		print_answer(search_result)
+		if "wikipedia" in words:
+			answer = search_wikipedia(query)
+			print_answer(answer)
+		else:
+			search_result = search(query, False, google=True)
+			print_answer(search_result)
 
 	elif re.match(r"[\w\W]*[(set)|(create)] [\w\W]* reminder[\w\W]*", user_input_without_syntax, re.IGNORECASE):
 		reminder = get_input("What's the reminder?")
@@ -596,7 +600,6 @@ def generate_answer(user_input, user_input_without_syntax):
 			answer = generate_answer(user_input, user_input_without_syntax)
 			print_answer(answer)
 			return
-			# TODO: if "wikipedia" in words and "google" not in words: search in wikipedia
 	# if user said something about assistant
 	elif about_it:
 		
