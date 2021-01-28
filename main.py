@@ -23,6 +23,7 @@ from googletrans import Translator
 from gtts import gTTS
 from playsound import playsound
 from PyDictionary import PyDictionary
+from quotes import random as random_quote
 
 # importing dataset from data.py file
 from data import data
@@ -62,7 +63,7 @@ if len(argv) > 1:
 		tts_off = True
 
 def say(string, lang="en"):
-	if len(string) < 150:
+	if len(string) < 200:
 		string = re.sub(r"<[\w\W]*?>", "", string)
 		tts = gTTS(text=string, lang=lang)
 		try:
@@ -378,6 +379,11 @@ def generate_answer(user_input, user_input_without_syntax):
 	elif "joke" in words and "not" not in words or "humor" in words or "make me laugh" in user_input_without_syntax or ("tell" in words and "funny" in words):
 			answer = pyjokes.get_joke()
 			print_answer(answer)
+	
+	elif "quote" in user_input_without_syntax:
+		quote = random_quote()
+		answer = "\"" + quote[1] + "\"" + "—" + quote[0]
+		print_answer(answer)
 
 	elif "time" in words:
 		answer = "Right now it is " + str(datetime.now().time())[:8]
