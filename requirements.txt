@@ -10,3 +10,4 @@ pyowm
 googletrans==3.1.0a0
 pyscreenshot
 pyjokes
+quotes==0.0.2
