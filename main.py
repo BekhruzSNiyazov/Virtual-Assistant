@@ -87,7 +87,6 @@ def send_to_js():
 def print_answer(string, end="\n", tts=True):
 	if string:
 		string = string.replace("\n", "<br>")
-		print("\nAssistant:", string, end=end)
 		global last_assistant, to_send_to_js, last_assistant2, to_send, printed, tts_off
 		printed = True
 		before_last_assistant = last_assistant
@@ -158,8 +157,7 @@ def search(search_item, person, google=False):
 				else: more += "<a class='news' target='_blank' href='" + link + "'>" + "<h2>" + title + "</h2>" + snippet + "</a><br><br>"
 			eel.update_news(more)()
 			answer += "<div class='more' onclick='expand();'>Click for more</div>"
-			print(answer)
-		except Exception as e: print(e)
+		except Exception as e: pass
 	elif person:
 		try:
 			answer = search_wikipedia(search_item)
@@ -289,7 +287,7 @@ def generate_answer(user_input, user_input_without_syntax):
 	if "reminder_threads" in data:
 		for thread in data["reminder_threads"]:
 			try: data["reminder_threads"][thread][0].start()
-			except Exception as e: print(e)
+			except: pass
 
 	user_input = user_input.lower()
 
