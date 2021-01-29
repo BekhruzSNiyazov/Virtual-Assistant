@@ -697,7 +697,7 @@ def generate_answer(user_input, user_input_without_syntax):
 					answer = "It is no longer morning, I believe. It is already afternoon."
 					print_answer(answer)
 					return
-				elif hour < 20:
+				elif hour < 20 and hour > 17:
 					answer = "It is evening now. Good evening to you!"
 					print_answer(answer)
 					return
@@ -716,7 +716,7 @@ def generate_answer(user_input, user_input_without_syntax):
 					answer = "It is only morning yet, I believe. Good morning to you!"
 					print_answer(answer)
 					return
-				elif hour > 17:
+				elif hour > 17 and hour < 20:
 					answer = "It is evening now."
 					print_answer(answer)
 					return
