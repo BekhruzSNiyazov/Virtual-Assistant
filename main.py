@@ -979,7 +979,7 @@ def generate_answer(user_input, user_input_without_syntax):
 				if "all" in words:
 					for i in range(len(timers)):
 						timers[i][-1] = False
-				print_answers("All timers were canceled")
+				print_answer("All timers were canceled")
 
 		elif user_input_without_syntax == "same" or re.match("i feel[ the]* same[\w ]*", user_input_without_syntax):
 			user_input = last_assistant
@@ -1078,7 +1078,7 @@ def generate_answer(user_input, user_input_without_syntax):
 			print_answer("Got it! " + to_remember + " is " + category)
 			return
 
-		if re.match(r"set[ a]* timer$", user_input_without_syntax, re.IGNORECASE):
+		if re.match(r"[create|set]+[ a]* timer$", user_input_without_syntax, re.IGNORECASE):
 			seconds = get_input("How many seconds should I set timer for?")
 			if seconds.isdigit(): seconds = int(seconds)
 			else:
