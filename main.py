@@ -606,7 +606,7 @@ def generate_answer(user_input, user_input_without_syntax):
 	elif question:
 
 		if "my" in words and "name" in words:
-			print_answer("Your name is " + data["name"].capitalize())
+			print_answer("Your name is " + data["name"].title())
 			return
 
 		elif "what" in words and "can" in words and "do" in words:
