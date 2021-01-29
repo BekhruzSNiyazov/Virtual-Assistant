@@ -315,6 +315,9 @@ def generate_answer(user_input, user_input_without_syntax):
 		print_answer(answer)
 		return
 
+	elif "you" in words and "are" in words and not greeting:
+		print_answer("I am assistant created by Bekhruz Niyazov. Ask me \"What can you do?\" if you want to know what I am capable of.")
+
 	elif "brightness" in words:
 		percentage = re.findall(r"(\d+)", user_input_without_syntax)
 		if percentage:
@@ -602,6 +605,31 @@ def generate_answer(user_input, user_input_without_syntax):
 
 	# if user's input is a question
 	elif question:
+
+		if "what" in words and "can" in words and "do" in words:
+			if not tts_off:
+				say_thread = threading.Thread(target=say, args=("Here are some things that I can do",))
+				say_thread.start()
+			answer = "Tell current weather ⛅<br>"
+			answer += "Take a screenshot 📷<br>"
+			answer += "Tell time ⏰<br>"
+			answer += "Tell date 📅<br>"
+			answer += "Perform calculations +/-/×/÷<br>"
+			answer += "Open websites and apps<br>"
+			answer += "Tell jokes 😉<br>"
+			answer += "Send emails 📨<br>"
+			answer += "Translate from and to pretty much every language A/漢<br>"
+			answer += "Look up a word in dictionary 📙<br>"
+			answer += "Search for people on Wikipedia<br>"
+			answer += "Chat with you<br>"
+			answer += "Get news from Google<br>"
+			answer += "Create reminders<br>"
+			answer += "Create timers ⏱<br>"
+			answer += "Cancel timers<br>"
+			answer += "Display the timers<br>"
+			answer += "Set the brightness of the display🔆<br>"
+			answer += "Search for anything you might possibly want"
+			print_answer(answer)
 
 		if re.match(r"what does [\w\s]+ mean", user_input_without_syntax, re.IGNORECASE):
 
@@ -1192,6 +1220,3 @@ def recognize_type(user_input, user_input_without_syntax, words):
 
 if __name__ == "__main__":
 	eel.start("index.html", size=(475, 750))
-
-# TODO: add "what can you do"
-# TODO: add "who are you"
