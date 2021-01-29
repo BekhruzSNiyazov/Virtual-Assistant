@@ -315,9 +315,6 @@ def generate_answer(user_input, user_input_without_syntax):
 		print_answer(answer)
 		return
 
-	elif "you" in words and "are" in words and not greeting:
-		print_answer("I am assistant created by Bekhruz Niyazov. Ask me \"What can you do?\" if you want to know what I am capable of.")
-
 	elif "brightness" in words:
 		percentage = re.findall(r"(\d+)", user_input_without_syntax)
 		if percentage:
@@ -630,6 +627,7 @@ def generate_answer(user_input, user_input_without_syntax):
 			answer += "Set the brightness of the display🔆<br>"
 			answer += "Search for anything you might possibly want"
 			print_answer(answer)
+			return
 
 		if re.match(r"what does [\w\s]+ mean", user_input_without_syntax, re.IGNORECASE):
 
@@ -669,7 +667,6 @@ def generate_answer(user_input, user_input_without_syntax):
 					if noun.startswith(word) or noun.endswith(word):
 						answer = "Please, contact @bekhruzniyazov on Tim's Discord and tell him the reason why you didn't like me. :("
 						print_answer(answer)
-						return
 			else:
 				break
 		if not answered:
@@ -679,7 +676,8 @@ def generate_answer(user_input, user_input_without_syntax):
 						if noun.startswith(word) or noun.endswith(word):
 							answer = random.choice(["Thanks a ton!", "Happy to help!"])
 							print_answer(answer)
-							return
+		if "you" in words and "are" in words:
+			print_answer("I am an assistant created by Bekhruz Niyazov. Ask me \"What can you do?\" if you want to know what I am capable of.")
 
 	# if user's input is a greeting
 	elif greeting:		
