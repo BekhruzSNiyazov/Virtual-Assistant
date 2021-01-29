@@ -17,6 +17,7 @@ import pyjokes
 import pyowm
 import pyscreenshot
 import requests
+import screen_brightness_control as sbc
 import wikipedia
 from googlesearch import search as gSearch
 from googletrans import Translator
@@ -313,6 +314,15 @@ def generate_answer(user_input, user_input_without_syntax):
 		answer = str(data)
 		print_answer(answer)
 		return
+
+	elif "brightness" in words:
+		percentage = re.findall(r"(\d+)", user_input_without_syntax)
+		if percentage:
+			percentage = int(percentage[0].strip())
+			try:
+				sbc.set_brightness(percentage)
+			except:
+				print_answer("Sorry, couldn't set the brightness")
 
 	elif "weather" in words or "temperature" in words or ("like" in words and "outside" in words):
 		weather = pyowm.OWM("6d00d1d4e704068d70191bad2673e0cc").weather_manager().weather_at_place(eel.get_location()()).weather
