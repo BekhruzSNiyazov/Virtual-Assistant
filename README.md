@@ -59,6 +59,7 @@ List of things this assistant can do *(you **don't** have to remember these comm
 - cancel timers (`cancel the 1st timer`)
 - display the timers (`show me the timers`)
 - have text to speech turned off (`shut up`)
+- set the brightness of the display (`set brightness to 50%`)
 - **search for anything you might possibly want** (`search for Joe Biden`)
 
 # License
