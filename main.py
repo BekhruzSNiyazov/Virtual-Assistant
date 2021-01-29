@@ -457,7 +457,7 @@ def generate_answer(user_input, user_input_without_syntax):
 			news = search("latest news", False, google=True)
 			print_answer(news)
 
-	elif "google" in words or "search" in words or "wikipedia" in words:
+	elif "google" in words or "search" in words or "wikipedia" in words and words[0] != "open":
 		query = user_input_without_syntax.lower().replace("google", "").replace("search for", "").replace("search", "").strip()
 		if "wikipedia" in words:
 			answer = search_wikipedia(query)
@@ -951,8 +951,10 @@ def generate_answer(user_input, user_input_without_syntax):
 				except:
 					try:
 						Popen([application, ""])
-					except: pass
-			return
+					except:
+						try:
+							Popen[application + ".exe", ""]
+						except: pass
 
 		elif re.match(r"send[(a)|(an)\s]*[(email)|(message)\s]+[(please)|(cant you)\s]", user_input_without_syntax, re.IGNORECASE):
 			try:
