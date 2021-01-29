@@ -1014,22 +1014,33 @@ def generate_answer(user_input, user_input_without_syntax):
 				password = data["password"]
 			except:
 				email = get_input("Please, type in your email address")
-				if email.lower() == "cancel": return
+				if email.lower() == "cancel":
+					print_answer("Canceled")
+					return
 				password = get_input("Please, type in your password")
-				if password.lower() == "cancel": return
+				if password.lower() == "cancel":
+					print_answer("Canceled")
+					return
 				remember = get_input("Do you want me to remember them? (y|n)")
-				if remember.lower() == "cancel": return
+				if remember.lower() == "cancel":
+					print_answer("Canceled")
+					return
 				if remember == "y":
 					data["email"] = email
 					data["password"] = password
 					with open("data.py", "w") as file:
 						file.write("data = " + str(data))
 			to_email = get_input("Please, type the email address of a person you want to send this email to")
-			if to_email.lower() == "cancel": return
+			if to_email.lower() == "cancel":
+				print_answer("Canceled")
+				return
 			subject = get_input("Please, enter the subject of the email")
-			if subject.lower() == "cancel": return
+			if subject.lower() == "cancel":
+				print_answer("Canceled")
 			body = get_input("Please, enter the body of the email")
-			if body.lower() == "cancel": return
+			if body.lower() == "cancel":
+				print_answer("Canceled")
+				return
 
 			try:
 				server = smtplib.SMTP("smtp." + email[email.index("@")+1:], 587)
