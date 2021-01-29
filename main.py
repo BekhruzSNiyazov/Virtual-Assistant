@@ -605,7 +605,11 @@ def generate_answer(user_input, user_input_without_syntax):
 	# if user's input is a question
 	elif question:
 
-		if "what" in words and "can" in words and "do" in words:
+		if "my" in words and "name" in words:
+			print_answer("Your name is " + data["name"].capitalize())
+			return
+
+		elif "what" in words and "can" in words and "do" in words:
 			if not tts_off:
 				say_thread = threading.Thread(target=say, args=("Here are some things that I can do",))
 				say_thread.start()
@@ -819,6 +823,14 @@ def generate_answer(user_input, user_input_without_syntax):
 	# if user's input is a statement about themselves
 	elif about_themselves:
 
+		if re.match(r"my name is [\w\W]+", user_input, re.IGNORECASE):
+			name = re.findall("my name is ([\w\W]+)", user_input, re.IGNORECASE)[0]
+			data["name"] = name
+			with open("data.py", "w") as file:
+				file.write("data = " + str(data))
+			print_answer("I remembered it")
+			return
+
 		if re.match(r"i [do ]*feel [\w\s]+[,]*[\w\s]*", user_input_without_syntax, re.IGNORECASE):
 
 			their_feelings = re.findall(r"i [do ]*feel ([\w\s]+)?,*[\w\s]*", user_input_without_syntax, re.IGNORECASE)[0]
@@ -921,6 +933,14 @@ def generate_answer(user_input, user_input_without_syntax):
 
 	# if user's input is a statement
 	elif statement:
+
+		if re.match(r"my name is [\w\W]+", user_input, re.IGNORECASE):
+			name = re.findall("my name is ([\w\W]+)", user_input, re.IGNORECASE)[0]
+			data["name"] = name
+			with open("data.py", "w") as file:
+				file.write("data = " + str(data))
+			print_answer("I remembered it")
+			return
 		
 		# creating variables that will hold information about user's input
 		explanation = False
