@@ -48,7 +48,7 @@ List of things this assistant can do *(you **don't** have to remember these comm
 - perform calculations (`what is 2 + 2`)
 - open websites and apps (`open youtube.com`)
 - tell jokes (`tell me a joke` (they really are excellent, you have to try them))
-- send emails (`send an email`)
+- send emails (`send an email` (make sure to enable 3rd-party access if you have gmail.com email))
 - translate from and to pretty much every language (`translate hello world to German`)
 - look up a word in dictionary (`what does hello mean`)
 - search for people on Wikipedia (`who is Joe Biden`)
