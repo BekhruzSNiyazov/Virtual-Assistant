@@ -79,14 +79,21 @@
             color: #aca9a9;
         }
         .news {
-            color: #eeeeee;
             text-decoration: none;
         }
-        .news:hover {
+        .news-dark {
+            color: #eeeeee;
+        }
+        .news-dark:hover {
             color: #d4d4d4;
         }
+        .news-light {
+            color: #393e46;
+        }
+        .news-light:hover {
+            color: gray;
+        }
         .more:hover {
-            color: #d4d4d4;
             cursor: pointer;
         }
         #input {
@@ -169,9 +176,9 @@
             let span = document.getElementsByClassName("span");
             let out = document.getElementsByClassName("out");
             let element = document.getElementById("light-dark");
+            let news = document.getElementsByClassName("news");
             if (dark) {
                 element.innerHTML = '<svg onclick="toggle_mode();" style="position: fixed; top: 0;" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-brightness-high" viewBox="0 0 16 16"><path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/></svg>'
-                dark = false;
                 body.style.backgroundColor = "#ffffff";
                 for (let i = 0; i < svg.length; i++) {
                     svg[i].classList.remove("dark");
@@ -187,9 +194,12 @@
                     out[i].classList.remove("out-dark");
                     out[i].classList.add("out-light");
                 }
+                for (let i = 0; i < news.length; i++) {
+                    news[i].classList.remove("news-dark");
+                    news[i].classList.add("news-light");
+                }
             } else {
                 element.innerHTML = '<svg onclick="toggle_mode();" style="position: fixed; top: 0;" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-moon" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M14.53 10.53a7 7 0 0 1-9.058-9.058A7.003 7.003 0 0 0 8 15a7.002 7.002 0 0 0 6.53-4.47z"/></svg>'
-                dark = true;
                 body.style.backgroundColor = "#000000";
                 for (let i = 0; i < svg.length; i++) {
                     svg[i].classList.remove("light");
@@ -205,7 +215,13 @@
                     out[i].classList.remove("out-light");
                     out[i].classList.add("out-dark");
                 }
+                for (let i = 0; i < news.length; i++) {
+                    news[i].classList.remove("news-light");
+                    news[i].classList.add("news-dark");
+                }
             }
+            dark = !dark;
+            eel.toggle_mode()()
         }
 
         eel.expose(update_news);
@@ -215,6 +231,10 @@
 
         function expand() {
             let element_div = document.getElementsByClassName('more')[document.getElementsByClassName('more').length - 1];
+            if (!dark) {
+                more_news = more_news.replaceAll("news-dark", "news-light");
+            }
+            console.log(more_news);
             element_div.innerHTML = more_news;
         }
 

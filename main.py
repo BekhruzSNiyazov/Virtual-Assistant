@@ -50,6 +50,8 @@ timers = []
 
 last_user = ""
 
+mode = "dark"
+
 API_KEY = "AIzaSyCJwTqEZBqNmLru1kCSnQZOoPjDLXgqWko"
 
 SEARCH_ENGINE_ID = "74b00f5aa1b238403"
@@ -136,7 +138,13 @@ def translate(text, dest="en"):
 	translation = translator.translate(text, dest=dest)
 	return translation
 
+@eel.expose
+def toggle_mode():
+	global mode
+	mode = "light" if mode == "dark" else "dark"
+
 def search(search_item, person, google=False):
+	global mode
 	answer = ""
 	if google:
 		try:
@@ -154,8 +162,13 @@ def search(search_item, person, google=False):
 				# extract the page url
 				link = search_item.get("link")
 				if i < 4:
-					answer += "<a class='news' target='_blank' href='" + link + "'>" + "<h2>" + title + "</h2>" + snippet + "</a><br><br>"
-				else: more += "<a class='news' target='_blank' href='" + link + "'>" + "<h2>" + title + "</h2>" + snippet + "</a><br><br>"
+					if mode == "dark":
+						answer += "<a class='news news-dark' target='_blank' href='" + link + "'>" + "<h2>" + title + "</h2>" + snippet + "</a><br><br>"
+					else: answer += "<a class='news news-light' target='_blank' href='" + link + "'>" + "<h2>" + title + "</h2>" + snippet + "</a><br><br>"
+				else:
+					if mode == "dark":
+						more += "<a class='news news-dark' target='_blank' href='" + link + "'>" + "<h2>" + title + "</h2>" + snippet + "</a><br><br>"
+					else: more += "<a class='news news-light' target='_blank' href='" + link + "'>" + "<h2>" + title + "</h2>" + snippet + "</a><br><br>"
 			eel.update_news(more)()
 			answer += "<div class='more' onclick='expand();'>Click for more</div>"
 		except: pass
@@ -410,10 +423,11 @@ def generate_answer(user_input, user_input_without_syntax):
 			text = user_input_without_syntax[:user_input_without_syntax.lower().index(language.lower())-3].strip()
 		translation = translate(text=text, dest=code)
 		answer = "Translation: " + translation.text
-		answer += "<div style='color: #e3e3e3;'>Pronunciation: " + translation.pronunciation + "</div>" if translation.pronunciation else ""
+		answer += "<div>Pronunciation: " + translation.pronunciation + "</div>" if translation.pronunciation else ""
 		print_answer(answer, tts=False)
 		pronunciation = threading.Thread(target=say, args=(translation.text, code))
 		pronunciation.start()
+		return
 
 	elif user_input_without_syntax == "0 or 1" or user_input_without_syntax == "1 or 0" or user_input_without_syntax == "1 or 2" or user_input_without_syntax == "2 or 1":
 		print_answer("1!")
