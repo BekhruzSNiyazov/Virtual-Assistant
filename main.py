@@ -606,8 +606,12 @@ def generate_answer(user_input, user_input_without_syntax):
 	elif question:
 
 		if "my" in words and "name" in words:
-			print_answer("Your name is " + data["name"].title())
-			return
+			try:
+				print_answer("Your name is " + data["name"].title())
+				return
+			except:
+				print_answer("Sorry, but I don't yet know your name. Please, tell me, what's your name?")
+				return
 
 		elif "what" in words and "can" in words and "do" in words:
 			if not tts_off:
