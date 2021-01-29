@@ -5,11 +5,11 @@ You need to have Python 3.x installed.
 # Setup
 1. Download all repository code (`git clone https://github.com/BekhruzSNiyazov/Virtual-Assistant.git` or you can click Code->Download ZIP).
 
-![Installing the code using CLI](https://firebasestorage.googleapis.com/v0/b/file-sharing-7dcf2.appspot.com/o/Peek%202021-01-21%2012-49.gif?alt=media&token=ffa982ea-5df0-4191-b1a1-36ac0b126f85)![Installing the code using GUI](https://firebasestorage.googleapis.com/v0/b/file-sharing-7dcf2.appspot.com/o/Peek%202021-01-21%2013-21.gif?alt=media&token=c56c8dae-e331-4676-ac77-00394a639f75)
+![Installing the code using CLI](https://firebasestorage.googleapis.com/v0/b/file-sharing-7dcf2.appspot.com/o/clone.gif?alt=media&token=89dae903-5f04-41ee-ac70-779959a16186)![Installing the code using GUI](https://firebasestorage.googleapis.com/v0/b/file-sharing-7dcf2.appspot.com/o/zip.gif?alt=media&token=1b09553f-c8a4-43d1-8802-d19342983a26)
 
 2. Install needed libraries like so:
 
-![Installing the requirements](https://firebasestorage.googleapis.com/v0/b/file-sharing-7dcf2.appspot.com/o/Peek%202021-01-21%2012-53.gif?alt=media&token=e2d81a83-0d3b-433d-93c3-1ca44dd6e089)
+![Installing the requirements](https://firebasestorage.googleapis.com/v0/b/file-sharing-7dcf2.appspot.com/o/requirements.gif?alt=media&token=1041dd6a-b376-431c-91d3-549dbde92f93)
 #### Windows
 ```
 pip install -r requirements.txt
