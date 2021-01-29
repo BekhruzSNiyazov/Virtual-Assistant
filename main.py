@@ -233,6 +233,8 @@ def sleep(seconds, index):
 			break
 	try:
 		timers.remove(timer)
+		sound_thread = threading.Thread(target=playsound, args=("timeover.wav",))
+		sound_thread.start()
 		print_answer("Time is over")
 	except: pass
 
