@@ -314,7 +314,7 @@ def generate_answer(user_input, user_input_without_syntax):
 		print_answer(answer)
 		return
 
-	elif "weather" in words:
+	elif "weather" in words or "temperature" in words or ("like" in words and "outside" in words):
 		weather = pyowm.OWM("6d00d1d4e704068d70191bad2673e0cc").weather_manager().weather_at_place(eel.get_location()()).weather
 		temperature = ""
 		max_temperature = ""
@@ -338,28 +338,28 @@ def generate_answer(user_input, user_input_without_syntax):
 			if float(temperature_C.replace("°C", "")) > 15:
 				temperature = "<span style='color: lightcoral;'>+" + temperature + "</span>"
 			else:
-				temperature = "<span style='color: lightyellow;'>+" + temperature + "</span>"
+				temperature = "<span style='color: #fcba03;'>+" + temperature + "</span>"
 		else:
 			temperature =  "<span style='color: lightblue;'>" + temperature + "</span>"
 		if float(max_temperature_C.replace("°C", "")) > 0:
 			if float(max_temperature_C.replace("°C", "")) > 15:
 				max_temperature = "<span style='color: lightcoral;'>+" + max_temperature + "</span>"
 			else:
-				max_temperature = "<span style='color: lightyellow;'>+" + max_temperature + "</span>"
+				max_temperature = "<span style='color: #fcba03;'>+" + max_temperature + "</span>"
 		else:
 			max_temperature =  "<span style='color: lightblue;'>" + max_temperature + "</span>"
 		if float(min_temperature_C.replace("°C", "")) > 0:
 			if float(min_temperature_C.replace("°C", "")) > 15:
 				min_temperature = "<span style='color: lightcoral;'>+" + min_temperature + "</span>"
 			else:
-				min_temperature = "<span style='color: lightyellow;'>+" + min_temperature + "</span>"
+				min_temperature = "<span style='color: #fcba03;'>+" + min_temperature + "</span>"
 		else:
 			min_temperature =  "<span style='color: lightblue;'>" + min_temperature + "</span>"
 		if float(feels_like_C.replace("°C", "")) > 0:
 			if float(feels_like_C.replace("°C", "")) > 15:
 				feels_like = "<span style='color: lightcoral;'>+" + feels_like + "</span>"
 			else:
-				feels_like = "<span style='color: lightyellow;'>+" + feels_like + "</span>"
+				feels_like = "<span style='color: #fcba03;'>+" + feels_like + "</span>"
 		else:
 			feels_like =  "<span style='color: lightblue;'>" + feels_like + "</span>"
 
@@ -1185,5 +1185,3 @@ if __name__ == "__main__":
 
 # TODO: add "what can you do"
 # TODO: add "who are you"
-# TODO: try to add a control over volume and brightness
-# TODO: add wake word
