@@ -1027,19 +1027,17 @@ def generate_answer(user_input, user_input_without_syntax):
 
 		elif re.match(r"open [\w|\s]+", user_input.lower().strip()):
 			application = re.findall(r"open ([\w\W]+)", user_input.lower().strip())[0].strip()
-			request = requests.get("http://" + application if not application.startswith("http") else application)
-			if request.status_code != 404:
-				webbrowser.open(application)
-			else:
+			try: Popen[application + ".exe", ""]
+			except:
 				try:
-					os.system(application)
+					Popen([application, ""])
 				except:
 					try:
-						Popen([application, ""])
+						request = requests.get("http://" + application if not application.startswith("http") else application)
+						if request.status_code != 404:
+							webbrowser.open(application)
 					except:
-						try:
-							Popen[application + ".exe", ""]
-						except: pass
+						os.system(application)
 
 		elif re.match(r"send[(a)|(an)\s]*[(email)|(message)\s]+[(please)|(cant you)\s]", user_input_without_syntax, re.IGNORECASE):
 			try:
