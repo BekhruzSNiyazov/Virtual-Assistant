@@ -162,6 +162,10 @@ def search(search_item, person, google=False):
 				snippet = search_item.get("snippet")
 				# extract the page url
 				link = search_item.get("link")
+				for word in title.split():
+					if len(word) > 30: title = title.replace(word, word[:25] + "...")
+				for word in snippet.split():
+					if len(word) > 30: snippet = snippet.replace(word, word[:25] + "...")
 				if i < 4:
 					if mode == "dark":
 						answer += "<a class='news news-dark' target='_blank' href='" + link + "'>" + "<h2>" + title + "</h2>" + snippet + "</a><br><br>"
