@@ -329,6 +329,11 @@ def generate_answer(user_input, user_input_without_syntax):
 				sbc.set_brightness(percentage)
 			except:
 				print_answer("Sorry, couldn't set the brightness")
+		else:
+			percentage = int(re.sub(r"[^\d]", "", get_input("Please, enter the brightness percentage")).strip())
+			try:
+				sbc.set_brightness(percentage)
+			except: print_answer("Sorry, couldn't set the brightness")
 
 	elif "weather" in words or "temperature" in words or ("like" in words and "outside" in words):
 		weather = pyowm.OWM("6d00d1d4e704068d70191bad2673e0cc").weather_manager().weather_at_place(eel.get_location()()).weather
