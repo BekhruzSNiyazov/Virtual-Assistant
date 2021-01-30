@@ -129,7 +129,7 @@ def get_input(string):
     answer = string
     print_answer(answer)
     to_send_to_js = answer
-    eel.get_input()
+    eel.get_input()()
 
     value = eel.send_input_value()()
     while not value:
