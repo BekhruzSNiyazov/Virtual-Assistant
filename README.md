@@ -6,7 +6,7 @@ You need to have Python 3.x installed (tested with Python 3.8.6).
 Note: if you are on Windows you can just download and run `Virtual-Assistant.exe` installer and skip the following steps.
 1. Download all repository code (`git clone https://github.com/BekhruzSNiyazov/Virtual-Assistant.git` or you can click Code->Download ZIP).
 
-![Installing the code using CLI](https://firebasestorage.googleapis.com/v0/b/file-sharing-7dcf2.appspot.com/o/clone.gif?alt=media&token=89dae903-5f04-41ee-ac70-779959a16186)![Installing the code using GUI](https://firebasestorage.googleapis.com/v0/b/file-sharing-7dcf2.appspot.com/o/zip.gif?alt=media&token=1b09553f-c8a4-43d1-8802-d19342983a26)
+![Installing the code using CLI](https://firebasestorage.googleapis.com/v0/b/file-sharing-7dcf2.appspot.com/o/clone.gif?alt=media&token=89dae903-5f04-41ee-ac70-779959a16186)![Installing the code using GUI](https://firebasestorage.googleapis.com/v0/b/file-sharing-7dcf2.appspot.com/o/download.gif?alt=media&token=8abc215c-e783-4b65-84a4-536f6d040aea)
 
 2. Install needed libraries like so:
 
