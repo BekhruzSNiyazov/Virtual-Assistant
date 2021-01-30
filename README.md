@@ -1,7 +1,7 @@
 # Virtual Assistant
 This is a virtual assistant created by Bekhruz Niyazov for 3rd Code Jam hosted by Tech With Tim.
 # Requirements
-You need to have Python 3.x installed.
+You need to have Python 3.x installed (tested with Python 3.8.6).
 # Setup
 Note: if you are on Windows you can just download and run `Virtual-Assistant.exe` installer and skip the following steps.
 1. Download all repository code (`git clone https://github.com/BekhruzSNiyazov/Virtual-Assistant.git` or you can click Code->Download ZIP).
