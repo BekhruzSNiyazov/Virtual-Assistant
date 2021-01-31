@@ -771,6 +771,8 @@ def generate_answer(user_input, user_input_without_syntax):
             answer += "Chat with you<br>"
             answer += "Get news from Google<br>"
             answer += "Create reminders<br>"
+            answer += "Cance reminders<br>"
+            answer += "Display the reminders<br>"
             answer += "Create timers ⏱<br>"
             answer += "Cancel timers<br>"
             answer += "Display the timers<br>"
