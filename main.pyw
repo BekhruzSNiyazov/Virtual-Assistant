@@ -267,9 +267,7 @@ def sleep(seconds, index):
             break
     try:
         timers.remove(timer)
-        sound_thread = threading.Thread(
-            target=playsound, args=("timeover.wav",))
-        sound_thread.start()
+        playsound("timeover.wav")
         print_answer("Time is over")
     except:
         pass
@@ -277,23 +275,28 @@ def sleep(seconds, index):
 
 def check_reminder(reminder, date, index):
     date, time = date.split()
+    hours = int(time.split(":")[0])
+    minutes = int(time.split(":")[1])
     while True:
         date_now = str(datetime.now().date())
         time_now = str(datetime.now().time())
+        hours_now = int(time_now.split(":")[0])
+        minutes_now = int(time_now.split(":")[1])
         if date_now == date:
-            if time.startswith(time):
+            if hours_now > hours:
                 break
-            elif int(time.split(":")[0]) > int(time.split(":")[0]) or int(time_now.split(":")[1]) > int(time.split(":")[1]):
+            if hours_now == hours and minutes_now > minutes:
                 break
-        elif int(date.split("-")[1]) > int(date.split("-")[1]) or int(date_now.split("-")[2]) > int(date.split("-")[2]):
+            elif int(time.split(":")[0]) < int(time.split(":")[0]) or int(time_now.split(":")[1]) < int(time.split(":")[1]):
+                break
+        elif int(date.split("-")[1]) < int(date.split("-")[1]) or int(date_now.split("-")[2]) < int(date.split("-")[2]):
             break
-    print_answer("Reminder: " + reminder + " on " + date + " " + time)
-    reminder_tts = threading.Thread(target=say, args=(
-        "Reminder :" + reminder + " on " + date + " " + time))
-    data["reminder_threads"][0].pop(index)
-    data["reminder_threads"].remove({})
-    with open("data.py", "w") as file:
-        file.write("data = " + str(data))
+    if not data["reminder_threads"][index][3]:
+        playsound("timeover.wav")
+        print_answer("Reminder: " + reminder + " on " + date + " " + time)
+        data["reminder_threads"][index][3] = True
+        with open("data.py", "w") as file:
+            file.write("data = " + str(data))
 
 
 def take_screenshot(seconds):
@@ -347,13 +350,15 @@ def generate_answer(user_input, user_input_without_syntax):
                     break
         else:
             break
-
+    
     if "reminder_threads" in data:
-        for thread in data["reminder_threads"]:
+        for reminder in data["reminder_threads"]:
             try:
-                data["reminder_threads"][thread][0].start()
-            except:
-                pass
+                if not reminder[3]:
+                    reminder_thread = threading.Thread(
+                        target=check_reminder, args=(reminder[0], reminder[1], reminder[2]))
+                    reminder_thread.start()
+            except: pass
 
     user_input = user_input.lower()
 
@@ -574,7 +579,7 @@ def generate_answer(user_input, user_input_without_syntax):
             search_result = search(query, False, google=True)
             print_answer(search_result)
 
-    elif re.match(r"[\w\W]*[(set)|(create)] [\w\W]* reminder[\w\W]*", user_input_without_syntax, re.IGNORECASE):
+    elif re.match(r"[create|set]+[ a]* reminder$", user_input_without_syntax, re.IGNORECASE):
         reminder = get_input("What's the reminder?")
         month_day_time = get_input(
             "Got it, \"" + reminder + "\". When do you want to be reminded?")
@@ -629,23 +634,57 @@ def generate_answer(user_input, user_input_without_syntax):
                 date += "00"
             yes = get_input("So, that's \"" + reminder + "\" on " + date + "?")
             if yes[0] == "y":
-                index = str(len(data["reminder_threads"])
-                            ) if "reminder_threads" in data else "0"
+                index = len(data["reminder_threads"]) if "reminder_threads" in data else 0
                 reminder_thread = threading.Thread(
                     target=check_reminder, args=(reminder, date, index))
-                reminder_thread.start()
                 if "reminder_threads" in data:
-                    data["reminder_threads"].append({index: [reminder_thread]})
+                    data["reminder_threads"].append([reminder, date, index, False])
                 else:
-                    data["reminder_threads"] = [{index: [reminder_thread]}]
+                    data["reminder_threads"] = [[reminder, date, index, False]]
                 with open("data.py", "w") as file:
                     file.write("data = " + str(data))
+                reminder_thread.start()
                 print_answer("Reminder saved")
             else:
                 print_answer("Reminder canceled")
         else:
             print_answer("Reminder canceled")
         return
+    
+    elif "show" in words and "reminders" in words:
+        answer = ""
+        index = 1
+        if "reminder_threads" in data:
+            for reminder in data["reminder_threads"]:
+                try:
+                    if not reminder[3]:
+                        answer += str(index) + ". "
+                        answer += reminder[0] + " on " + reminder[1] + "<br>"
+                        index += 1
+                except: pass
+            print_answer(answer)
+        else: print_answer("There are no reminders created")
+        if not answer:
+            print_answer("There are no reminders created")
+    
+    elif "cancel" in words and "reminder" in words and "all" not in words:
+        index = re.findall(r"(\d+)", user_input_without_syntax)
+        if index:
+            index = int(index[0])
+            try:
+                data["reminder_threads"][index-1][3] = True
+                with open("data.py", "w") as file:
+                    file.write("data = " + str(data))
+                print_answer("Reminder " + str(index) + " canceled")
+            except: print_answer("Reminder " + str(index) + " does not exist")
+        else: print_answer("You need to provide the index of the reminder")
+    
+    elif "cancel" in words and "reminders" in words and "all" in words:
+        for i in range(len(data["reminder_threads"])):
+            data["reminder_threads"][i][3] = True
+        with open("data.py", "w") as file:
+            file.write("data = " + str(data))
+        print_answer("All reminders were canceled")
 
     elif user_input_without_syntax == "exit":
         with open("data.py", "w") as file:
@@ -1117,7 +1156,7 @@ def generate_answer(user_input, user_input_without_syntax):
                     answer += "Timer " + str(timers.index(timer)+1) + " was created on " + str(timer[0]) + ":" + str(
                         timer[1]) + ":" + str(timer[2]) + ". It was set for " + str(timer[3]) + " seconds." + "<br>"
             else:
-                answer = "There are no timers set."
+                answer = "There are no timers set"
             send(answer)
             return
 
@@ -1264,7 +1303,7 @@ def generate_answer(user_input, user_input_without_syntax):
             if seconds.isdigit():
                 seconds = int(seconds)
             else:
-                answer = "Timer canceled."
+                answer = "Timer canceled"
                 to_send_to_js = answer
                 print_answer(answer)
                 return
@@ -1278,7 +1317,7 @@ def generate_answer(user_input, user_input_without_syntax):
                     timer_thread.start()
                     return
                 else:
-                    answer = "Timer was canceled."
+                    answer = "Timer was canceled"
                     print_answer(answer)
                     return
 
@@ -1315,7 +1354,7 @@ def generate_answer(user_input, user_input_without_syntax):
                 timer_thread.start()
                 return
             else:
-                answer = "Timer was canceled."
+                answer = "Timer was canceled"
                 print_answer(answer)
                 return
 
