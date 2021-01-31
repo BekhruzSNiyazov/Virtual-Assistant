@@ -56,6 +56,8 @@ List of things this assistant can do *(you **don't** have to remember these comm
 - chat with you (`anything`)
 - get news from Google (`news about Joe Biden`)
 - create reminders (`create a reminder`)
+- cancel reminders (`cancel the 1st reminder`)
+- display the reminders (`show me the reminders`)
 - create timers (`set a timer`)
 - cancel timers (`cancel the 1st timer`)
 - display the timers (`show me the timers`)
